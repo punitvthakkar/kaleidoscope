@@ -1,0 +1,179 @@
+/* Kaleidoscope app layout. Components come from mn.css; colors only from theme tokens.
+   UI built with Material Next: an independent design language built on Material 3, not an official Google design. */
+
+:root {
+  --glass: color-mix(in srgb, var(--md-sys-color-surface-container-low) 78%, transparent);
+  --glass-strong: color-mix(in srgb, var(--md-sys-color-surface-container-low) 90%, transparent);
+  --dock-h: 68px;
+  --mn-nav-space: calc(var(--dock-h) + 16px);   /* lifts snackbars above the dock */
+}
+
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--md-sys-color-scrim); }
+
+#c {
+  position: fixed; inset: 0; width: 100vw; height: 100vh; display: block;
+  touch-action: none; cursor: crosshair;
+}
+body.idle #c, body.clean #c { cursor: none; }
+
+/* ---- Dock ------------------------------------------------------------------------------ */
+.dock {
+  position: fixed; z-index: 10; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); translate: -50% 0;
+  display: flex; align-items: center; gap: 4px; height: var(--dock-h); padding: 6px;
+  border-radius: var(--r-full); background: var(--glass); color: var(--md-sys-color-on-surface);
+  backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  box-shadow: var(--mn-depth-3);
+  transition: opacity 1.2s ease, translate var(--mn-spatial-slow);
+}
+.dock-tab {
+  display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 18px 0 14px; border: 0;
+  border-radius: var(--r-full); background: none; color: inherit; cursor: pointer; text-align: start;
+  transition: background-color var(--mn-effects-default), color var(--mn-effects-default);
+}
+.dock-tab > svg, .dock-tab > [data-icon] { flex: none; width: 24px; height: 24px; color: var(--md-sys-color-on-surface-variant); }
+.dock-tab:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent); }
+.dock-tab[aria-expanded="true"] { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
+.dock-tab[aria-expanded="true"] > :is(svg, [data-icon]) { color: inherit; }
+.dock-text { display: flex; flex-direction: column; min-width: 0; }
+.dock-kicker { font: 500 11px/16px var(--mn-font-plain); letter-spacing: .5px; color: var(--md-sys-color-on-surface-variant); }
+.dock-tab[aria-expanded="true"] .dock-kicker { color: inherit; opacity: .8; }
+.dock-value { font: 500 14px/20px var(--mn-font-plain); letter-spacing: .1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+.dock-sep { width: 1px; height: 32px; margin: 0 6px; background: var(--md-sys-color-outline-variant); }
+.dock .wander { height: 52px; padding-inline: 20px 24px; }
+.dock .more { position: relative; }
+.rec-dot { position: absolute; top: 10px; right: 10px; background: var(--md-sys-color-error); }
+
+body.idle:not(.panel-open) .dock { opacity: 0; translate: -50% 12px; pointer-events: none; }
+
+/* ---- Panels: kit sheets opened non-modally, so the picture stays live -------------------- */
+.panel {
+  z-index: 20;
+  background: var(--glass-strong);
+  backdrop-filter: blur(28px) saturate(1.2); -webkit-backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow: var(--mn-depth-3);
+  gap: 20px;
+}
+.panel[open] { display: flex; flex-direction: column; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; margin: -6px -8px -4px 0; }
+.panel-head h2 { margin: 0; }
+
+@media (min-width: 840px) {
+  .panel {
+    inset: 16px 16px auto auto; margin: 0; width: 400px; height: auto;
+    max-height: calc(100dvh - var(--dock-h) - 64px); transform-origin: right center;
+  }
+  .panel.wide { width: 440px; }
+}
+@media (max-width: 839.98px) {
+  .panel {
+    left: 8px; right: 8px; bottom: calc(var(--dock-h) + 24px + env(safe-area-inset-bottom)); width: auto;
+    max-height: 58dvh; border-radius: var(--r-xl); padding-bottom: 24px;
+  }
+}
+
+/* Chamber cards */
+.chambers { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }
+.chamber {
+  --mn-pad: 12px; gap: 2px; text-align: start; cursor: pointer;
+  background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface);
+}
+.chamber > .media { --ratio: 16 / 10; margin-bottom: 8px; }
+.chamber[aria-current] {
+  background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container);
+  box-shadow: inset 0 0 0 2px var(--md-sys-color-primary);
+}
+.chamber[aria-current] .mn-muted { color: inherit; opacity: .8; }
+
+/* Dials: one control, words at both ends */
+.dial { display: grid; gap: 2px; }
+.dial-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.dial-sub { margin: 0 0 2px; }
+.dial input[type="range"], .set-row input[type="range"] { width: 100%; margin: 6px 0 0; }
+.dial-ends { display: flex; justify-content: space-between; }
+
+.block { display: flex; flex-direction: column; gap: 10px; }
+.block h3 { margin: 0; }
+.block-head { display: flex; align-items: baseline; gap: 8px; }
+.chip-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.panel .mn-seg > * { flex: 1; }
+.panel > .mn-btn { align-self: flex-start; }
+.panel .mn-list .mn-item { background: var(--md-sys-color-surface-container); }
+
+/* Palette swatches: the gradients are the palettes themselves */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 10px; }
+.swatch {
+  aspect-ratio: 1; width: 100%; max-width: 48px; border: 0; border-radius: var(--r-full); cursor: pointer;
+  background: var(--swatch); outline: 2px solid transparent; outline-offset: 3px;
+  transition: outline-color var(--mn-effects-default), scale var(--mn-spatial-fast);
+}
+.swatch:hover { scale: 1.08; }
+.swatch[aria-pressed="true"] { outline-color: var(--md-sys-color-primary); }
+
+/* All settings */
+.set-body { display: flex; flex-direction: column; gap: 14px; }
+.set-row { display: flex; flex-direction: column; gap: 2px; }
+.set-row[hidden] { display: none; }
+.set-head { display: flex; align-items: center; gap: 12px; min-height: 32px; }
+.set-head > label { flex: 1; }
+.set-select {
+  max-width: 55%; padding: 6px 10px; border: 0; border-radius: var(--r-s);
+  background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);
+  font: 400 14px/20px var(--mn-font-plain);
+}
+.set-actions { gap: 8px; margin-top: 8px; }
+.set-readout { margin: 0; }
+.mn-group[hidden] { display: none; }
+
+/* ---- Caption: the chamber's name, like a museum label ---------------------------------- */
+.caption {
+  position: fixed; z-index: 5; left: 28px; bottom: calc(var(--dock-h) + 40px + env(safe-area-inset-bottom));
+  max-width: 420px; margin: 0; pointer-events: none; color: var(--md-sys-color-on-surface);
+  text-shadow: 0 1px 12px var(--md-sys-color-scrim), 0 0 2px var(--md-sys-color-scrim);
+  opacity: 0; translate: 0 10px; transition: opacity 1.6s ease, translate 1.6s ease;
+}
+.caption p { margin: 0; }
+.caption .mn-body-m { color: var(--md-sys-color-on-surface-variant); }
+.caption.show { opacity: 1; translate: 0 0; }
+body.panel-open .caption { opacity: 0; transition-duration: .3s; }
+@media (max-width: 599.98px) { .caption { left: 16px; right: 16px; text-align: center; max-width: none; } }
+
+/* ---- First visit ----------------------------------------------------------------------- */
+.intro {
+  position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px;
+  background: color-mix(in srgb, var(--md-sys-color-scrim) 40%, transparent);
+}
+.intro[hidden] { display: none; }
+.intro-card {
+  display: flex; flex-direction: column; gap: 14px; max-width: 440px; padding: 32px;
+  border-radius: var(--r-xl); background: var(--glass-strong); color: var(--md-sys-color-on-surface);
+  backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); box-shadow: var(--mn-depth-3);
+}
+.intro-card h1, .intro-card p { margin: 0; }
+.intro-kicker { color: var(--md-sys-color-primary); letter-spacing: 2px; text-transform: uppercase; }
+.intro-steps { margin: 4px 0 8px; padding-left: 20px; display: grid; gap: 6px; color: var(--md-sys-color-on-surface-variant); }
+.intro-steps b { color: var(--md-sys-color-on-surface); font-weight: 500; }
+.intro-card .mn-btn { align-self: flex-start; }
+
+/* ---- Keys sheet ------------------------------------------------------------------------ */
+.keys { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0; }
+.keys dt { color: var(--md-sys-color-primary); font-variant-numeric: tabular-nums; }
+.keys dd { margin: 0; }
+
+.fatal { position: fixed; inset: 0; z-index: 40; place-content: center; color: var(--md-sys-color-error); }
+.fatal[hidden] { display: none; }
+
+body.clean :is(.dock, .panel, .caption) { display: none; }
+
+/* ---- Compact: the dock becomes a thumb bar --------------------------------------------- */
+@media (max-width: 599.98px) {
+  :root { --dock-h: 64px; }
+  .dock { left: 8px; right: 8px; translate: none; justify-content: space-between; }
+  body.idle:not(.panel-open) .dock { translate: 0 12px; }
+  .dock-tab { flex: 1; flex-direction: column; justify-content: center; gap: 2px; height: 52px; padding: 0 6px; }
+  .dock-tab > svg, .dock-tab > [data-icon] { width: 22px; height: 22px; }
+  .dock-kicker { display: none; }
+  .dock-value { font-size: 12px; line-height: 16px; max-width: 84px; }
+  .dock-sep { display: none; }
+  .dock .wander { width: 52px; padding: 0; justify-content: center; }
+  .dock .wander > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+}

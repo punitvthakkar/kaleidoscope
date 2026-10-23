@@ -1,13 +1,143 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<!-- UI built with Material Next: an independent design language built on Material 3, not an official Google design. -->
+<html lang="en" data-expressiveness="calm" data-theme="dark">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>p5.js Kaleidoscope</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <script src="sketch.js"></script>
-  <style> body {padding: 0; margin: 0; overflow: hidden;} </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kaleidoscope</title>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="mn.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <canvas id="c" aria-label="Kaleidoscope canvas. Move to paint with light."></canvas>
+
+  <!-- Museum-style caption: shown briefly when you enter a chamber -->
+  <div class="caption" id="caption" aria-live="polite">
+    <p class="mn-headline-s" id="captionName"></p>
+    <p class="mn-body-m" id="captionLine"></p>
+  </div>
+
+  <!-- First visit only -->
+  <div class="intro" data-once="intro">
+    <div class="intro-card">
+      <p class="mn-label-l intro-kicker">Kaleidoscope</p>
+      <h1 class="mn-headline-m">Look through the glass</h1>
+      <p class="mn-body-l mn-muted">Move to paint with light. The mirrors do the rest.</p>
+      <ol class="intro-steps mn-body-m">
+        <li><b>Chamber</b> shapes the mirrors</li>
+        <li><b>Light</b> is what shines into them</li>
+        <li><b>Mood</b> is how it moves and fades</li>
+      </ol>
+      <button class="mn-btn lg" id="begin">Step inside</button>
+    </div>
+  </div>
+
+  <!-- Dock: the three ingredients of a kaleidoscope, plus the journey -->
+  <nav class="dock" id="dock" aria-label="Kaleidoscope controls">
+    <button class="dock-tab" data-panel="chamber" aria-expanded="false" aria-controls="panel-chamber">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z"/><path d="M12 2.8v18.4M4 7.4l16 9.2M20 7.4L4 16.6"/></svg>
+      <span class="dock-text"><span class="dock-kicker">Chamber</span><span class="dock-value" id="dockChamber">Mandala</span></span>
+    </button>
+    <button class="dock-tab" data-panel="light" aria-expanded="false" aria-controls="panel-light">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.6"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>
+      <span class="dock-text"><span class="dock-kicker">Light</span><span class="dock-value" id="dockLight">Your hand</span></span>
+    </button>
+    <button class="dock-tab" data-panel="mood" aria-expanded="false" aria-controls="panel-mood">
+      <i data-icon="tune"></i>
+      <span class="dock-text"><span class="dock-kicker">Mood</span><span class="dock-value" id="dockMood">Rainbow</span></span>
+    </button>
+    <span class="dock-sep" aria-hidden="true"></span>
+    <button class="mn-btn wander" id="wander" aria-pressed="false"><i data-icon="play"></i><span>Wander</span></button>
+    <button class="mn-icon-btn more" popovertarget="more" aria-label="More"><i data-icon="more"></i><span class="mn-badge rec-dot" id="recDot" hidden></span></button>
+  </nav>
+
+  <div popover class="mn-menu" id="more">
+    <button data-act="snapshot"><i data-icon="image"></i>Save image</button>
+    <button data-act="export4k"><i data-icon="download"></i>Save 4K image</button>
+    <button data-act="record"><i data-icon="play"></i><span id="recLabel">Record video</span></button>
+    <hr>
+    <button data-act="copyLink"><i data-icon="share"></i>Copy link to this view</button>
+    <button data-act="fullscreen"><i data-icon="open"></i>Full screen</button>
+    <button data-act="hide"><i data-icon="close"></i>Hide controls</button>
+    <hr>
+    <button data-act="all"><i data-icon="settings"></i>All settings</button>
+    <button data-act="keys"><i data-icon="info"></i>Keyboard keys</button>
+  </div>
+
+  <!-- Panels are non-modal so the picture stays live while you adjust it -->
+  <dialog class="mn-sheet panel" id="panel-chamber" aria-labelledby="h-chamber">
+    <header class="panel-head"><h2 class="mn-title-l" id="h-chamber">Chamber</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
+    <div class="chambers" id="chambers"></div>
+    <div class="dial" id="shapeDial"></div>
+    <button class="mn-btn tonal" id="turn"><i data-icon="refresh"></i>Turn the glass</button>
+  </dialog>
+
+  <dialog class="mn-sheet panel" id="panel-light" aria-labelledby="h-light">
+    <header class="panel-head"><h2 class="mn-title-l" id="h-light">Light</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
+    <section class="block">
+      <h3 class="mn-title-s">Your hand</h3>
+      <div class="mn-seg" role="group" aria-label="Brush" id="brushSeg"></div>
+    </section>
+    <div class="dial" id="wanderersDial"></div>
+    <section class="block">
+      <div class="block-head"><h3 class="mn-title-s">Pattern</h3><span class="mn-body-s mn-muted">fed into the mirrors</span></div>
+      <div class="chip-wrap" id="genChips"></div>
+    </section>
+    <div class="mn-list">
+      <label class="mn-item"><span class="lead plain"><i data-icon="image"></i></span><span class="text"><span class="title">Camera</span><span class="sub">Your view becomes light</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="camSwitch"></span></label>
+      <label class="mn-item"><span class="lead plain"><i data-icon="person"></i></span><span class="text"><span class="title">Fingertips</span><span class="sub">Paint in the air</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="handSwitch"></span></label>
+    </div>
+    <button class="mn-btn text" id="clearGlass"><i data-icon="delete"></i>Clear the glass</button>
+  </dialog>
+
+  <dialog class="mn-sheet panel" id="panel-mood" aria-labelledby="h-mood">
+    <header class="panel-head"><h2 class="mn-title-l" id="h-mood">Mood</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
+    <section class="block">
+      <div class="block-head"><h3 class="mn-title-s">Color</h3><span class="mn-body-s mn-muted" id="paletteName"></span></div>
+      <div class="swatches" id="swatches" role="group" aria-label="Palette"></div>
+    </section>
+    <div class="dial" id="paceDial"></div>
+    <div class="dial" id="echoDial"></div>
+    <div class="dial" id="meltDial"></div>
+    <div class="dial" id="glowDial"></div>
+  </dialog>
+
+  <dialog class="mn-sheet panel wide" id="panel-all" aria-labelledby="h-all">
+    <header class="panel-head"><h2 class="mn-title-l" id="h-all">All settings</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
+    <label class="mn-search"><i data-icon="search"></i><input type="search" id="search" placeholder="Search settings" autocomplete="off"></label>
+    <div class="mn-groups" id="allGroups"></div>
+    <div class="mn-empty" id="noHits" hidden><i data-icon="search"></i><p class="title">No setting by that name</p><p>Try speed, color or glow</p></div>
+  </dialog>
+
+  <dialog class="mn-sheet" id="keys" aria-labelledby="h-keys">
+    <h2 id="h-keys">Keyboard keys</h2>
+    <dl class="keys mn-body-m">
+      <dt>Space</dt><dd>Turn the glass</dd>
+      <dt>1 – 9 · ← →</dt><dd>Chambers</dd>
+      <dt>↑ ↓</dt><dd>More or fewer mirrors</dd>
+      <dt>W</dt><dd>Wander</dd>
+      <dt>B · P</dt><dd>Next brush · next palette</dd>
+      <dt>C · T</dt><dd>Camera · fingertips</dd>
+      <dt>X</dt><dd>Clear the glass</dd>
+      <dt>I · R</dt><dd>Save image · record video</dd>
+      <dt>L</dt><dd>Copy link</dd>
+      <dt>E</dt><dd>All settings</dd>
+      <dt>H · F</dt><dd>Hide controls · full screen</dd>
+    </dl>
+    <form method="dialog" class="actions"><button class="mn-btn text">Close keys</button></form>
+  </dialog>
+
+  <div id="fatal" class="mn-empty fatal" hidden></div>
+
+  <script src="mn.js"></script>
+  <script src="js/params.js"></script>
+  <script src="js/fold.js"></script>
+  <script src="js/shaders.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/pens.js"></script>
+  <script src="js/inputs.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
