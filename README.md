@@ -1,6 +1,6 @@
 # Kaleidoscope
 
-A calm, GPU-driven kaleidoscope for the browser. Plain HTML, CSS and JavaScript on raw WebGL2, no build step.
+A calm, GPU-driven kaleidoscope for the browser. One self-contained HTML file on raw WebGL2, with no build step and no dependencies.
 
 **Live:** https://punitvthakkar.github.io/kaleidoscope/
 
