@@ -1,6 +1,6 @@
 # Kaleidoscope
 
-A calm, GPU-driven kaleidoscope for the browser. One self-contained HTML file on raw WebGL2, with no build step and no dependencies.
+A calm, GPU-driven kaleidoscope for the browser. One HTML file on raw WebGL2 (plus chamber thumbnails in `thumbs/`), with no build step and no dependencies.
 
 **Live:** https://punitvthakkar.github.io/kaleidoscope/
 
@@ -27,5 +27,5 @@ Space turn the glass · 1–9 / ← → chambers · ↑ ↓ mirrors · W wander 
 
 ## Notes
 
-- Brightness changes are eased by a flash guard (All settings → Journey & performance → Soften flashes) to reduce photosensitivity risk.
+- Brightness changes are eased by a flash guard (All settings → Journey & performance → Soften flashes) to reduce photosensitivity risk. While it is on, average brightness is also held under a ceiling (Brightness ceiling, 30% by default).
 - The interface uses Material Next, an independent design language built on Material 3. It is not an official Google design.
