@@ -1,8 +1,8 @@
-# fractonaut
+# fractonaut 2026
 
 *Out on an infinite adventure.*
 
-A calm, GPU-driven kaleidoscope for the browser. It opens in its stillest mood with sound on (starting at your first touch); Calm and Sound are both on the first ring of the orb, and your choices are remembered. One HTML file on raw WebGL2 (plus chamber thumbnails in `thumbs/`), with no build step and no dependencies.
+A calm, GPU-driven kaleidoscope for the browser. It opens in its stillest mood with sound on (heard from your first touch, the earliest browsers allow; it fades out when you leave); Calm and Sound are both on the first ring of the orb, and your choices are remembered. One HTML file on raw WebGL2 (plus chamber thumbnails in `thumbs/`), with no build step and no dependencies.
 
 **Live:** https://punitvthakkar.github.io/kaleidoscope/
 
@@ -45,7 +45,7 @@ With **Fingertips** on (Light panel, or T), the camera reads your hands and noth
 - **Pinch to hold the glass.** With one hand pinched, turn your wrist like a dial to spin it and move toward or away from the camera to dive. With both hands pinched, turn and stretch as if holding a wheel, the same twist and pinch as two fingers on a touch screen. Let go and it coasts.
 While one hand is pinching, its other three fingers still paint if you raise them, so a single hand can turn the glass and draw at once; curl them to turn without drawing.
 
-Both hands are tracked by default, so you can hold the glass with one and paint with the other, turn it with both like a wheel, or show both palms and hold still to step to the next chamber. **Both hands** sits beside Hands under Light; switching it off tracks one hand, which is lighter on the laptop.
+Both hands are tracked by default, so you can hold the glass with one and paint with the other, turn it with both like a wheel, or show both palms and hold still to step to the next chamber. **Both hands** appears beside Hands under Light while Hands is on; switching it off tracks one hand, which is lighter on the laptop.
 
 The tracker runs only as hard as the hand needs: 30 times a second while it moves or holds the glass, 15 while it is slow or still, a few glances a second once it leaves, and once a second after ten seconds with nobody there. If the laptop still runs warm, **Track hands on the processor** and **Half frame rate while tracking hands** are there to try.
 
