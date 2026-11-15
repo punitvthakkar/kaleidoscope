@@ -4,6 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Kaleidoscope</title>
   <style>
 /* Material Next theme: nocturne #5B4BDB, calm.
@@ -779,8 +783,8 @@ html:active-view-transition-type(back)::view-transition-new(root) { animation: v
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--md-sys-color-scrim); }
 
 #c {
-  position: fixed; inset: 0; width: 100vw; height: 100vh; display: block;
-  touch-action: none; cursor: crosshair;
+  position: fixed; inset: 0; width: 100%; height: 100%; display: block;
+  touch-action: none; cursor: crosshair; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
 }
 body.idle #c, body.clean #c { cursor: none; }
 
@@ -791,7 +795,7 @@ body.idle #c, body.clean #c { cursor: none; }
   border-radius: var(--r-full); background: var(--glass); color: var(--md-sys-color-on-surface);
   backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3);
   box-shadow: var(--mn-depth-3);
-  transition: opacity 1.2s ease, translate var(--mn-spatial-slow);
+  transition: opacity 1.2s ease, translate var(--mn-spatial-slow), visibility 0s;
 }
 .dock-tab {
   display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 18px 0 14px; border: 0;
@@ -811,7 +815,7 @@ body.idle #c, body.clean #c { cursor: none; }
 .dock .more { position: relative; }
 .rec-dot { position: absolute; top: 10px; right: 10px; background: var(--md-sys-color-error); }
 
-body.idle:not(.panel-open) .dock { opacity: 0; translate: -50% 12px; pointer-events: none; }
+body.idle:not(.panel-open) .dock { opacity: 0; translate: -50% 12px; pointer-events: none; visibility: hidden; transition-delay: 0s, 0s, 1.2s; }
 
 /* ---- Panels: kit sheets opened non-modally, so the picture stays live -------------------- */
 .panel {
@@ -1000,7 +1004,7 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
     <button data-act="hide"><i data-icon="close"></i>Hide controls</button>
     <hr>
     <button data-act="all"><i data-icon="settings"></i>All settings</button>
-    <button data-act="keys"><i data-icon="info"></i>Keyboard keys</button>
+    <button data-act="keys"><i data-icon="info"></i>Keys and gestures</button>
   </div>
 
   <!-- Panels are non-modal so the picture stays live while you adjust it -->
@@ -1039,6 +1043,10 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
     <div class="dial" id="echoDial"></div>
     <div class="dial" id="meltDial"></div>
     <div class="dial" id="glowDial"></div>
+    <div class="mn-list">
+      <label class="mn-item"><span class="lead plain"><i data-icon="volume"></i></span><span class="text"><span class="title">Sound</span><span class="sub">The glass sings as you paint</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="soundSwitch"></span></label>
+      <label class="mn-item"><span class="lead plain"><i data-icon="mic"></i></span><span class="text"><span class="title">Listen</span><span class="sub">Music in the room moves the mirrors</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="micSwitch"></span></label>
+    </div>
   </dialog>
 
   <dialog class="mn-sheet panel wide" id="panel-all" aria-labelledby="h-all">
@@ -1049,21 +1057,25 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
   </dialog>
 
   <dialog class="mn-sheet" id="keys" aria-labelledby="h-keys">
-    <h2 id="h-keys">Keyboard keys</h2>
+    <h2 id="h-keys">Keys and gestures</h2>
     <dl class="keys mn-body-m">
+      <dt>Tap · click</dt><dd>Drop a ripple</dd>
+      <dt>Scroll · pinch</dt><dd>Dive in or out</dd>
+      <dt>Twist · Shift scroll</dt><dd>Spin the glass</dd>
       <dt>Space</dt><dd>Turn the glass</dd>
       <dt>1 – 9 · ← →</dt><dd>Chambers</dd>
       <dt>↑ ↓</dt><dd>More or fewer mirrors</dd>
       <dt>W</dt><dd>Wander</dd>
       <dt>B · P</dt><dd>Next brush · next palette</dd>
       <dt>C · T</dt><dd>Camera · fingertips</dd>
+      <dt>S · M</dt><dd>Sound · listen to music</dd>
       <dt>X</dt><dd>Clear the glass</dd>
       <dt>I · R</dt><dd>Save image · record video</dd>
       <dt>L</dt><dd>Copy link</dd>
       <dt>E</dt><dd>All settings</dd>
       <dt>H · F</dt><dd>Hide controls · full screen</dd>
     </dl>
-    <form method="dialog" class="actions"><button class="mn-btn text">Close keys</button></form>
+    <form method="dialog" class="actions"><button class="mn-btn text">Close</button></form>
   </dialog>
 
   <div id="fatal" class="mn-empty fatal" hidden></div>
@@ -1113,6 +1125,7 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
     mail: 'M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z',
     calendar: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z',
     send: 'M2.01 21 23 12 2.01 3 2 10l15 2-15 2z',
+    volume: 'M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z',
     mic: 'M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z',
     attach: 'M16.5 6v11.5a4 4 0 0 1-8 0V5a2.5 2.5 0 0 1 5 0v10.5a1 1 0 0 1-2 0V6H10v9.5a2.5 2.5 0 0 0 5 0V5a4 4 0 0 0-8 0v12.5a5.5 5.5 0 0 0 11 0V6h-1.5z',
     undo: 'M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z',
@@ -1353,6 +1366,7 @@ const SCHEMA = {
   fbHueShift:    [6, -180, 180, 1, 'Echo', 'Color drift °/s', [-18, 18]],
   fbSat:         [1, 0, 2, 0.01, 'Echo', 'Saturation', [0.95, 1.15]],
   fbSharpen:     [0.12, 0, 1, 0.01, 'Echo', 'Sharpen', false],
+  fbDream:       [0, 0, 1, 0.01, 'Echo', 'Dream current', [0, 0.3]],
 
   // Light: what you paint with, and the wanderers that paint on their own
   brush:         ['neon', BRUSHES, null, null, 'Light', 'Brush', false],
@@ -1365,6 +1379,7 @@ const SCHEMA = {
   autoPens:      [0, 0, 8, 1, 'Light', 'Wanderers', [1, 4]],
   autoPath:      ['lissajous', PEN_PATHS, null, null, 'Light', 'Wanderer path', true],
   autoSpeed:     [0.35, 0.05, 3, 0.01, 'Light', 'Wanderer speed', [0.22, 0.5]],
+  ripple:        [1, 0, 2, 0.01, 'Light', 'Tap ripples', false],
 
   gen:           ['none', GENERATORS, null, null, 'Patterns', 'Pattern', false],
   genMix:        [0.3, 0, 2, 0.01, 'Patterns', 'Strength', [0.22, 0.55]],
@@ -1383,17 +1398,19 @@ const SCHEMA = {
   palette:       ['rainbow', Object.keys(PALETTES), null, null, 'Color & time', 'Palette', true],
   paletteSpeed:  [0.015, -0.3, 0.3, 0.001, 'Color & time', 'Palette drift', [-0.03, 0.03]],
   paletteMap:    [0, 0, 1, 0.01, 'Color & time', 'Recolor everything', [0, 0.45]],
+  breath:        [0.35, 0, 1, 0.01, 'Color & time', 'Breathing', false],
 
   bloom:         [0.85, 0, 3, 0.01, 'Finish', 'Glow', [0.65, 1.3]],
   bloomThreshold:[0.75, 0, 2, 0.01, 'Finish', 'Glow threshold', false],
   chroma:        [0.18, 0, 3, 0.01, 'Finish', 'Prism edges', [0, 0.5]],
+  sheen:         [0.2, 0, 1.5, 0.01, 'Finish', 'Liquid sheen', [0.05, 0.6]],
   grain:         [0.012, 0, 0.3, 0.001, 'Finish', 'Grain', false],
   vignette:      [0.38, 0, 1.5, 0.01, 'Finish', 'Vignette', false],
   exposure:      [1.05, 0.2, 3, 0.01, 'Finish', 'Brightness', false],
 };
 
 // Params a chamber change leaves alone: they belong to the viewer, not the place.
-const STICKY = ['pace', 'inkHover'];
+const STICKY = ['pace', 'inkHover', 'ripple', 'breath'];
 
 // System settings: not part of chambers, the URL or Turn.
 const SYSTEM_DEFAULTS = {
@@ -1414,9 +1431,9 @@ const system = { ...SYSTEM_DEFAULTS };
 // Chambers: the places the explorer visits. `line` says what the mirrors do.
 const CHAMBERS = [
   { name: 'Mandala', slug: 'mandala', line: 'Mirrors meeting at a single point',
-    p: { symmetry: 8, fbDecay: 0.97, fbZoom: 1.004, fbRotate: 3, autoPens: 3, autoPath: 'rose', bloom: 1, inkSize: 1.2, inkGlow: 1.5, fbHueShift: 8, spinSpeed: 1.5 } },
+    p: { symmetry: 8, fbDecay: 0.994, fbZoom: 1.007, fbRotate: 5, fbSwirl: 0.004, autoPens: 4, autoPath: 'rose', autoSpeed: 0.55, bloom: 1.1, inkSize: 1.2, inkGlow: 1.5, fbHueShift: 14, spinSpeed: 1.5, sheen: 0.35 } },
   { name: 'Tunnel', slug: 'tunnel', line: 'Light streaming from a vanishing point',
-    p: { symmetry: 8, foldInLoop: false, fbZoom: 1.012, fbRotate: 6, fbDecay: 0.975, gen: 'petals', genRadius: 0.35, genMix: 0.5, fbHueShift: 12, autoPens: 2 } },
+    p: { symmetry: 8, foldInLoop: false, fbZoom: 1.016, fbRotate: 7, fbDecay: 0.986, gen: 'petals', genRadius: 0.35, genMix: 0.6, fbHueShift: 16, autoPens: 3, sheen: 0.3 } },
   { name: 'Fractal', slug: 'fractal', line: 'Mirrors folded inside mirrors',
     p: { mode: 'kifs', kifsIters: 5, kifsScale: 1.42, kifsAngle: 24, kifsOffX: 0.72, kifsOffY: 0.28, kifsAngleSpeed: 1.2, fbZoom: 1.003, fbRotate: 4, fbDecay: 0.94, gen: 'cells', genMix: 0.38, palette: 'magenta', chroma: 0.35, bloom: 1.05, autoPens: 2, autoPath: 'rose' } },
   { name: 'Circle limit', slug: 'circle-limit', line: 'Tiles shrinking forever toward the edge',
@@ -1424,13 +1441,15 @@ const CHAMBERS = [
   { name: 'Spiral', slug: 'spiral', line: 'A picture that contains itself',
     p: { mode: 'droste', drosteScale: 3.0, drosteSpeed: 0.15, foldInLoop: false, fbRotate: 4, gen: 'flow', genMix: 0.4, fbDecay: 0.94, palette: 'sunset', autoPens: 2 } },
   { name: 'Liquid', slug: 'liquid', line: 'Mirrors that melt as you watch',
-    p: { symmetry: 12, warpAmount: 0.32, fbWarp: 0.004, fbDecay: 0.97, fbZoom: 1.005, fbRotate: 2.5, palette: 'ocean', paletteMap: 0.35, gen: 'flow', genMix: 0.35, autoPens: 3 } },
+    p: { symmetry: 12, warpAmount: 0.32, fbWarp: 0.004, fbDecay: 0.97, fbZoom: 1.005, fbRotate: 2.5, palette: 'ocean', paletteMap: 0.35, gen: 'flow', genMix: 0.35, autoPens: 3, sheen: 0.75 } },
   { name: 'Crystal', slug: 'crystal', line: 'Drifting through a folded lattice',
     p: { symmetry: 6, gen: 'fractal3d', genMix: 0.65, fbDecay: 0.82, fbZoom: 1.002, bloom: 1.05, chroma: 0.45, fbHueShift: 8, palette: 'ice' } },
   { name: 'Maze', slug: 'maze', line: 'A wallpaper of mirrored tiles',
     p: { mode: 'tiles', tileScale: 2.2, gen: 'cells', genMix: 0.42, chroma: 0.45, fbDecay: 0.93, fbRotate: 4, fbZoom: 1.003, palette: 'toxic', autoPens: 2 } },
   { name: 'Dissolve', slug: 'dissolve', line: 'Curved space folding back on itself',
     p: { mode: 'hyperbolic', symmetry: 5, hypQ: 4, foldInLoop: true, fbZoom: 1.003, fbRotate: 3, fbDecay: 0.94, chroma: 0.5, fisheye: 0.18, gen: 'flow', genMix: 0.45, genSpeed: 0.22, hypDrift: 0.15, fbHueShift: 10, autoPens: 2, exposure: 1.15, bloom: 1.05, palette: 'neon' } },
+  { name: 'Dream', slug: 'dream', line: 'Light carried on a slow current',
+    p: { symmetry: 6, fbDream: 0.6, fbDecay: 0.988, fbZoom: 1.0, fbRotate: 0, fbHueShift: 22, fbSharpen: 0.5, gen: 'flow', genMix: 0.4, genScale: 1.4, autoPens: 4, autoPath: 'noise', autoSpeed: 0.55, sheen: 0.6, bloom: 1.1, chroma: 0.4, palette: 'magenta' } },
 ];
 
 // Live palette: eases toward the selected palette so switches never pop.
@@ -1439,9 +1458,10 @@ const Palette = {
   c: new Float32Array(PALETTES.rainbow[2]), d: new Float32Array(PALETTES.rainbow[3]),
   update(dt) {
     const t = PALETTES[params.palette] || PALETTES.rainbow, k = Math.min(1, dt * 1.4);
-    [this.a, this.b, this.c, this.d].forEach((v, i) => {
-      for (let j = 0; j < 3; j++) v[j] += (t[i][j] - v[j]) * k;
-    });
+    for (let j = 0; j < 3; j++) {
+      this.a[j] += (t[0][j] - this.a[j]) * k; this.b[j] += (t[1][j] - this.b[j]) * k;
+      this.c[j] += (t[2][j] - this.c[j]) * k; this.d[j] += (t[3][j] - this.d[j]) * k;
+    }
   },
   // Writes rgb * gain into arr at offset (no allocation).
   write(t, arr, o, gain) {
@@ -1469,7 +1489,7 @@ const TAU = Math.PI * 2;
 
 // Per-frame fold state, written by Fold.update(), read by the renderer and pens.
 const fold = {
-  mode: 1, sym: 6, mirror: true, spin: 0, cx: 0, cy: 0, vz: 1,
+  mode: 1, sym: 6, mirror: true, spin: 0, cx: 0, cy: 0, vz: 1, fish: 0,
   warpAmt: 0, warpScale: 1.5, warpT: 0,
   kIters: 5, kScale: 1.42, kAngle: 0, kOffX: 0.72, kOffY: 0.28,
   hypC: 2, hypR: 1.7, hypAx: 0, hypAy: 0,
@@ -1667,6 +1687,21 @@ const Fold = (() => {
 
   return { update, apply, gnoise };
 })();
+
+// Momentum the viewer adds by hand: a twist spins the glass, a scroll or pinch
+// dives through the echo. Both coast and settle, and neither touches `params`.
+const Motion = {
+  spinVel: 0, diveVel: 0, held: false,
+  spin(v) { this.spinVel = Math.max(-8, Math.min(8, this.spinVel + v)); },
+  dive(v) { this.diveVel = Math.max(-1.6, Math.min(1.6, this.diveVel + v)); },
+  update(dt) {
+    if (!this.held) fold.spin += this.spinVel * dt;
+    this.spinVel *= Math.exp(-1.6 * dt);
+    this.diveVel *= Math.exp(-2.6 * dt);
+    if (Math.abs(this.spinVel) < 1e-4) this.spinVel = 0;
+    if (Math.abs(this.diveVel) < 1e-4) this.diveVel = 0;
+  },
+};
 </script>
   <script>
 // GLSL ES 3.0 sources. COMMON mirrors fold.js.
@@ -1892,7 +1927,10 @@ vec2 foldSpace(vec2 p) {
 uniform sampler2D uPrev, uCam, uRM;
 uniform bool uFoldLoop;
 uniform mat3 uColorMat;
-uniform float uFbRot, uFbZoom, uFbSwirl, uFbWarp, uFbWarpT, uSharpen, uDt;
+uniform float uFbRot, uFbZoom, uFbSwirl, uFbWarp, uFbWarpT, uSharpen, uDt, uDream;
+uniform vec2 uDreamC;
+uniform vec4 uRip[4];     // ripple center.xy, radius, push
+uniform int uRipN;
 uniform int uGen;
 uniform float uGenK, uGenScale, uGenT, uGenRadius;
 uniform bool uCamOn;
@@ -1902,7 +1940,19 @@ out vec4 o;
 vec2 fbTransform(vec2 q) {
   vec2 d = q - uCenter;
   d = rot(uFbRot + uFbSwirl * length(d)) * d / uFbZoom;
+  // Dream current: the flow of z² + c, turned a quarter so its two drifting poles
+  // become slow whirlpools that light orbits and spirals between.
+  if (uDream > 0.0) {
+    vec2 v = (cmul(d, d) * 0.9 + uDreamC - d) / (1.0 + 0.6 * dot(d, d));
+    d += uDream * (vec2(-v.y, v.x) + 0.1 * v);
+  }
   if (uFbWarp > 0.0) d += uFbWarp * vec2(gnoise(d * 2.6 + uFbWarpT), gnoise(d * 2.6 - uFbWarpT + 7.3));
+  for (int i = 0; i < 4; i++) {
+    if (i >= uRipN) break;
+    vec2 r = q - uRip[i].xy;
+    float l = max(length(r), 1e-4), w = l - uRip[i].z;
+    d -= r / l * (uRip[i].w * exp(-w * w * 160.0));
+  }
   return uCenter + d;
 }
 
@@ -2020,6 +2070,7 @@ void main() {
   const RAYMARCH_FS = HEADER + COMMON + `
 uniform mat3 uRmRot;
 uniform float uRmScale, uRmZ, uRmT;
+uniform int uRmSteps;
 out vec4 o;
 
 float de(vec3 p, out float trap) {
@@ -2052,6 +2103,7 @@ void main() {
   float t = 0.05, glow = 0.0, trap = 0.0, steps = 0.0;
   bool hit = false;
   for (int i = 0; i < 76; i++) {
+    if (i >= uRmSteps) break;
     float d = de(ro + rd * t, trap);
     glow += exp(-d * 75.0);
     steps += 1.0;
@@ -2067,7 +2119,7 @@ void main() {
     vec3 n = normalize(vec3(de(pos + e.xyy, tr) - de(pos - e.xyy, tr),
                             de(pos + e.yxy, tr) - de(pos - e.yxy, tr),
                             de(pos + e.yyx, tr) - de(pos - e.yyx, tr)));
-    float ao = 1.0 - steps / 76.0;
+    float ao = 1.0 - steps / float(uRmSteps);
     float dif = 0.35 + 0.65 * max(dot(n, -rd), 0.0);
     float rim = pow(1.0 - max(dot(n, -rd), 0.0), 3.0);
     vec3 base = pal(sqrt(trap) * 0.35 + t * 0.05 + uRmT * 0.04);
@@ -2079,7 +2131,9 @@ void main() {
   // Scene pass: 4-tap supersampled mip-aware chamber fold + orbit-trap filigree + optical veil dissolve.
   const SCENE_FS = HEADER + COMMON + `
 uniform sampler2D uFB, uVeilTex;
-uniform float uFisheye, uPalMap, uPalShift, uVeil;
+uniform float uFisheye, uPalMap, uPalShift, uVeil, uSheen;
+uniform vec2 uSheenL;
+uniform int uTaps;
 out vec4 o;
 
 vec3 evalPoint(vec2 p) {
@@ -2106,13 +2160,27 @@ vec3 evalPoint(vec2 p) {
 void main() {
   vec2 px = 2.0 / vec2(uRes.y);
   vec2 p0 = fragP();
-  // 2x2 rotated-grid sub-pixel supersampling for razor-sharp, alias-free geometry
-  vec3 c = 0.25 * (
+  // Rotated-grid supersampling, only as many taps as the chamber and the screen need:
+  // seamless folds take one, dense screens two, everything else four.
+  vec3 c;
+  if (uTaps <= 1) c = evalPoint(p0);
+  else if (uTaps == 2) c = 0.5 * (evalPoint(p0 + px * 0.25) + evalPoint(p0 - px * 0.25));
+  else c = 0.25 * (
     evalPoint(p0 + px * vec2( 0.125,  0.375)) +
     evalPoint(p0 + px * vec2(-0.375,  0.125)) +
     evalPoint(p0 + px * vec2( 0.375, -0.125)) +
     evalPoint(p0 + px * vec2(-0.125, -0.375))
   );
+  // Liquid sheen: treat brightness as a height field and light it like oil on glass.
+  if (uSheen > 0.0) {
+    float l = dot(c, vec3(0.299, 0.587, 0.114));
+    float h = l / (1.0 + l);
+    vec2 g = vec2(dFdx(h), dFdy(h)) * uRes.y * 0.02;
+    vec3 n = normalize(vec3(-g, 1.0));
+    float spec = pow(max(dot(n, normalize(vec3(uSheenL, 0.75))), 0.0), 28.0);
+    float fres = 1.0 - n.z;
+    c += (pal(fres * 1.4 + h + uPalShift + 0.33) * fres * 0.7 + spec * 0.45) * uSheen * smoothstep(0.02, 0.3, l);
+  }
   if (uPalMap > 0.0) {
     float l = dot(c, vec3(0.299, 0.587, 0.114));
     c = mix(c, pal(l * 0.7 + uPalShift) * (l * 1.3 + 0.02), uPalMap);
@@ -2140,11 +2208,15 @@ void main() {
   c += textureLod(uSrc, uv + uTexel * vec2(-1, 1), 0.0).rgb;
   c += textureLod(uSrc, uv + uTexel * vec2(1, 1), 0.0).rgb;
   c /= 8.0;
+  // Alpha carries plain average brightness down the chain, so the flash guard
+  // reads the scene's mean from the smallest level instead of a full mip chain.
+  float lum = textureLod(uSrc, uv, 0.0).a;
   if (uPrefilter) {
+    lum = dot(c, vec3(0.2126, 0.7152, 0.0722));
     float l = max(c.r, max(c.g, c.b));
     c *= max(l - uThreshold, 0.0) / max(l, 1e-4);
   }
-  o = vec4(c, 1.0);
+  o = vec4(c, lum);
 }`;
 
   const UP_FS = HEADER + `
@@ -2213,15 +2285,13 @@ void main() {
 
   const LUM_FS = HEADER + `
 uniform sampler2D uSrc;
-uniform float uLod;
 out vec4 o;
 void main() {
   float s = 0.0;
-  for (int y = 0; y < 16; y++) for (int x = 0; x < 16; x++) {
-    vec3 c = textureLod(uSrc, (vec2(x, y) + 0.5) / 16.0, uLod).rgb;
-    s += dot(c, vec3(0.2126, 0.7152, 0.0722));
+  for (int y = 0; y < 8; y++) for (int x = 0; x < 8; x++) {
+    s += textureLod(uSrc, (vec2(x, y) + 0.5) / 8.0, 0.0).a;
   }
-  o = vec4(s / 256.0);
+  o = vec4(s / 64.0);
 }`;
 
   const ADAPT_FS = HEADER + `
@@ -2314,6 +2384,9 @@ const Renderer = (() => {
   let camTex, camAspect = 16 / 9, camReady = false;
   let W = 0, H = 0;                 // render resolution
   let frameNo = 0;
+  let maxTaps = 4, rmSteps = 76;    // detail level, set by the frame loop
+  let backupTimer = 0;
+  const colH = new Float32Array(9), colS = new Float32Array(9);
   const MAX_SEG = 16384;
   const inkData = new Float32Array(MAX_SEG * 8);
   const colorMat = new Float32Array(9);
@@ -2439,11 +2512,12 @@ const Renderer = (() => {
     if (old) copyInto(old, nfb[0]);
     free(fb[0]); free(fb[1]);
     fb = nfb; cur = 0;
-    free(scene); scene = target(w, h, true, gl.CLAMP_TO_EDGE, true);
+    free(scene); scene = target(w, h, true, gl.CLAMP_TO_EDGE);
     if (!lumCur) { lumCur = target(1, 1, true, gl.CLAMP_TO_EDGE); lumAd = [target(1, 1, true, gl.CLAMP_TO_EDGE), target(1, 1, true, gl.CLAMP_TO_EDGE)]; }
-    free(veil); veil = target(w, h, true, gl.CLAMP_TO_EDGE); veilAmt = 0;
+    // The dissolve veil, the undo copy and the lattice buffer exist only while in use.
+    free(veil); veil = null; veilAmt = 0;
     free(backup); backup = null;
-    free(rm); rm = target(Math.max(16, w >> 1), Math.max(16, h >> 1), true, gl.MIRRORED_REPEAT);
+    free(rm); rm = null;
     bloom.forEach(free); bloom = [];
     let bw = w, bh = h;
     for (let i = 0; i < 6 && bw > 8 && bh > 8; i++) {
@@ -2456,6 +2530,8 @@ const Renderer = (() => {
   // Clearing keeps a copy so it can be undone.
   function clear() {
     if (!backup) backup = target(W, H, true, gl.MIRRORED_REPEAT);
+    clearTimeout(backupTimer);
+    backupTimer = setTimeout(() => { free(backup); backup = null; }, 8000);   // undo window
     gl.bindVertexArray(vao);
     copyInto(fb[cur], backup);
     for (const t of fb) {
@@ -2478,12 +2554,17 @@ const Renderer = (() => {
   // Capture the current composite scene and dissolve it smoothly into the new view.
   function startVeil(duration = 1.4) {
     if (!scene) return;
+    if (!veil) veil = target(W, H, true, gl.CLAMP_TO_EDGE);
     gl.bindVertexArray(vao);
     copyInto(scene, veil);
     veilAmt = 1;
     veilDur = Math.max(0.2, duration);
   }
-  function fadeVeil(dt) { veilAmt = Math.max(0, veilAmt - dt / veilDur); }
+  function fadeVeil(dt) {
+    veilAmt = Math.max(0, veilAmt - dt / veilDur);
+    if (veilAmt === 0 && veil) { free(veil); veil = null; }
+  }
+  function setDetail(taps, steps) { maxTaps = taps; rmSteps = steps; }
 
   // ---- uniform helpers (cached locations; unknown names are skipped) ----
   function use(pr) { gl.useProgram(pr.p); }
@@ -2520,9 +2601,10 @@ const Renderer = (() => {
   // Decay × saturation × hue rotation about the gray axis, as one matrix.
   function buildColorMat(decay, sat, hue) {
     const c = Math.cos(hue), s = Math.sin(hue), k = (1 - c) / 3, q = Math.sqrt(1 / 3) * s;
-    const h = [c + k, k - q, k + q, k + q, c + k, k - q, k - q, k + q, c + k];
+    const h = colH, S = colS;         // scratch, so the frame loop never allocates
+    h[0] = c + k; h[1] = k - q; h[2] = k + q; h[3] = k + q; h[4] = c + k; h[5] = k - q; h[6] = k - q; h[7] = k + q; h[8] = c + k;
     const lr = 0.299 * (1 - sat), lg = 0.587 * (1 - sat), lb = 0.114 * (1 - sat);
-    const S = [lr + sat, lr, lr, lg, lg + sat, lg, lb, lb, lb + sat]; // column-major
+    S[0] = lr + sat; S[1] = lr; S[2] = lr; S[3] = lg; S[4] = lg + sat; S[5] = lg; S[6] = lb; S[7] = lb; S[8] = lb + sat; // column-major
     for (let col = 0; col < 3; col++) {
       for (let row = 0; row < 3; row++) {
         let v = 0;
@@ -2535,9 +2617,10 @@ const Renderer = (() => {
   function buildRmRot(a) {
     const x = Math.SQRT1_2, y = Math.SQRT1_2, z = 0;
     const c = Math.cos(a), s = Math.sin(a), t = 1 - c;
-    rmRot.set([t * x * x + c, t * x * y + s * z, t * x * z - s * y,
-               t * x * y - s * z, t * y * y + c, t * y * z + s * x,
-               t * x * z + s * y, t * y * z - s * x, t * z * z + c]);
+    const m = rmRot;
+    m[0] = t * x * x + c; m[1] = t * x * y + s * z; m[2] = t * x * z - s * y;
+    m[3] = t * x * y - s * z; m[4] = t * y * y + c; m[5] = t * y * z + s * x;
+    m[6] = t * x * z + s * y; m[7] = t * y * z - s * x; m[8] = t * z * z + c;
   }
 
   function uploadCamera(video) {
@@ -2558,6 +2641,7 @@ const Renderer = (() => {
     // 1. raymarched fractal source
     const useRm = P.gen === 'fractal3d';
     if (useRm) {
+      if (!rm) rm = target(Math.max(16, W >> 1), Math.max(16, H >> 1), true, gl.MIRRORED_REPEAT);
       const pr = progs.raymarch;
       gl.bindFramebuffer(gl.FRAMEBUFFER, rm.fbo);
       gl.viewport(0, 0, rm.w, rm.h);
@@ -2568,8 +2652,9 @@ const Renderer = (() => {
       u1f(pr, 'uRmScale', P.rmScale);
       u1f(pr, 'uRmZ', f.rmZ);
       u1f(pr, 'uRmT', f.rmT);
+      u1i(pr, 'uRmSteps', rmSteps);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-    }
+    } else if (rm) { free(rm); rm = null; }
 
     // 2. feedback
     const src = fb[cur], dst = fb[1 - cur];
@@ -2581,7 +2666,7 @@ const Renderer = (() => {
       setCommon(pr, W, H);
       tex(0, src.tex); u1i(pr, 'uPrev', 0);
       tex(1, camTex); u1i(pr, 'uCam', 1);
-      tex(2, rm.tex); u1i(pr, 'uRM', 2);
+      tex(2, rm ? rm.tex : camTex); u1i(pr, 'uRM', 2);
       // Only folds with F(F(p)) = F(p) can fold the echoes; the fractal fold compounds light.
       u1i(pr, 'uFoldLoop', P.foldInLoop && fold.mode !== 2 ? 1 : 0);
       buildColorMat(f.decay, P.fbSat, f.hue);
@@ -2593,6 +2678,10 @@ const Renderer = (() => {
       u1f(pr, 'uFbWarpT', f.fbWarpT);
       u1f(pr, 'uSharpen', P.fbSharpen * Math.min(f.n, 2));
       u1f(pr, 'uDt', f.dt);
+      u1f(pr, 'uDream', f.dream);
+      u2f(pr, 'uDreamC', f.dreamX, f.dreamY);
+      u1i(pr, 'uRipN', f.ripN);
+      if (f.ripN > 0 && pr.loc['uRip[0]']) gl.uniform4fv(pr.loc['uRip[0]'], f.rip);
       u1i(pr, 'uGen', GENERATORS.indexOf(P.gen));
       u1f(pr, 'uGenK', P.genMix * 1.85);
       u1f(pr, 'uGenScale', P.genScale);
@@ -2632,9 +2721,12 @@ const Renderer = (() => {
     }
     cur = 1 - cur;
 
-    // 3b. generate mipmaps on the updated feedback texture for alias-free minification
-    gl.bindTexture(gl.TEXTURE_2D, fb[cur].tex);
-    gl.generateMipmap(gl.TEXTURE_2D);
+    // 3b. mipmaps on the feedback texture, only when a fold will actually minify it
+    const seamless = fold.mode === 0 || (fold.mode === 1 && fold.mirror);
+    if (fold.mode >= 2 || fold.vz * 0.65 > 1) {
+      gl.bindTexture(gl.TEXTURE_2D, fb[cur].tex);
+      gl.generateMipmap(gl.TEXTURE_2D);
+    }
 
     // 4. scene (supersampled display fold + filigree + palette remap + optical veil)
     {
@@ -2644,42 +2736,22 @@ const Renderer = (() => {
       use(pr);
       setCommon(pr, W, H);
       tex(0, fb[cur].tex); u1i(pr, 'uFB', 0);
-      tex(1, veil.tex); u1i(pr, 'uVeilTex', 1);
-      u1f(pr, 'uFisheye', P.fisheye);
+      tex(1, veil ? veil.tex : fb[cur].tex); u1i(pr, 'uVeilTex', 1);
+      u1i(pr, 'uTaps', seamless ? 1 : fold.mode === 1 ? Math.min(2, maxTaps) : maxTaps);
+      u1f(pr, 'uSheen', P.sheen);
+      u2f(pr, 'uSheenL', 0.6 * Math.cos(f.sheenT), 0.6 * Math.sin(f.sheenT));
+      u1f(pr, 'uFisheye', fold.fish);
       u1f(pr, 'uPalMap', P.paletteMap);
       u1f(pr, 'uPalShift', f.palPhase);
-      u1f(pr, 'uVeil', veilAmt * veilAmt * (3 - 2 * veilAmt));
+      u1f(pr, 'uVeil', veil ? veilAmt * veilAmt * (3 - 2 * veilAmt) : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
-    // 4b. flash guard: scene luminance → 1×1, eased adaptation
-    if (system.flashGuard) {
-      gl.bindTexture(gl.TEXTURE_2D, scene.tex);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      let pr = progs.lum;
-      gl.bindFramebuffer(gl.FRAMEBUFFER, lumCur.fbo);
-      gl.viewport(0, 0, 1, 1);
-      use(pr);
-      tex(0, scene.tex); u1i(pr, 'uSrc', 0);
-      u1f(pr, 'uLod', Math.max(0, Math.log2(Math.max(W, H) / 16)));
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      pr = progs.adapt;
-      gl.bindFramebuffer(gl.FRAMEBUFFER, lumAd[1 - lumIdx].fbo);
-      use(pr);
-      tex(0, lumAd[lumIdx].tex); u1i(pr, 'uPrev', 0);
-      tex(1, lumCur.tex); u1i(pr, 'uCur', 1);
-      u1f(pr, 'uK', lumReset ? 1 : 1 - Math.exp(-f.dt / 0.4));
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      lumIdx = 1 - lumIdx;
-      lumReset = false;
-    } else {
-      lumReset = true;
-    }
-
-    // 5. bloom
+    // 5. bloom downsample chain; its alpha channel also averages scene brightness
     const doBloom = P.bloom > 0 && bloom.length > 0;
-    if (doBloom) {
-      let pr = progs.down;
+    const guard = system.flashGuard && bloom.length > 0;
+    if (doBloom || guard) {
+      const pr = progs.down;
       use(pr);
       u1f(pr, 'uThreshold', P.bloomThreshold);
       let s = scene;
@@ -2694,7 +2766,32 @@ const Renderer = (() => {
         gl.drawArrays(gl.TRIANGLES, 0, 3);
         s = d;
       }
-      pr = progs.up;
+    }
+
+    // 5b. flash guard: mean brightness → 1×1, eased adaptation
+    if (guard) {
+      let pr = progs.lum;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, lumCur.fbo);
+      gl.viewport(0, 0, 1, 1);
+      use(pr);
+      tex(0, bloom[bloom.length - 1].tex); u1i(pr, 'uSrc', 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      pr = progs.adapt;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, lumAd[1 - lumIdx].fbo);
+      use(pr);
+      tex(0, lumAd[lumIdx].tex); u1i(pr, 'uPrev', 0);
+      tex(1, lumCur.tex); u1i(pr, 'uCur', 1);
+      u1f(pr, 'uK', lumReset ? 1 : 1 - Math.exp(-f.dt / 0.4));
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      lumIdx = 1 - lumIdx;
+      lumReset = false;
+    } else {
+      lumReset = true;
+    }
+
+    // 5c. bloom upsample
+    if (doBloom) {
+      const pr = progs.up;
       use(pr);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE);
@@ -2720,7 +2817,7 @@ const Renderer = (() => {
       tex(1, doBloom ? bloom[0].tex : scene.tex); u1i(pr, 'uBloomTex', 1);
       tex(2, lumCur.tex); u1i(pr, 'uLumCur', 2);
       tex(3, lumAd[lumIdx].tex); u1i(pr, 'uLumAdapt', 3);
-      u1i(pr, 'uGuard', system.flashGuard ? 1 : 0);
+      u1i(pr, 'uGuard', guard ? 1 : 0);
       u1f(pr, 'uCap', system.brightCap);
       u2f(pr, 'uOut', canvas.width, canvas.height);
       u1f(pr, 'uBloom', doBloom ? P.bloom * 0.22 : 0);
@@ -2734,7 +2831,7 @@ const Renderer = (() => {
   }
 
   return {
-    init, resize, clear, restore, startVeil, fadeVeil, render, uploadCamera, inkData, MAX_SEG,
+    init, resize, clear, restore, startVeil, fadeVeil, setDetail, render, uploadCamera, inkData, MAX_SEG,
     get size() { return [W, H]; },
     get gl() { return gl; },
     get maxSize() { return gl.getParameter(gl.MAX_TEXTURE_SIZE); },
@@ -2760,18 +2857,23 @@ const Pens = (() => {
   let ux = 0, uy = 0;
   const data = Renderer.inkData;
   let canvasEl;
+  const touches = new Map();    // fingers on the glass, for twist and pinch
+  let gd = 0, ga = 0, gt = 0, gdN = 0, gaN = 0;
+  const tapQ = [];              // taps waiting to become ripples
+  const rip = new Float32Array(16), ripAge = new Float32Array(4);
+  let ripN = 0, energy = 0, moved = 0;
 
   const LISSAJOUS = [[3, 2], [5, 4], [3, 4], [5, 6], [7, 4], [2, 5], [7, 6], [4, 9]];
   const ROSE = [3, 5, 2, 7, 4, 6, 3, 5];
 
   function pen(kind, offset) {
-    return { kind, x: 0, y: 0, px: 0, py: 0, has: false, down: false, inside: false, hue: offset, offset, v: 0, vx: 0, vy: 0 };
+    return { kind, x: 0, y: 0, px: 0, py: 0, has: false, down: false, inside: false, hue: offset, offset, v: 0, vx: 0, vy: 0, q: [], acc: 0, t0: 0, sx: 0, sy: 0 };
   }
 
   function toP(clientX, clientY, out) {
     const w = canvasEl.clientWidth, h = canvasEl.clientHeight;
     let x = (clientX - w / 2) / h * 2, y = -(clientY - h / 2) / h * 2;
-    const k = 1 + params.fisheye * (x * x + y * y) * 0.3;
+    const k = 1 + fold.fish * (x * x + y * y) * 0.3;
     out.x = x * k; out.y = y * k;
   }
 
@@ -2783,24 +2885,59 @@ const Pens = (() => {
       if (!p) { p = pen(e.pointerType, pointers.size * 0.17); pointers.set(e.pointerId, p); }
       return p;
     };
+    const measure = () => {
+      let a = null, b = null;
+      for (const t of touches.values()) { if (!a) a = t; else if (!b) b = t; }
+      gdN = Math.hypot(b.x - a.x, b.y - a.y);
+      gaN = Math.atan2(b.y - a.y, b.x - a.x);
+    };
     canvas.addEventListener('pointerdown', (e) => {
       const p = get(e);
       toP(e.clientX, e.clientY, tmp);
       p.x = p.px = tmp.x; p.y = p.py = tmp.y;
-      p.down = true; p.inside = true; p.has = false;
+      p.down = true; p.inside = true; p.has = false; p.q.length = 0;
+      p.t0 = e.timeStamp; p.sx = e.clientX; p.sy = e.clientY;
       canvas.setPointerCapture(e.pointerId);
+      if (e.pointerType !== 'mouse') {
+        touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (touches.size === 2) { measure(); gd = gdN; ga = gaN; gt = e.timeStamp; Motion.held = true; Motion.spinVel = 0; }
+      }
     });
     canvas.addEventListener('pointermove', (e) => {
       const p = get(e);
-      const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
-      const last = evs.length ? evs[evs.length - 1] : e;
-      toP(last.clientX, last.clientY, tmp);
-      if (!p.inside) { p.px = tmp.x; p.py = tmp.y; p.has = false; }
+      // Every sample the device reported since the last frame, so fast strokes stay curved.
+      const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : null;
+      const fresh = !p.inside;
+      if (fresh) p.q.length = 0;
+      if (evs && evs.length > 1 && p.q.length < 96) {
+        for (let i = 0; i < evs.length; i++) { toP(evs[i].clientX, evs[i].clientY, tmp); p.q.push(tmp.x, tmp.y); }
+      } else {
+        toP(e.clientX, e.clientY, tmp);
+        if (p.q.length < 96) p.q.push(tmp.x, tmp.y);
+      }
+      if (fresh) { p.px = p.q[0]; p.py = p.q[1]; p.has = false; }
       p.x = tmp.x; p.y = tmp.y; p.inside = true;
+
+      const t = touches.get(e.pointerId);
+      if (!t) return;
+      t.x = e.clientX; t.y = e.clientY;
+      if (touches.size !== 2) return;
+      // Two fingers hold the glass itself: twist turns it, pinch dives through it.
+      measure();
+      let da = gaN - ga;
+      if (da > Math.PI) da -= TAU; else if (da < -Math.PI) da += TAU;
+      const secs = Math.max(4, e.timeStamp - gt) / 1000;
+      fold.spin -= da;
+      Motion.spinVel += (Math.max(-8, Math.min(8, -da / secs)) - Motion.spinVel) * 0.3;
+      if (gd > 8 && gdN > 8) Motion.dive(Math.log(gdN / gd) * 9);
+      gd = gdN; ga = gaN; gt = e.timeStamp;
     });
     const up = (e) => {
       const p = pointers.get(e.pointerId);
+      if (touches.delete(e.pointerId) && touches.size < 2) Motion.held = false;
       if (!p) return;
+      const still = Math.hypot(e.clientX - p.sx, e.clientY - p.sy) < 10;
+      if (p.down && e.type === 'pointerup' && still && e.timeStamp - p.t0 < 320 && touches.size === 0) tapQ.push(p.x, p.y);
       p.down = false;
       if (e.pointerType !== 'mouse') pointers.delete(e.pointerId);
     };
@@ -2810,6 +2947,13 @@ const Pens = (() => {
       const p = pointers.get(e.pointerId);
       if (p) { p.inside = false; p.has = false; }
     });
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+      let dx = e.deltaX * k, dy = e.deltaY * k;
+      if (e.shiftKey && !dx) { dx = dy; dy = 0; }
+      if (Math.abs(dy) >= Math.abs(dx)) Motion.dive(-dy * 0.004); else Motion.spin(dx * 0.006);
+    }, { passive: false });
   }
 
   function push(ax, ay, bx, by, rad, src) {
@@ -2866,20 +3010,64 @@ const Pens = (() => {
     }
   }
 
+  function spawn(x, y, vx, vy, life) {
+    if (pCount >= PMAX) return false;
+    const o = pCount * 8;
+    parts[o] = x; parts[o + 1] = y; parts[o + 2] = vx; parts[o + 3] = vy;
+    parts[o + 4] = life;
+    parts[o + 5] = lastT + Math.random() * 0.15;
+    const f = Fold.apply(x, y);
+    parts[o + 6] = f[0]; parts[o + 7] = f[1];
+    pCount++;
+    return true;
+  }
+
   function emit(p, d) {
     emitAcc += dt * 60 + d * 300;
     while (emitAcc >= 1) {
       emitAcc -= 1;
-      if (pCount >= PMAX) { emitAcc = 0; break; }
-      const o = pCount * 8, a = Math.random() * TAU, sp = 0.15 + Math.random() * 0.6;
-      parts[o] = p.x; parts[o + 1] = p.y;
-      parts[o + 2] = p.vx * 0.25 + Math.cos(a) * sp;
-      parts[o + 3] = p.vy * 0.25 + Math.sin(a) * sp;
-      parts[o + 4] = 0.6 + Math.random();
-      parts[o + 5] = lastT + Math.random() * 0.15;
-      const f = Fold.apply(p.x, p.y);
-      parts[o + 6] = f[0]; parts[o + 7] = f[1];
-      pCount++;
+      const a = Math.random() * TAU, sp = 0.15 + Math.random() * 0.6;
+      if (!spawn(p.x, p.y, p.vx * 0.25 + Math.cos(a) * sp, p.vy * 0.25 + Math.sin(a) * sp, 0.6 + Math.random())) { emitAcc = 0; break; }
+    }
+  }
+
+  // A tap drops a stone in the glass: a ring of light, a scatter of sparks and
+  // a wave that pushes the echo outward through every mirror.
+  function burst(x, y) {
+    const P = params;
+    if (P.ripple > 0) {
+      const f = Fold.apply(x, y);
+      if (ripN === 4) { rip.copyWithin(0, 4, 16); ripAge.copyWithin(0, 1, 4); ripN = 3; }
+      rip[ripN * 4] = f[0]; rip[ripN * 4 + 1] = f[1]; ripAge[ripN] = 0; ripN++;
+    }
+    lastT += 0.07;
+    Palette.write(lastT + palPhase, col, 0, P.inkBright);
+    const R = 0.03 * P.inkSize, N = 14;
+    let ax = x + R, ay = y;
+    for (let i = 1; i <= N; i++) {
+      const a = i / N * TAU, bx = x + R * Math.cos(a), by = y + R * Math.sin(a);
+      stroke(ax, ay, bx, by, 0.004 * P.inkSize);
+      ax = bx; ay = by;
+    }
+    for (let i = 0; i < 18; i++) {
+      const a = Math.random() * TAU, sp = 0.35 + Math.random() * 0.7;
+      spawn(x, y, Math.cos(a) * sp, Math.sin(a) * sp, 0.4 + Math.random() * 0.7);
+    }
+    Sound.pluck(x, y, 0.5);
+    mn.haptic('tick');
+  }
+
+  function updateRipples() {
+    const push0 = params.ripple * 0.011 * dt * 60;
+    for (let i = 0; i < ripN; i++) {
+      ripAge[i] += dt;
+      if (ripAge[i] > 3) {
+        rip.copyWithin(i * 4, (i + 1) * 4, 16); ripAge.copyWithin(i, i + 1, 4);
+        ripN--; i--;
+        continue;
+      }
+      rip[i * 4 + 2] = 0.02 + ripAge[i] * 0.8;
+      rip[i * 4 + 3] = push0 * Math.exp(-ripAge[i] * 1.2);
     }
   }
 
@@ -2979,9 +3167,24 @@ const Pens = (() => {
       if (i < count) autoPos(autos[i], i, count);
       run(autos[i], i < count);
     }
-    for (const p of pointers.values()) run(p, p.kind === 'mouse' ? p.inside && (p.down || P.inkHover) : p.down);
+    for (const p of pointers.values()) {
+      const active = p.kind === 'mouse' ? p.inside && (p.down || P.inkHover) : p.down;
+      const q = p.q, m = q.length >> 1;
+      if (active && m > 1) {
+        const lx = p.x, ly = p.y;
+        dt = _dt / m;
+        for (let j = 0; j < m; j++) { p.x = q[j * 2]; p.y = q[j * 2 + 1]; run(p, true); }
+        dt = _dt; p.x = lx; p.y = ly;
+      } else run(p, active);
+      q.length = 0;
+    }
     for (const p of hands) run(p, p.down);
+    for (let i = 0; i < tapQ.length; i += 2) burst(tapQ[i], tapQ[i + 1]);
+    tapQ.length = 0;
+    updateRipples();
     updateParticles(time);
+    energy += (moved / Math.max(dt, 1e-3) - energy) * Math.min(1, dt * 5);
+    moved = 0;
     return n;
   }
 
@@ -3000,6 +3203,11 @@ const Pens = (() => {
     p.vx = dx * inv; p.vy = dy * inv;
     if (d > 0.6) { p.px = p.x; p.py = p.y; return; }
     const P = params;
+    // Movement is what the glass sings: wanderers murmur, hands ring out.
+    const auto = p.kind === 'auto';
+    if (!auto) moved += d;
+    p.acc += d;
+    if (p.acc > (auto ? 0.9 : 0.32)) { p.acc = 0; Sound.pluck(p.x, p.y, auto ? 0.13 : 0.3); }
     const rad = 0.006 * P.inkSize * (1 + P.inkSpeed * Math.min(p.v, 8) * 0.25);
     Palette.write(lastT + palPhase, col, 0, P.inkBright);
     if (d > 1e-4) {
@@ -3010,9 +3218,14 @@ const Pens = (() => {
     p.px = p.x; p.py = p.y;
   }
 
-  function clear() { pCount = 0; }
+  function clear() { pCount = 0; ripN = 0; }
 
-  return { attach, build, setHands, clear, get particles() { return pCount; } };
+  return {
+    attach, build, setHands, clear, rip,
+    get particles() { return pCount; },
+    get ripples() { return ripN; },
+    get energy() { return energy; },
+  };
 })();
 </script>
   <script>
@@ -3246,6 +3459,147 @@ onmessage = async (e) => {
 })();
 </script>
   <script>
+// Sound, both ways. The synth is a soft drone plus plucked notes on a pentatonic
+// scale, chosen by where light lands, through one feedback delay: a handful of
+// audio nodes and no samples. Listening taps the microphone and follows three
+// bands, which the frame loop turns into motion (never into brightness).
+
+const Sound = (() => {
+  const state = { synth: false, mic: false };
+  const level = { bass: 0, mid: 0, high: 0 };
+  const SCALE = [0, 2, 4, 7, 9];
+  let ctx = null, out = null, bus = null, filt = null, drone = [];
+  let an = null, micStream = null, micSrc = null, bins = null;
+  let root = 65.41, lastPluck = 0, tick = 0;
+  const peak = [0.15, 0.15, 0.15];
+
+  function ensure() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) throw new Error("This browser can't play sound");
+      ctx = new AC({ latencyHint: 'interactive' });
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  function setSynth(on) {
+    if (on === state.synth) return;
+    if (!on) {
+      state.synth = false;
+      const o = out, d = drone;
+      out = bus = filt = null; drone = [];
+      o.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
+      setTimeout(() => { d.forEach((x) => x.stop()); o.disconnect(); }, 1600);
+      return;
+    }
+    ensure();
+    const t = ctx.currentTime;
+    out = ctx.createGain();
+    out.gain.value = 0;
+    out.gain.setTargetAtTime(0.55, t, 0.9);
+    const comp = ctx.createDynamicsCompressor();
+    out.connect(comp); comp.connect(ctx.destination);
+    // One delay line with a damped loop stands in for a reverb.
+    const delay = ctx.createDelay(1), loop = ctx.createGain(), damp = ctx.createBiquadFilter();
+    delay.delayTime.value = 0.38; loop.gain.value = 0.46;
+    damp.type = 'lowpass'; damp.frequency.value = 2400;
+    delay.connect(damp); damp.connect(loop); loop.connect(delay); damp.connect(out);
+    bus = ctx.createGain();
+    bus.connect(out); bus.connect(delay);
+    filt = ctx.createBiquadFilter();
+    filt.type = 'lowpass'; filt.frequency.value = 260; filt.Q.value = 0.8;
+    const dg = ctx.createGain();
+    dg.gain.value = 0.2;
+    filt.connect(dg); dg.connect(bus);
+    drone = [1, 1.498, 2.004].map((r, i) => {
+      const o = ctx.createOscillator();
+      o.type = i === 2 ? 'sine' : 'triangle';
+      o.frequency.value = root * r;
+      o.connect(filt); o.start();
+      return o;
+    });
+    state.synth = true;
+  }
+
+  // Each chamber sits on its own root note.
+  function setRoot(i) {
+    root = 65.41 * Math.pow(2, SCALE[i % 5] / 12);
+    if (!state.synth) return;
+    [1, 1.498, 2.004].forEach((r, k) => drone[k].frequency.setTargetAtTime(root * r, ctx.currentTime, 1.2));
+  }
+
+  // Angle picks the note, distance from the center picks the octave.
+  function pluck(x, y, vel) {
+    if (!state.synth || ctx.state !== 'running') return;
+    const t = ctx.currentTime;
+    if (t - lastPluck < 0.07) return;
+    lastPluck = t;
+    const deg = Math.floor((Math.atan2(y, x) / TAU + 0.5) * 5) % 5;
+    const oct = 2 + Math.min(2, Math.floor(Math.hypot(x, y) / 0.38));
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = root * Math.pow(2, oct + SCALE[deg] / 12);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vel * 0.5, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+    o.connect(g); g.connect(bus);
+    o.start(t); o.stop(t + 1.15);
+    o.onended = () => g.disconnect();
+  }
+
+  async function setMic(on) {
+    if (!on) {
+      state.mic = false;
+      if (micStream) micStream.getTracks().forEach((t) => t.stop());
+      if (micSrc) micSrc.disconnect();
+      micStream = micSrc = null;
+      level.bass = level.mid = level.high = 0;
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('Listening needs HTTPS or localhost');
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, video: false });
+    } catch (e) {
+      throw new Error('Listening needs microphone access · allow it in the address bar');
+    }
+    ensure();
+    if (!an) { an = ctx.createAnalyser(); an.fftSize = 512; an.smoothingTimeConstant = 0.45; bins = new Uint8Array(an.frequencyBinCount); }
+    micSrc = ctx.createMediaStreamSource(micStream);
+    micSrc.connect(an);
+    state.mic = true;
+  }
+
+  function band(lo, hi) {
+    let v = 0;
+    for (let i = lo; i < hi; i++) v += bins[i];
+    return v / ((hi - lo) * 255);
+  }
+
+  function follow(key, i, v, dt) {
+    // Slow automatic gain so a quiet room and a loud one both use the full range.
+    peak[i] = Math.max(peak[i] * Math.exp(-dt * 0.25), v, 0.12);
+    const x = Math.max(0, v / peak[i] - 0.25) / 0.75;
+    level[key] += (x - level[key]) * Math.min(1, dt * (x > level[key] ? 30 : 5));
+  }
+
+  function update(dt, energy) {
+    if (state.mic) {
+      an.getByteFrequencyData(bins);
+      follow('bass', 0, band(1, 4), dt);
+      follow('mid', 1, band(4, 24), dt);
+      follow('high', 2, band(24, 96), dt);
+    }
+    // The drone opens up while you paint. Scheduled a few times a second, not per frame.
+    if (state.synth && (tick = (tick + 1) % 8) === 0) {
+      filt.frequency.setTargetAtTime(240 + Math.min(energy, 5) * 420, ctx.currentTime, 0.25);
+    }
+  }
+
+  return { state, level, setSynth, setMic, setRoot, pluck, update };
+})();
+</script>
+  <script>
 // Interface: a dock with the three ingredients of a kaleidoscope (Chamber,
 // Light, Mood) plus Wander, live panels with a few plain-language dials, and
 // "All settings" for every parameter. Also: chambers + morphing, Turn,
@@ -3291,7 +3645,7 @@ const UI = (() => {
 
   function chamberTarget(i) {
     const t = { ...DEFAULTS, ...CHAMBERS[i].p };
-    for (const k of STICKY) t[k] = params[k];
+    for (const k of STICKY) if (!(k in CHAMBERS[i].p)) t[k] = params[k];
     return t;
   }
 
@@ -3331,6 +3685,7 @@ const UI = (() => {
   function enterChamber(i, { instant = false, quiet = false } = {}) {
     chamber = (i + CHAMBERS.length) % CHAMBERS.length;
     morphTo(chamberTarget(chamber), instant);
+    Sound.setRoot(chamber);
     if (!quiet) showCaption();
   }
 
@@ -3539,6 +3894,41 @@ const UI = (() => {
       set: (v) => { setParam('bloom', v * 2.2); setParam('inkGlow', 0.4 + v * 1.8); },
       out: (v) => `${Math.round(v * 100)}%`,
     });
+    const sw = (id, fn) => $(id).addEventListener('change', async (e) => {
+      try { await fn(e.target.checked); } catch (err) { e.target.checked = false; toast(err.message || "That isn't available here"); }
+      refresh();
+    });
+    sw('#soundSwitch', setSound);
+    sw('#micSwitch', setListen);
+    refreshers.push(() => {
+      $('#soundSwitch').checked = Sound.state.synth;
+      $('#micSwitch').checked = Sound.state.mic;
+    });
+  }
+
+  function setSound(on) {
+    Sound.setSynth(on);
+    Sound.setRoot(chamber);
+    if (on && !mn.store.get('sound-taught')) { toast('Paint or tap to play · wanderers hum along'); mn.store.set('sound-taught', 1); }
+  }
+
+  async function setListen(on) {
+    await Sound.setMic(on);
+    if (on) toast('Listening · play some music');
+  }
+
+  // Keep the screen awake while the picture is the point (wandering or full screen).
+  let wakeLock = null;
+  async function keepAwake() {
+    const want = (system.autoVJ || !!document.fullscreenElement) && !document.hidden;
+    try {
+      if (want && !wakeLock && navigator.wakeLock) {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => { wakeLock = null; });
+      } else if (!want && wakeLock) {
+        await wakeLock.release();
+      }
+    } catch (e) { /* not allowed right now; harmless */ }
   }
 
   // ---------------- All settings ----------------
@@ -3662,7 +4052,7 @@ const UI = (() => {
     readRow.append(readout);
     refreshers.push(() => {
       const [w, h] = Renderer.size;
-      readout.textContent = `${Math.round(stats.fps)} fps · ${w} × ${h}${stats.quality < 1 ? ` · ${Math.round(stats.quality * 100)}% for smoothness` : ''}`;
+      readout.textContent = `${Math.round(stats.fps)} of ${Math.round(Main.refreshHz)} fps · ${w} × ${h}${stats.quality < 1 ? ` · ${Math.round(stats.quality * 100)}% for smoothness` : ''}`;
     });
     host.append(group('Journey & performance', [
       systemRange('autoVJInterval', 'Wander to a new view every', 10, 120, 1, (v) => `${v} s`),
@@ -3733,6 +4123,7 @@ const UI = (() => {
   function setWander(on) {
     system.autoVJ = on;
     vjTimer = 0;
+    keepAwake();
     const b = $('#wander');
     b.setAttribute('aria-pressed', on);
     b.innerHTML = on ? '<i data-icon="pause"></i><span>Wandering</span>' : '<i data-icon="play"></i><span>Wander</span>';
@@ -3863,6 +4254,8 @@ const UI = (() => {
       case 'P': cycle('palette', -1); break;
       case 'c': case 'C': Inputs.setCam(!Inputs.state.cam).then(refresh, (err) => toast(err.message)); break;
       case 't': case 'T': Inputs.setHands(!Inputs.state.hands).then(refresh, (err) => toast(err.message)); break;
+      case 's': case 'S': try { setSound(!Sound.state.synth); toast(Sound.state.synth ? 'Sound on' : 'Sound off'); } catch (err) { toast(err.message); } refresh(); break;
+      case 'm': case 'M': setListen(!Sound.state.mic).then(refresh, (err) => { toast(err.message); refresh(); }); break;
       case 'x': case 'X': case 'Backspace': clearGlass(); break;
       case 'i': case 'I': actions.snapshot(); break;
       case 'r': case 'R': toggleRecord(); break;
@@ -3908,6 +4301,8 @@ const UI = (() => {
     window.addEventListener('keydown', (e) => { wake(); onKey(e); });
     window.addEventListener('pointermove', wake, { passive: true });
     window.addEventListener('pointerdown', wake, { passive: true });
+    document.addEventListener('visibilitychange', keepAwake);
+    document.addEventListener('fullscreenchange', keepAwake);
     wake();
     if (mn.store.get('done:intro') || document.querySelector('[data-once="intro"]')?.hidden) showCaption();
   }
@@ -3945,18 +4340,56 @@ const Main = (() => {
   const f = {
     n: 1, dt: 1 / 60, pace: 1, decay: 1, hue: 0, fbRot: 0, fbZoom: 1, fbSwirl: 0, fbWarp: 0, fbWarpT: 0,
     genT: 0, rmZ: 0, rmT: 0, palPhase: 0, camOn: false, inkCount: 0, inkCopies: 1,
+    dream: 0, dreamX: 0, dreamY: 0, sheenT: 0, rip: Pens.rip, ripN: 0,
   };
 
-  let quality = 1, refreshHz = 60, calib = [], fpsAcc = 0, fpsFrames = 0, good = 0;
-  let trial = null, cooldown = 0;
+  // Detail ladder, cheapest savings first: supersampling taps go before resolution,
+  // because on a dense screen fewer taps are invisible and a softer picture is not.
+  const LEVELS = [[4, 1], [2, 1], [1, 1], [1, 0.85], [1, 0.72], [1, 0.6], [1, 0.5], [1, 0.42], [1, 0.35], [1, 0.3]];
+  let level = 0, quality = 1, refreshHz = 60, calib = [], fpsAcc = 0, fpsFrames = 0, good = 0;
+  let trial = null, cooldown = 0, ceiling = 0, ceilingFor = 0;
+
+  // Canvas size in CSS and device pixels, kept current by a ResizeObserver so the
+  // frame loop never has to measure layout.
+  let cssW = 0, cssH = 0, devW = 0, devH = 0;
+
+  function observe() {
+    cssW = canvas.clientWidth; cssH = canvas.clientHeight;
+    if (!window.ResizeObserver) { window.addEventListener('resize', () => { cssW = canvas.clientWidth; cssH = canvas.clientHeight; }); return; }
+    const ro = new ResizeObserver((entries) => {
+      const e = entries[entries.length - 1];
+      cssW = e.contentRect.width; cssH = e.contentRect.height;
+      const b = e.devicePixelContentBoxSize && e.devicePixelContentBoxSize[0];
+      devW = b ? b.inlineSize : 0; devH = b ? b.blockSize : 0;
+    });
+    try { ro.observe(canvas, { box: 'device-pixel-content-box' }); } catch (e) { ro.observe(canvas); }
+  }
+
+  function applyLevel() {
+    const on = system.autoQuality;
+    quality = on ? LEVELS[level][1] : 1;
+    Renderer.setDetail(on ? LEVELS[level][0] : 4, level >= 4 && on ? 56 : 76);
+    UI.stats.quality = quality;
+  }
 
   function resize(force) {
-    const dpr = Math.min(window.devicePixelRatio || 1, system.maxDpr);
-    const cw = Math.max(1, Math.round(window.innerWidth * dpr));
-    const ch = Math.max(1, Math.round(window.innerHeight * dpr));
+    const dpr = window.devicePixelRatio || 1, k = Math.min(1, system.maxDpr / dpr);
+    const cw = Math.max(1, Math.round((devW || cssW * dpr) * k));
+    const ch = Math.max(1, Math.round((devH || cssH * dpr) * k));
     if (force || canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
     const s = system.renderScale * quality;
     Renderer.resize(cw * s, ch * s);
+  }
+
+  // Start near where this screen will settle, instead of stuttering down to it:
+  // dense screens skip 4-tap supersampling, and very large canvases start scaled.
+  function firstLevel() {
+    const dpr = Math.min(window.devicePixelRatio || 1, system.maxDpr);
+    const px = cssW * cssH * dpr * dpr;
+    const budget = matchMedia('(pointer: coarse)').matches ? 2.4e6 : 5.2e6;
+    level = dpr >= 1.75 ? 1 : 0;
+    if (px > budget) { level = 2; while (level < 6 && px * LEVELS[level][1] ** 2 > budget) level++; }
+    ceilingFor = 0;
   }
 
   function step(dt) {
@@ -3965,31 +4398,51 @@ const Main = (() => {
     time += pdt;
     UI.update(dt);
     Palette.update(dt);
+    Motion.update(dt);
     Fold.update(pdt, time, Inputs.state.tiltX, Inputs.state.tiltY);
     Renderer.fadeVeil(dt);
+
+    // Slow breathing, and whatever the room is playing. All of it moves the picture;
+    // none of it changes brightness, so the flash guard has nothing new to catch.
+    const a = Sound.level;
+    const breath = P.breath * Math.sin(time * 0.37);
+    fold.spin += a.mid * pdt * 0.3;
+    fold.fish = P.fisheye + breath * 0.045 + a.bass * 0.12;
 
     f.n = n;
     f.dt = dt;
     f.pace = P.pace;
     f.decay = Math.pow(P.fbDecay, n);
     f.hue = P.fbHueShift * rad * pdt;
-    f.fbRot = P.fbRotate * rad * pdt;
-    f.fbZoom = Math.pow(P.fbZoom, pn);
+    f.fbRot = P.fbRotate * rad * pdt + (Motion.held ? 0 : Motion.spinVel * dt * 0.35);
+    f.fbZoom = Math.pow(P.fbZoom, pn) * Math.exp(Motion.diveVel * dt + breath * 0.1 * pdt + a.bass * a.bass * 0.9 * dt);
     f.fbSwirl = P.fbSwirl * pn;
     f.fbWarp = P.fbWarp * pn;
     f.fbWarpT += pdt * 0.5;
-    f.genT += pdt * P.genSpeed;
-    f.rmZ += pdt * P.rmFly;
+    f.genT += pdt * P.genSpeed * (1 + a.mid * 1.5);
+    f.rmZ += pdt * P.rmFly * (1 + a.bass * 2);
     f.rmT += pdt;
-    f.palPhase += pdt * P.paletteSpeed;
+    f.palPhase += pdt * P.paletteSpeed + a.high * dt * 0.12;
+    f.dream = Math.min(0.5, P.fbDream * 0.05 * pn);
+    f.dreamX = 0.3 * Math.cos(time * 0.11);
+    f.dreamY = 0.3 * Math.sin(time * 0.143);
+    f.sheenT += pdt * 0.21;
 
     f.camOn = Inputs.state.cam;
     if (f.camOn && Inputs.takeFrame()) Renderer.uploadCamera(Inputs.video);
 
     f.inkCount = Pens.build(dt, time, f);
+    f.ripN = Pens.ripples;
     const gpuMirrors = fold.mode === 0 || (fold.mode === 1 && fold.warpAmt <= 0);
     f.inkCopies = gpuMirrors ? (fold.mirror ? 2 * fold.sym : fold.sym) : 1;
+    Sound.update(dt, Pens.energy);
     Renderer.render(f);
+  }
+
+  function setLevel(l) {
+    level = Math.max(0, Math.min(LEVELS.length - 1, l));
+    applyLevel();
+    resize();
   }
 
   function adapt(dt) {
@@ -3998,20 +4451,23 @@ const Main = (() => {
     const fps = fpsFrames / fpsAcc;
     fpsAcc = 0; fpsFrames = 0;
     UI.stats.fps = fps;
-    if (!system.autoQuality) { if (quality !== 1) { quality = 1; UI.stats.quality = 1; resize(); } return; }
-    let q = quality;
-    if (trial && fps < trial.fps * 1.05 && fps < refreshHz * 0.9) {
-      q = trial.q; cooldown = 8;
-    } else if (fps < refreshHz * 0.9 && cooldown <= 0) {
-      trial = { q, fps };
-      q = Math.max(0.3, q * 0.85); good = 0;
-    } else if (fps > refreshHz * 0.97 && q < 1 && ++good >= 3) {
-      q = Math.min(1, q * 1.1); good = 0;
+    if (!system.autoQuality) { applyLevel(); return; }
+    cooldown--; ceilingFor--;
+    const slow = fps < refreshHz * 0.9;
+    if (trial && slow && fps < trial.fps * 1.05) {
+      // Dropping detail bought nothing, so the GPU is not what is holding us back.
+      const back = trial.level; trial = null; cooldown = 8;
+      setLevel(back);
+    } else if (slow && cooldown <= 0) {
+      if (good < 0) { ceiling = level + 1; ceilingFor = 45; }   // we only just climbed here: remember it
+      trial = { level, fps }; good = 0;
+      setLevel(level + (fps < refreshHz * 0.6 ? 2 : 1));
+    } else if (!slow) {
+      trial = null;
+      const floor = ceilingFor > 0 ? ceiling : 0;
+      if (fps > refreshHz * 0.97 && level > floor && ++good >= 4) { good = -3; setLevel(level - 1); }
+      else if (good < 0) good++;
     }
-    if (q >= quality) trial = null;
-    cooldown--;
-    q = Math.round(q * 20) / 20;
-    if (q !== quality) { quality = q; UI.stats.quality = q; resize(); }
   }
 
   function loop(now) {
@@ -4042,8 +4498,11 @@ const Main = (() => {
       document.getElementById('fatal').textContent = e.message;
       throw e;
     }
+    observe();
     Pens.attach(canvas);
     UI.init(canvas);
+    firstLevel();
+    applyLevel();
     resize(true);
     requestAnimationFrame((t) => { last = t; requestAnimationFrame(loop); });
   }
