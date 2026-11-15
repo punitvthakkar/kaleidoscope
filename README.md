@@ -10,7 +10,16 @@ A kaleidoscope is mirrors, light and time, so the controls are three questions:
 - **Light** is what shines into them: your hand, wanderers that paint on their own, patterns, your camera, your fingertips
 - **Mood** is how it moves and fades: color, pace, echo, melt, glow, and sound (the glass can sing as you paint, or listen to music in the room and move with it)
 
-The controls stay out of the picture: the dock tucks away while you paint and returns from the small handle at the bottom edge (or when the mouse rests there). Holding a slider clears the panel so you can see what it does, and swiping or scrolling the Chamber button steps between chambers without opening anything.
+The interface is one orb, and the whole thing is meant as a quiet place to settle rather than a tool to operate. At rest the orb is a small iris in the colours of the current palette, and nothing else is on screen. Tap it and a halo opens around the centre of the picture:
+
+- **Place, Colour, Calm, Light** shape where you are. Their discs show the thing itself: the place you are in, the colours you are sitting in, how gently it is moving.
+- **Breathe** turns the orb into a breathing guide: it swells for four seconds and falls for six, and the glass (and the drone, if sound is on) move with it.
+- **Sound, Listen, Drift** are ways of being there: the glass sings as you paint, moves to music in the room, or wanders on its own while you watch.
+- **Keep** saves a picture, a film or a link.
+
+**Calm** is five feelings rather than four sliders: Still, Soft, Flowing, Bright, Wild. The one you choose stays with you from place to place. The individual dials are one step further in, under Fine tune.
+
+Inside any view the orb becomes the way back: an arrow steps out, a cross closes. The halo never takes the picture away. You can reach past it and paint, and it thins out while you do, so you can feel a place before you settle on it. Swipe or scroll the orb to change place without opening anything.
 
 **Wander** travels between chambers on its own. Every underlying setting is under ⋯ → All settings, and the URL always reproduces the current view.
 
@@ -38,7 +47,7 @@ A line at the top of the screen says what the camera currently sees ("2 fingers 
 
 ## Keys
 
-Space turn the glass · 1–9 / ← → chambers · ↑ ↓ mirrors · W wander · S sound · M listen · E all settings · I save image · R record · H hide controls · ? all keys
+Space turn the glass · 1–9 / ← → chambers · ↑ ↓ mirrors · W wander · O open the halo · G breathe · S sound · M listen · E all settings · I save image · R record · H hide controls · ? all keys
 
 ## Notes
 

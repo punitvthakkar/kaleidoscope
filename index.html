@@ -770,14 +770,19 @@ html:active-view-transition-type(back)::view-transition-new(root) { animation: v
 }
 </style>
   <style>
-/* Kaleidoscope app layout. Components come from mn.css; colors only from theme tokens.
-   UI built with Material Next: an independent design language built on Material 3, not an official Google design. */
+/* Kaleidoscope interface. The picture is the place; the controls are a ring of
+   light laid over it. No dock, no sheets, no blur: one orb, and a halo that blooms
+   from the centre of the mirrors when you ask for it. Colors only from theme tokens.
+   Built on Material Next tokens: an independent design language, not an official Google design. */
 
 :root {
   --glass: color-mix(in srgb, var(--md-sys-color-surface-container-low) 78%, transparent);
-  --glass-strong: color-mix(in srgb, var(--md-sys-color-surface-container-low) 90%, transparent);
-  --dock-h: 68px;
-  --mn-nav-space: calc(var(--dock-h) + 16px);   /* lifts snackbars above the dock */
+  --glass-strong: color-mix(in srgb, var(--md-sys-color-surface-container-low) 92%, transparent);
+  --ink: var(--md-sys-color-on-surface);
+  --glow: var(--md-sys-color-primary);
+  --R: clamp(138px, min(42vw, 32vh), 310px);     /* radius of the halo */
+  --cy: calc(50% - 24px);                        /* its centre, lifted clear of the orb */
+  --mn-nav-space: 64px;                          /* lifts snackbars above the orb */
 }
 
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--md-sys-color-scrim); }
@@ -787,101 +792,214 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--md-sys
   touch-action: none; cursor: crosshair; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
 }
 body.idle #c, body.clean #c { cursor: none; }
+body.nohover:not(.clean) #c { cursor: crosshair; }
 
-/* ---- Dock ------------------------------------------------------------------------------ */
-.dock {
-  position: fixed; z-index: 10; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); translate: -50% 0;
-  display: flex; align-items: center; gap: 4px; height: var(--dock-h); padding: 6px;
-  border-radius: var(--r-full); background: var(--glass); color: var(--md-sys-color-on-surface);
-  backdrop-filter: blur(20px) saturate(1.3); -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  box-shadow: var(--mn-depth-3);
-  transition: opacity 1.2s ease, translate var(--mn-spatial-slow), visibility 0s;
+/* ---- Orb: the one thing that stays. An iris in the colors of the current palette -------- */
+.orb {
+  position: fixed; z-index: 22; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom)); translate: -50% 0;
+  width: 56px; height: 56px; padding: 0; border: 0; border-radius: var(--r-full); background: none;
+  cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent;
 }
-.dock-tab {
-  display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 18px 0 14px; border: 0;
-  border-radius: var(--r-full); background: none; color: inherit; cursor: pointer; text-align: start;
-  transition: background-color var(--mn-effects-default), color var(--mn-effects-default);
+.orb-eye {
+  position: absolute; inset: 6px; border-radius: var(--r-full);
+  transition: scale var(--mn-spatial-slow), opacity 1.2s ease;
 }
-.dock-tab > svg, .dock-tab > [data-icon] { flex: none; width: 24px; height: 24px; color: var(--md-sys-color-on-surface-variant); }
-.dock-tab:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent); }
-.dock-tab[aria-expanded="true"] { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
-.dock-tab[aria-expanded="true"] > :is(svg, [data-icon]) { color: inherit; }
-.dock-text { display: flex; flex-direction: column; min-width: 0; }
-.dock-kicker { font: 500 11px/16px var(--mn-font-plain); letter-spacing: .5px; color: var(--md-sys-color-on-surface-variant); }
-.dock-tab[aria-expanded="true"] .dock-kicker { color: inherit; opacity: .8; }
-.dock-value { font: 500 14px/20px var(--mn-font-plain); letter-spacing: .1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
-.dock-sep { width: 1px; height: 32px; margin: 0 6px; background: var(--md-sys-color-outline-variant); }
-.dock .wander { height: 52px; padding-inline: 20px 24px; }
-.dock .more { position: relative; }
-.rec-dot { position: absolute; top: 10px; right: 10px; background: var(--md-sys-color-error); }
+.orb-iris {
+  position: absolute; inset: 0; border-radius: var(--r-full); background: var(--orb);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--glow) 55%, transparent);
+  animation: orb-turn 26s linear infinite;
+}
+.orb-iris::after {
+  content: ""; position: absolute; inset: 5px; border-radius: var(--r-full);
+  background: var(--md-sys-color-scrim); opacity: .84;
+}
+.orb-pupil {
+  position: absolute; inset: 16px; border-radius: var(--r-full); background: var(--ink);
+  box-shadow: 0 0 10px var(--ink); transition: inset var(--mn-spatial-default), border-radius var(--mn-spatial-default);
+}
+.orb:hover .orb-eye { scale: 1.12; }
+.orb:active .orb-eye { scale: .92; }
+.orb:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
+/* Open, the pupil becomes the way out: a cross to close, an arrow to step back */
+.orb-pupil::before, .orb-pupil::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 2px; margin: -1px 0 0 -7px; border-radius: 2px;
+  background: var(--ink); opacity: 0; transition: opacity var(--mn-effects-default), rotate var(--mn-spatial-default), translate var(--mn-spatial-default), width var(--mn-spatial-default);
+}
+.orb:not([data-state="rest"]) .orb-pupil { background: none; box-shadow: none; }
+.orb:not([data-state="rest"]) .orb-pupil::before, .orb:not([data-state="rest"]) .orb-pupil::after { opacity: 1; }
+.orb[data-state="home"] .orb-pupil::before { rotate: 45deg; }
+.orb[data-state="home"] .orb-pupil::after { rotate: -45deg; }
+.orb[data-state="sub"] .orb-pupil::before { width: 9px; rotate: -45deg; translate: -1px -3px; }
+.orb[data-state="sub"] .orb-pupil::after { width: 9px; rotate: 45deg; translate: -1px 3px; }
+/* Breathing: the orb is the guide. Four seconds in, six out. */
+body.breathing .orb-eye { animation: breathe 10s infinite; }
+@keyframes breathe {
+  0% { scale: .62; animation-timing-function: ease-in-out; }
+  40% { scale: 1.3; animation-timing-function: ease-in-out; }
+  100% { scale: .62; }
+}
+body.breathing.idle .orb .orb-eye { opacity: .85; }
+.pip .lung { width: 14px; height: 14px; border-radius: var(--r-full); background: currentColor; }
+body.breathing .pip .lung { animation: breathe 10s infinite; }
+.orb[data-wander] .orb-iris { animation-duration: 7s; }
+body.idle .orb:not([aria-expanded="true"]) .orb-eye { scale: .34; opacity: .6; }
+@keyframes orb-turn { to { rotate: 1turn; } }
+.rec-dot { position: absolute; top: 4px; right: 4px; background: var(--md-sys-color-error); }
 
-body.idle:not(.panel-open) .dock { opacity: 0; translate: -50% 12px; pointer-events: none; visibility: hidden; transition-delay: 0s, 0s, 1.2s; }
-
-/* ---- Panels: kit sheets opened non-modally, so the picture stays live -------------------- */
-.panel {
-  z-index: 20;
-  background: var(--glass-strong);
-  backdrop-filter: blur(28px) saturate(1.2); -webkit-backdrop-filter: blur(28px) saturate(1.2);
-  box-shadow: var(--mn-depth-3);
-  gap: 20px;
+/* ---- Halo: choices on the ring, dials at the centre, the picture alive behind both ------ */
+.halo {
+  position: fixed; inset: 0; z-index: 20; visibility: hidden; pointer-events: none;
+  transition: visibility 0s .5s;
 }
+.halo.open { visibility: visible; transition-delay: 0s; }
+.halo .core > * { pointer-events: none; }
+.halo.open .core.on :is(button, input, .dial) { pointer-events: auto; }
+/* Reach past the ring to touch the picture and the ring thins out to let you see it */
+.halo .ring, .halo .core, .halo .halo-track { transition: opacity .5s ease; }
+.halo.peek::before { opacity: 0; }
+.halo.peek .ring, .halo.peek .halo-track { opacity: .5; }
+.halo.peek .core { opacity: 0; }
+/* Choosing a place or a colour is about seeing it: no veil, nothing in the middle but a name */
+.halo[data-view="chamber"]::before, .halo[data-view="colour"]::before, .halo[data-view="calm"]::before {
+  background: radial-gradient(circle at 50% var(--cy), transparent calc(var(--R) * .72), color-mix(in srgb, var(--md-sys-color-scrim) 50%, transparent) calc(var(--R) * 1), transparent calc(var(--R) * 1.5));
+}
+.halo::before {
+  content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .5s ease;
+  background: radial-gradient(circle at 50% var(--cy),
+    color-mix(in srgb, var(--md-sys-color-scrim) 80%, transparent) 0,
+    color-mix(in srgb, var(--md-sys-color-scrim) 64%, transparent) calc(var(--R) * .8),
+    color-mix(in srgb, var(--md-sys-color-scrim) 34%, transparent) calc(var(--R) * 1.45),
+    transparent calc(var(--R) * 2.5));
+}
+.halo.open::before { opacity: 1; }
+.halo-track {
+  position: absolute; left: 50%; top: var(--cy); width: calc(var(--R) * 2); height: calc(var(--R) * 2);
+  translate: -50% -50%; border-radius: var(--r-full); pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--glow) 14%, transparent), inset 0 0 40px color-mix(in srgb, var(--glow) 10%, transparent);
+  scale: .5; opacity: 0; transition: scale var(--mn-spatial-slow), opacity .4s ease;
+}
+.halo.open .halo-track { scale: 1; opacity: 1; }
+
+.ring { position: absolute; left: 50%; top: var(--cy); width: 0; height: 0; }
+.pip {
+  --s: 56px;
+  position: absolute; left: 0; top: 0; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transform: rotate(var(--a)) translateY(calc(var(--R) * -.45)) rotate(calc(var(--a) * -1)) scale(.4);
+  opacity: 0; pointer-events: none;
+  transition: transform var(--mn-spatial-slow), opacity .25s ease;
+}
+.halo.open .ring.on .pip {
+  transform: rotate(var(--a)) translateY(calc(var(--R) * -1)) rotate(calc(var(--a) * -1));
+  opacity: 1; pointer-events: auto; transition-delay: calc(var(--i) * 18ms);
+}
+.pip-disc {
+  position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; border-radius: var(--r-full);
+  background: color-mix(in srgb, var(--md-sys-color-surface-container-low) 84%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 24%, transparent);
+  transition: scale var(--mn-spatial-fast), background-color var(--mn-effects-default), box-shadow var(--mn-effects-default), color var(--mn-effects-default);
+}
+.pip-disc svg { width: 24px; height: 24px; fill: currentColor; }
+.pip-disc svg.line { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.pip-disc img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pip:hover .pip-disc { scale: 1.12; box-shadow: inset 0 0 0 1px var(--ink), 0 0 18px color-mix(in srgb, var(--glow) 45%, transparent); }
+.pip:active .pip-disc { scale: .94; }
+.pip:focus-visible { outline: none; }
+.pip:focus-visible .pip-disc { outline: 2px solid var(--glow); outline-offset: 3px; }
+.pip[aria-pressed="true"] .pip-disc {
+  background: var(--glow); color: var(--md-sys-color-on-primary);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--glow) 70%, transparent);
+}
+.pip-label {
+  position: absolute; left: 50%; top: 100%; translate: -50% 5px; width: max-content; max-width: 88px;
+  font: 500 11px/14px var(--mn-font-plain); letter-spacing: .5px; text-align: center; color: var(--ink);
+  text-shadow: 0 1px 8px var(--md-sys-color-scrim), 0 0 2px var(--md-sys-color-scrim); opacity: .82;
+  transition: opacity var(--mn-effects-default);
+}
+.pip:hover .pip-label, .pip[aria-pressed="true"] .pip-label, .pip[aria-current] .pip-label { opacity: 1; }
+.pip.go { --s: 64px; }
+.pip.go .pip-disc svg { width: 28px; height: 28px; }
+
+/* Chambers are lenses you look through; palettes are the light itself */
+.pip.lens { --s: 66px; }
+.pip.swatch { --s: 46px; }
+.pip.swatch .pip-disc { background: var(--swatch); box-shadow: none; }
+.pip.swatch .pip-label { opacity: 0; }
+.pip.face .pip-disc { background: var(--face, var(--glass)) center / cover; }
+.pip:is(.lens, .swatch)[aria-current] .pip-disc,
+.pip.swatch[aria-pressed="true"] .pip-disc {
+  box-shadow: 0 0 0 2px var(--md-sys-color-scrim), 0 0 0 4px var(--ink), 0 0 26px color-mix(in srgb, var(--glow) 80%, transparent);
+  scale: 1.14;
+}
+.pip.swatch[aria-pressed="true"] .pip-disc { background: var(--swatch); }
+
+.core {
+  position: absolute; left: 50%; top: var(--cy); translate: -50% -50%; width: calc(var(--R) * 1.38);
+  display: none; flex-direction: column; gap: 8px; text-align: center; color: var(--ink);
+  text-shadow: 0 1px 10px var(--md-sys-color-scrim);
+}
+.halo.open .core.on { display: flex; animation: core-in .45s ease both; }
+/* Where there is no veil, the words carry their own small shadow instead */
+.halo:is([data-view="chamber"], [data-view="colour"], [data-view="calm"]) .core::before {
+  content: ""; position: absolute; inset: -18% -12%; z-index: -1; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--md-sys-color-scrim) 78%, transparent) 40%, transparent);
+}
+@keyframes core-in { from { opacity: 0; scale: .9; } }
+.core > * { margin: 0; }
+.core-kicker { font: 500 11px/16px var(--mn-font-plain); letter-spacing: 3px; text-transform: uppercase; color: var(--glow); }
+.core-title { font: 400 clamp(22px, calc(var(--R) * .16), 40px)/1.15 var(--mn-font-brand, var(--mn-font-plain)); letter-spacing: -.2px; }
+.core-line { font: 400 13px/18px var(--mn-font-plain); color: var(--md-sys-color-on-surface-variant); }
+.core-back, .link {
+  align-self: center; padding: 6px 12px; border: 0; border-radius: var(--r-full); background: none; cursor: pointer;
+  font: 500 12px/18px var(--mn-font-plain); letter-spacing: 1.6px; text-transform: uppercase; text-shadow: inherit;
+  transition: background-color var(--mn-effects-default);
+}
+.core-back { color: var(--md-sys-color-on-surface-variant); }
+.link { color: var(--glow); }
+:is(.core-back, .link):is(:hover, :focus-visible) { background: color-mix(in srgb, var(--ink) 12%, transparent); outline: none; }
+.core-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
+
+/* Dials: a hairline and a point of light */
+.dial { display: grid; gap: 0; text-align: start; }
+.dial-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.dial-head label { font: 500 12px/16px var(--mn-font-plain); letter-spacing: .6px; }
+.dial-sub, .dial-ends { display: none; }
+.dial input[type="range"], .set-row input[type="range"] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 26px; margin: 0; background: none; cursor: pointer; touch-action: none;
+}
+:is(.dial, .set-row) input[type="range"]::-webkit-slider-runnable-track { height: 2px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 34%, transparent); }
+:is(.dial, .set-row) input[type="range"]::-moz-range-track { height: 2px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 34%, transparent); }
+:is(.dial, .set-row) input[type="range"]::-moz-range-progress { height: 2px; border-radius: 2px; background: var(--glow); }
+:is(.dial, .set-row) input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px; margin-top: -7px; border: 0; border-radius: 50%;
+  background: var(--ink); box-shadow: 0 0 14px var(--glow), 0 0 3px var(--glow);
+}
+:is(.dial, .set-row) input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px; border: 0; border-radius: 50%; background: var(--ink); box-shadow: 0 0 14px var(--glow), 0 0 3px var(--glow);
+}
+:is(.dial, .set-row) input[type="range"]:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; border-radius: var(--r-full); }
+
+/* While a dial is held, everything but that dial leaves, so you see what it does */
+.halo.adjusting::before, .halo.adjusting .halo-track, .halo.adjusting .ring { opacity: 0; transition: opacity .2s ease; }
+.halo.adjusting .core > :not(.live) { visibility: hidden; }
+
+/* ---- All settings: the one place that is still a list ----------------------------------- */
+.panel { z-index: 24; background: var(--glass-strong); box-shadow: var(--mn-depth-3); gap: 20px; transition: background-color .2s ease, box-shadow .2s ease; }
 .panel[open] { display: flex; flex-direction: column; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; margin: -6px -8px -4px 0; }
 .panel-head h2 { margin: 0; }
-
 @media (min-width: 840px) {
-  .panel {
-    inset: 16px 16px auto auto; margin: 0; width: 400px; height: auto;
-    max-height: calc(100dvh - var(--dock-h) - 64px); transform-origin: right center;
-  }
-  .panel.wide { width: 440px; }
+  .panel { inset: 16px 16px auto auto; margin: 0; width: 440px; height: auto; max-height: calc(100dvh - 32px); transform-origin: right center; }
 }
 @media (max-width: 839.98px) {
-  .panel {
-    left: 8px; right: 8px; bottom: calc(var(--dock-h) + 24px + env(safe-area-inset-bottom)); width: auto;
-    max-height: 58dvh; border-radius: var(--r-xl); padding-bottom: 24px;
-  }
+  .panel { left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom)); width: auto; max-height: 62dvh; border-radius: var(--r-xl); padding-bottom: 24px; }
 }
-
-/* Chamber cards */
-.chambers { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }
-.chamber {
-  --mn-pad: 12px; gap: 2px; text-align: start; cursor: pointer;
-  background: var(--md-sys-color-surface-container); color: var(--md-sys-color-on-surface);
-}
-.chamber > .media { --ratio: 16 / 10; margin-bottom: 8px; }
-.chamber[aria-current] {
-  background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container);
-  box-shadow: inset 0 0 0 2px var(--md-sys-color-primary);
-}
-.chamber[aria-current] .mn-muted { color: inherit; opacity: .8; }
-
-/* Dials: one control, words at both ends */
-.dial { display: grid; gap: 2px; }
-.dial-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.dial-sub { margin: 0 0 2px; }
-.dial input[type="range"], .set-row input[type="range"] { width: 100%; margin: 6px 0 0; }
-.dial-ends { display: flex; justify-content: space-between; }
-
-.block { display: flex; flex-direction: column; gap: 10px; }
-.block h3 { margin: 0; }
-.block-head { display: flex; align-items: baseline; gap: 8px; }
-.chip-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-.panel .mn-seg > * { flex: 1; }
-.panel > .mn-btn { align-self: flex-start; }
-.panel .mn-list .mn-item { background: var(--md-sys-color-surface-container); }
-
-/* Palette swatches: the gradients are the palettes themselves */
-.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 10px; }
-.swatch {
-  aspect-ratio: 1; width: 100%; max-width: 48px; border: 0; border-radius: var(--r-full); cursor: pointer;
-  background: var(--swatch); outline: 2px solid transparent; outline-offset: 3px;
-  transition: outline-color var(--mn-effects-default), scale var(--mn-spatial-fast);
-}
-.swatch:hover { scale: 1.08; }
-.swatch[aria-pressed="true"] { outline-color: var(--md-sys-color-primary); }
-
-/* All settings */
+.panel.adjusting { background: transparent; box-shadow: none; }
+.panel.adjusting::before { visibility: hidden; }
+.panel.adjusting * { visibility: hidden; }
+.panel.adjusting .live, .panel.adjusting .live * { visibility: visible; }
+.panel.adjusting .live { background: var(--glass-strong); border-radius: var(--r-m); box-shadow: 0 0 0 12px var(--glass-strong); }
 .set-body { display: flex; flex-direction: column; gap: 14px; }
 .set-row { display: flex; flex-direction: column; gap: 2px; }
 .set-row[hidden] { display: none; }
@@ -898,7 +1016,7 @@ body.idle:not(.panel-open) .dock { opacity: 0; translate: -50% 12px; pointer-eve
 
 /* ---- Caption: the chamber's name, like a museum label ---------------------------------- */
 .caption {
-  position: fixed; z-index: 5; left: 28px; bottom: calc(var(--dock-h) + 40px + env(safe-area-inset-bottom));
+  position: fixed; z-index: 5; left: 28px; bottom: calc(28px + env(safe-area-inset-bottom));
   max-width: 420px; margin: 0; pointer-events: none; color: var(--md-sys-color-on-surface);
   text-shadow: 0 1px 12px var(--md-sys-color-scrim), 0 0 2px var(--md-sys-color-scrim);
   opacity: 0; translate: 0 10px; transition: opacity 1.6s ease, translate 1.6s ease;
@@ -907,41 +1025,16 @@ body.idle:not(.panel-open) .dock { opacity: 0; translate: -50% 12px; pointer-eve
 .caption .mn-body-m { color: var(--md-sys-color-on-surface-variant); }
 .caption.show { opacity: 1; translate: 0 0; }
 body.panel-open .caption { opacity: 0; transition-duration: .3s; }
-@media (max-width: 599.98px) { .caption { left: 16px; right: 16px; text-align: center; max-width: none; } }
+@media (max-width: 599.98px) { .caption { left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); text-align: center; max-width: none; } }
 
-/* ---- Whisper: one quiet line of guidance, never a blur over the picture ----------------- */
+/* ---- Whisper: one quiet line of guidance ------------------------------------------------ */
 .whisper {
-  position: fixed; z-index: 6; left: 50%; top: calc(16px + env(safe-area-inset-top)); translate: -50% -6px;
+  position: fixed; z-index: 26; left: 50%; top: calc(16px + env(safe-area-inset-top)); translate: -50% -6px;
   margin: 0; padding: 8px 16px; width: max-content; max-width: calc(100vw - 32px); text-align: center;
   border-radius: var(--r-full); background: var(--glass-strong); color: var(--md-sys-color-on-surface);
   pointer-events: none; opacity: 0; transition: opacity .6s ease, translate .6s ease;
 }
 .whisper.show { opacity: 1; translate: -50% 0; }
-
-/* ---- Handle: all that remains of the dock while you paint ------------------------------- */
-.handle {
-  position: fixed; z-index: 9; left: 50%; bottom: env(safe-area-inset-bottom); translate: -50% 0;
-  width: 96px; height: 32px; padding: 0; border: 0; background: none; cursor: pointer;
-  opacity: 0; pointer-events: none; transition: opacity .8s ease;
-}
-.handle::before {
-  content: ""; position: absolute; left: 50%; bottom: 10px; translate: -50% 0; width: 44px; height: 4px;
-  border-radius: var(--r-full); background: var(--md-sys-color-on-surface); opacity: .32;
-  transition: opacity var(--mn-effects-default), width var(--mn-spatial-fast);
-}
-.handle:is(:hover, :focus-visible)::before { opacity: .8; width: 56px; }
-body.idle:not(.panel-open):not(.clean) .handle { opacity: 1; pointer-events: auto; }
-
-/* ---- While a slider is held, the panel steps aside so you can see what it does ---------- */
-.panel { transition: background-color .2s ease, box-shadow .2s ease; }
-.panel.adjusting { background: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.panel.adjusting::before { visibility: hidden; }
-.panel.adjusting * { visibility: hidden; }
-.panel.adjusting .live, .panel.adjusting .live * { visibility: visible; }
-.panel.adjusting .live { background: var(--glass-strong); border-radius: var(--r-m); box-shadow: 0 0 0 12px var(--glass-strong); }
-
-.dock-tab[data-panel="chamber"] { touch-action: none; }
-body.nohover:not(.clean) #c { cursor: crosshair; }
 
 /* ---- Keys sheet ------------------------------------------------------------------------ */
 .keys { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0; }
@@ -959,21 +1052,16 @@ body.nohover:not(.clean) #c { cursor: crosshair; }
 .fatal { position: fixed; inset: 0; z-index: 40; place-content: center; color: var(--md-sys-color-error); }
 .fatal[hidden] { display: none; }
 
-body.clean :is(.dock, .panel, .caption) { display: none; }
+body.clean :is(.orb, .halo, .panel, .caption) { display: none; }
 
-/* ---- Compact: the dock becomes a thumb bar --------------------------------------------- */
-@media (max-width: 599.98px) {
-  :root { --dock-h: 64px; }
-  .dock { left: 8px; right: 8px; translate: none; justify-content: space-between; }
-  body.idle:not(.panel-open) .dock { translate: 0 12px; }
-  .dock-tab { flex: 1; flex-direction: column; justify-content: center; gap: 2px; height: 52px; padding: 0 6px; }
-  .dock-tab > svg, .dock-tab > [data-icon] { width: 22px; height: 22px; }
-  .dock-kicker { display: none; }
-  .dock-value { font-size: 12px; line-height: 16px; max-width: 84px; }
-  .dock-sep { display: none; }
-  .dock .wander { width: 52px; padding: 0; justify-content: center; }
-  .dock .wander > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 479.98px) {
+  .pip { --s: 50px; }
+  .pip.go { --s: 56px; }
+  .pip.lens { --s: 56px; }
+  .pip.swatch { --s: 40px; }
+  .pip-label { font-size: 10px; max-width: 72px; }
 }
+@media (prefers-reduced-motion: reduce) { .orb-iris { animation: none; } }
 </style>
 </head>
 <body>
@@ -988,80 +1076,63 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
   <!-- One quiet line at the top: first-use hints, and what the camera sees of your hands -->
   <p class="whisper mn-label-l" id="whisper" aria-live="polite"></p>
 
-  <!-- Shown only while the dock is tucked away -->
-  <button class="handle" id="handle" aria-label="Show controls"></button>
+  <!-- The orb is the whole interface at rest. Tap it for the halo; swipe it for the next chamber. -->
+  <button class="orb" id="orb" aria-label="Controls" aria-expanded="false" aria-controls="halo">
+    <span class="orb-eye"><span class="orb-iris"></span><span class="orb-pupil"></span></span>
+    <span class="mn-badge rec-dot" id="recDot" hidden></span>
+  </button>
 
-  <!-- Dock: the three ingredients of a kaleidoscope, plus the journey -->
-  <nav class="dock" id="dock" aria-label="Kaleidoscope controls">
-    <button class="dock-tab" data-panel="chamber" aria-expanded="false" aria-controls="panel-chamber">
-      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z"/><path d="M12 2.8v18.4M4 7.4l16 9.2M20 7.4L4 16.6"/></svg>
-      <span class="dock-text"><span class="dock-kicker">Chamber</span><span class="dock-value" id="dockChamber">Mandala</span></span>
-    </button>
-    <button class="dock-tab" data-panel="light" aria-expanded="false" aria-controls="panel-light">
-      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.6"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>
-      <span class="dock-text"><span class="dock-kicker">Light</span><span class="dock-value" id="dockLight">Your hand</span></span>
-    </button>
-    <button class="dock-tab" data-panel="mood" aria-expanded="false" aria-controls="panel-mood">
-      <i data-icon="tune"></i>
-      <span class="dock-text"><span class="dock-kicker">Mood</span><span class="dock-value" id="dockMood">Rainbow</span></span>
-    </button>
-    <span class="dock-sep" aria-hidden="true"></span>
-    <button class="mn-btn wander" id="wander" aria-pressed="false"><i data-icon="play"></i><span>Wander</span></button>
-    <button class="mn-icon-btn more" popovertarget="more" aria-label="More"><i data-icon="more"></i><span class="mn-badge rec-dot" id="recDot" hidden></span></button>
-  </nav>
+  <!-- Halo: every view is choices on the ring and dials at the centre -->
+  <div class="halo" id="halo" role="dialog" aria-label="Controls">
+    <div class="halo-track"></div>
+    <div class="ring" data-view="home" id="homeRing"></div>
+    <div class="ring" data-view="chamber" id="chambers"></div>
+    <div class="ring" data-view="colour" id="swatches" role="group" aria-label="Colour"></div>
+    <div class="ring" data-view="calm" id="calmRing" role="group" aria-label="Calm"></div>
+    <div class="ring" data-view="light" id="lightRing"></div>
+    <div class="ring" data-view="keep" id="keepRing"></div>
 
-  <div popover class="mn-menu" id="more">
-    <button data-act="snapshot"><i data-icon="image"></i>Save image</button>
-    <button data-act="record"><i data-icon="play"></i><span id="recLabel">Record video</span></button>
-    <hr>
-    <button data-act="copyLink"><i data-icon="share"></i>Copy link to this view</button>
-    <button data-act="fullscreen"><i data-icon="open"></i>Full screen</button>
-    <hr>
-    <button data-act="all"><i data-icon="settings"></i>All settings</button>
-    <button data-act="keys"><i data-icon="info"></i>Keys and gestures</button>
+    <!-- Each centre says one thing: where you are, and what the thing you touched does -->
+    <div class="core" data-view="home">
+      <h2 class="core-title">Be here</h2>
+      <p class="core-line" id="say"></p>
+    </div>
+    <div class="core" data-view="chamber">
+      <h2 class="core-title" id="chamberName"></h2>
+      <p class="core-line" id="chamberLine"></p>
+      <div class="dial" id="shapeDial"></div>
+      <button class="link" id="turn">Turn the glass</button>
+    </div>
+    <div class="core" data-view="colour">
+      <h2 class="core-title" id="paletteName"></h2>
+      <p class="core-line">The light you are sitting in</p>
+    </div>
+    <div class="core" data-view="calm">
+      <h2 class="core-title" id="calmName"></h2>
+      <p class="core-line" id="calmLine"></p>
+      <button class="link" id="fineTune">Fine tune</button>
+    </div>
+    <div class="core" data-view="tune">
+      <div class="dial" id="paceDial"></div>
+      <div class="dial" id="echoDial"></div>
+      <div class="dial" id="meltDial"></div>
+      <div class="dial" id="glowDial"></div>
+    </div>
+    <div class="core" data-view="light">
+      <h2 class="core-title" id="lightName"></h2>
+      <p class="core-line" id="lightLine"></p>
+      <div class="dial" id="wanderersDial"></div>
+      <button class="link" id="clearGlass">Clear the glass</button>
+    </div>
+    <div class="core" data-view="keep">
+      <h2 class="core-title">Keep</h2>
+      <p class="core-line" id="keepLine">Take this moment with you</p>
+      <div class="core-links">
+        <button class="link" data-act="all">All settings</button>
+        <button class="link" data-act="keys">Keys</button>
+      </div>
+    </div>
   </div>
-
-  <!-- Panels are non-modal so the picture stays live while you adjust it -->
-  <dialog class="mn-sheet panel" id="panel-chamber" aria-labelledby="h-chamber">
-    <header class="panel-head"><h2 class="mn-title-l" id="h-chamber">Chamber</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
-    <div class="chambers" id="chambers"></div>
-    <div class="dial" id="shapeDial"></div>
-    <button class="mn-btn tonal" id="turn"><i data-icon="refresh"></i>Turn the glass</button>
-  </dialog>
-
-  <dialog class="mn-sheet panel" id="panel-light" aria-labelledby="h-light">
-    <header class="panel-head"><h2 class="mn-title-l" id="h-light">Light</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
-    <section class="block">
-      <h3 class="mn-title-s">Your hand</h3>
-      <div class="mn-seg" role="group" aria-label="Brush" id="brushSeg"></div>
-    </section>
-    <div class="dial" id="wanderersDial"></div>
-    <section class="block">
-      <div class="block-head"><h3 class="mn-title-s">Pattern</h3><span class="mn-body-s mn-muted">fed into the mirrors</span></div>
-      <div class="chip-wrap" id="genChips"></div>
-    </section>
-    <div class="mn-list">
-      <label class="mn-item"><span class="lead plain"><i data-icon="image"></i></span><span class="text"><span class="title">Camera</span><span class="sub">Your view becomes light</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="camSwitch"></span></label>
-      <label class="mn-item"><span class="lead plain"><i data-icon="person"></i></span><span class="text"><span class="title">Fingertips</span><span class="sub">Paint in the air · pinch to hold the glass</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="handSwitch"></span></label>
-    </div>
-    <button class="mn-btn text" id="clearGlass"><i data-icon="delete"></i>Clear the glass</button>
-  </dialog>
-
-  <dialog class="mn-sheet panel" id="panel-mood" aria-labelledby="h-mood">
-    <header class="panel-head"><h2 class="mn-title-l" id="h-mood">Mood</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
-    <div class="chip-wrap">
-      <button class="mn-chip" id="soundSwitch" aria-pressed="false" title="The glass sings as you paint"><i data-icon="volume"></i>Sound</button>
-      <button class="mn-chip" id="micSwitch" aria-pressed="false" title="Music in the room moves the mirrors"><i data-icon="mic"></i>Listen</button>
-    </div>
-    <section class="block">
-      <div class="block-head"><h3 class="mn-title-s">Color</h3><span class="mn-body-s mn-muted" id="paletteName"></span></div>
-      <div class="swatches" id="swatches" role="group" aria-label="Palette"></div>
-    </section>
-    <div class="dial" id="paceDial"></div>
-    <div class="dial" id="echoDial"></div>
-    <div class="dial" id="meltDial"></div>
-    <div class="dial" id="glowDial"></div>
-  </dialog>
 
   <dialog class="mn-sheet panel wide" id="panel-all" aria-labelledby="h-all">
     <header class="panel-head"><h2 class="mn-title-l" id="h-all">All settings</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
@@ -1087,7 +1158,8 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
       <dt>X</dt><dd>Clear the glass</dd>
       <dt>I · R</dt><dd>Save image · record video</dd>
       <dt>L</dt><dd>Copy link</dd>
-      <dt>E</dt><dd>All settings</dd>
+      <dt>O · E</dt><dd>Open the halo · all settings</dd>
+      <dt>G</dt><dd>Breathe with the orb</dd>
       <dt>H · F</dt><dd>Hide controls · full screen</dd>
     </dl>
     <form method="dialog" class="actions"><button class="mn-btn text">Close</button></form>
@@ -1142,6 +1214,8 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
     mail: 'M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z',
     calendar: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z',
     send: 'M2.01 21 23 12 2.01 3 2 10l15 2-15 2z',
+    hex: 'M12 2l8.5 5v10L12 22l-8.5-5V7zM12 4.3l-6.5 3.8v7.8l6.5 3.8 6.5-3.8V8.1z',
+    record: 'M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14z',
     volume: 'M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z',
     mic: 'M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z',
     attach: 'M16.5 6v11.5a4 4 0 0 1-8 0V5a2.5 2.5 0 0 1 5 0v10.5a1 1 0 0 1-2 0V6H10v9.5a2.5 2.5 0 0 0 5 0V5a4 4 0 0 0-8 0v12.5a5.5 5.5 0 0 0 11 0V6h-1.5z',
@@ -1438,6 +1512,7 @@ const SYSTEM_DEFAULTS = {
   brightCap: 0.3,      // ceiling on average scene brightness while flashGuard is on
   morphTime: 4.5,
   autoVJ: false,
+  breathGuide: false,
   autoVJInterval: 40,
 };
 
@@ -1708,13 +1783,25 @@ const Fold = (() => {
 // Momentum the viewer adds by hand: a twist spins the glass, a scroll or pinch
 // dives through the echo. Both coast and settle, and neither touches `params`.
 const Motion = {
-  spinVel: 0, diveVel: 0, held: false, pend: 0, used: 0,
+  spinVel: 0, diveVel: 0, held: false, pend: 0, used: 0, ref: {},
+  // Hands are never perfectly still. `take` gives a grip some play: movement smaller
+  // than `play` is ignored outright, and only what exceeds it comes through.
+  take(key, v, play) {
+    const r = this.ref;
+    if (r[key] == null) { r[key] = v; return 0; }
+    const d = v - r[key];
+    if (Math.abs(d) <= play) return 0;
+    const out = d - Math.sign(d) * play;
+    r[key] = v - Math.sign(d) * play;
+    return out;
+  },
+  drop(...keys) { for (const k of keys) this.ref[k] = null; },
   feed(a) { this.pend += a; },
   spin(v) { this.used++; this.spinVel = Math.max(-8, Math.min(8, this.spinVel + v)); },
   dive(v) { this.used++; this.diveVel = Math.max(-1.6, Math.min(1.6, this.diveVel + v)); },
   update(dt) {
     if (!this.held) fold.spin += this.spinVel * dt;
-    const turn = this.pend * (1 - Math.exp(-dt * 22));
+    const turn = this.pend * (1 - Math.exp(-dt * 11));
     fold.spin += turn; this.pend -= turn;
     this.spinVel *= Math.exp(-1.6 * dt);
     this.diveVel *= Math.exp(-2.6 * dt);
@@ -1756,8 +1843,12 @@ uniform vec4 uHyp;        // circle center, radius, mobius a.xy
 uniform vec2 uDroste;     // log ratio, phase
 uniform float uTile;
 uniform vec3 uPalA, uPalB, uPalC, uPalD;
+uniform vec2 uSpinCS;     // cos, sin of the mirror spin
+uniform vec2 uKifsCS[10]; // cos, sin of each fractal fold's twist
 
 mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
+mat2 spinM() { return mat2(uSpinCS.x, uSpinCS.y, -uSpinCS.y, uSpinCS.x); }
+mat2 spinInv() { return mat2(uSpinCS.x, -uSpinCS.y, uSpinCS.y, uSpinCS.x); }
 vec2 cmul(vec2 a, vec2 b) { return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x); }
 vec2 cdiv(vec2 a, vec2 b) { return vec2(a.x * b.x + a.y * b.y, a.y * b.x - a.x * b.y) / max(dot(b, b), 1e-6); }
 vec3 pal(float t) { return uPalA + uPalB * cos(TAU * (uPalC * t + uPalD)); }
@@ -1832,8 +1923,8 @@ vec2 foldKifs(vec2 z, out float trap, out float scale) {
     fz = 0.5 * vec2(fz.x + fz.y + sd, fz.x + fz.y - sd);
     float stepTrap = min(fz.y, (fz.x - fz.y) * 0.7071) / scale;
     fz = fz * s - uKifsOff * (s - 1.0);
-    float ang = uKifs.y / (1.0 + 0.45 * float(i));
-    fz = rot(ang) * fz;
+    vec2 cs = uKifsCS[i];
+    fz = mat2(cs.x, cs.y, -cs.y, cs.x) * fz;
     z = mix(z, fz, w);
     scale *= mix(1.0, s, w);
     trap = min(trap, mix(trap, stepTrap, w));
@@ -1910,10 +2001,10 @@ vec2 foldTiles(vec2 z, out float trap, out float scale) {
 vec2 foldKaleidoSpace(vec2 p) {
   p = warpSpace(p);
   if (uMode == 0) return p;
-  vec2 z = rot(-uSpin) * (p - uCenter) * uViewZoom;
+  vec2 z = spinInv() * (p - uCenter) * uViewZoom;
   float tr;
   z = foldKaleido(z, tr);
-  return uCenter + rot(uSpin) * z / uViewZoom;
+  return uCenter + spinM() * z / uViewZoom;
 }
 
 vec2 foldSpaceEx(vec2 p, out float trap, out float scale, out float diskMask, out float rimGlow) {
@@ -1923,17 +2014,17 @@ vec2 foldSpaceEx(vec2 p, out float trap, out float scale, out float diskMask, ou
   rimGlow = 0.0;
   p = warpSpace(p);
   if (uMode == 0) return p;
-  vec2 z = rot(-uSpin) * (p - uCenter) * uViewZoom;
+  vec2 z = spinInv() * (p - uCenter) * uViewZoom;
   if (uMode == 1) {
     z = foldKaleido(z, trap);
-    return uCenter + rot(uSpin) * z / uViewZoom;
+    return uCenter + spinM() * z / uViewZoom;
   }
   if (uMode == 2) z = foldKifs(z, trap, scale);
   else if (uMode == 3) z = foldHyper(z, trap, scale, diskMask, rimGlow);
   else if (uMode == 4) z = foldDroste(z, trap, scale);
   else z = foldTiles(z, trap, scale);
   scale = clamp(scale * uViewZoom, 0.2, 24.0);
-  return uCenter + rot(uSpin) * z;
+  return uCenter + spinM() * z;
 }
 
 vec2 foldSpace(vec2 p) {
@@ -1948,7 +2039,7 @@ uniform sampler2D uPrev, uCam, uRM;
 uniform bool uFoldLoop;
 uniform mat3 uColorMat;
 uniform float uFbRot, uFbZoom, uFbSwirl, uFbWarp, uFbWarpT, uSharpen, uDt, uDream;
-uniform vec2 uDreamC;
+uniform vec2 uDreamC, uFbRotCS;
 uniform vec4 uRip[4];     // ripple center.xy, radius, push
 uniform int uRipN;
 uniform int uGen;
@@ -1959,7 +2050,7 @@ out vec4 o;
 
 vec2 fbTransform(vec2 q) {
   vec2 d = q - uCenter;
-  d = rot(uFbRot + uFbSwirl * length(d)) * d / uFbZoom;
+  d = (uFbSwirl == 0.0 ? mat2(uFbRotCS.x, uFbRotCS.y, -uFbRotCS.y, uFbRotCS.x) : rot(uFbRot + uFbSwirl * length(d))) * d / uFbZoom;
   // Dream current: the flow of z² + c, turned a quarter so its two drifting poles
   // become slow whirlpools that light orbits and spirals between.
   if (uDream > 0.0) {
@@ -2151,7 +2242,7 @@ void main() {
   // Scene pass: 4-tap supersampled mip-aware chamber fold + orbit-trap filigree + optical veil dissolve.
   const SCENE_FS = HEADER + COMMON + `
 uniform sampler2D uFB, uVeilTex;
-uniform float uFisheye, uPalMap, uPalShift, uVeil, uSheen;
+uniform float uFisheye, uPalMap, uPalShift, uVeil, uSheen, uFbScale;
 uniform vec2 uSheenL;
 uniform int uTaps;
 out vec4 o;
@@ -2160,7 +2251,7 @@ vec3 evalPoint(vec2 p) {
   p *= 1.0 + uFisheye * dot(p, p) * 0.3;
   float trap, scale, diskMask, rimGlow;
   vec2 q = foldSpaceEx(p, trap, scale, diskMask, rimGlow);
-  float lod = clamp(log2(max(scale * 0.65, 1.0)), 0.0, 5.0);
+  float lod = clamp(log2(max(scale * 0.65 * uFbScale, 1.0)), 0.0, 5.0);
   vec3 c = textureLod(uFB, toUV(q), lod).rgb * diskMask;
 
   // Delicate anti-aliased filigree along fractal, hyperbolic, spiral and tile fold lines
@@ -2403,6 +2494,8 @@ const Renderer = (() => {
   let lumCur, lumAd = [null, null], lumIdx = 0, lumReset = true;
   let camTex, camAspect = 16 / 9, camReady = false;
   let W = 0, H = 0;                 // render resolution
+  let FW = 0, FH = 0, FS = 1;       // echo (feedback) resolution, and its scale against W
+  const kifsCS = new Float32Array(20);
   let frameNo = 0;
   let maxTaps = 4, rmSteps = 76;    // detail level, set by the frame loop
   let backupTimer = 0;
@@ -2523,12 +2616,16 @@ const Renderer = (() => {
   }
 
   // Reallocate render targets, resampling the feedback image so nothing resets.
-  function resize(w, h) {
+  // The echo buffers hold soft, glowing light and are the largest thing in memory
+  // (two float buffers with mips). On dense screens they run at a lower scale `fs`;
+  // the mirrors are still folded and supersampled at full resolution on top.
+  function resize(w, h, fs = FS) {
     w = Math.max(16, Math.round(w)); h = Math.max(16, Math.round(h));
-    if (w === W && h === H) return;
+    if (w === W && h === H && fs === FS) return;
+    const fw = Math.max(16, Math.round(w * fs)), fh = Math.max(16, Math.round(h * fs));
     gl.bindVertexArray(vao);
     const old = fb[cur];
-    const nfb = [target(w, h, true, gl.MIRRORED_REPEAT, true), target(w, h, true, gl.MIRRORED_REPEAT, true)];
+    const nfb = [target(fw, fh, true, gl.MIRRORED_REPEAT, true), target(fw, fh, true, gl.MIRRORED_REPEAT, true)];
     if (old) copyInto(old, nfb[0]);
     free(fb[0]); free(fb[1]);
     fb = nfb; cur = 0;
@@ -2544,12 +2641,12 @@ const Renderer = (() => {
       bw = Math.max(1, bw >> 1); bh = Math.max(1, bh >> 1);
       bloom.push(target(bw, bh, true, gl.CLAMP_TO_EDGE));
     }
-    W = w; H = h;
+    W = w; H = h; FW = fw; FH = fh; FS = fs;
   }
 
   // Clearing keeps a copy so it can be undone.
   function clear() {
-    if (!backup) backup = target(W, H, true, gl.MIRRORED_REPEAT);
+    if (!backup) backup = target(FW, FH, true, gl.MIRRORED_REPEAT);
     clearTimeout(backupTimer);
     backupTimer = setTimeout(() => { free(backup); backup = null; }, 8000);   // undo window
     gl.bindVertexArray(vao);
@@ -2612,6 +2709,11 @@ const Renderer = (() => {
     u4f(pr, 'uHyp', f.hypC, f.hypR, f.hypAx, f.hypAy);
     u2f(pr, 'uDroste', f.drL, f.drPhase);
     u1f(pr, 'uTile', f.tile);
+    u2f(pr, 'uSpinCS', Math.cos(f.spin), Math.sin(f.spin));
+    if (f.mode === 2 && pr.loc['uKifsCS[0]']) {
+      for (let i = 0; i < 10; i++) { const a = f.kAngle / (1 + 0.45 * i); kifsCS[i * 2] = Math.cos(a); kifsCS[i * 2 + 1] = Math.sin(a); }
+      gl.uniform2fv(pr.loc['uKifsCS[0]'], kifsCS);
+    }
     u3v(pr, 'uPalA', Palette.a);
     u3v(pr, 'uPalB', Palette.b);
     u3v(pr, 'uPalC', Palette.c);
@@ -2661,7 +2763,7 @@ const Renderer = (() => {
     // 1. raymarched fractal source
     const useRm = P.gen === 'fractal3d';
     if (useRm) {
-      if (!rm) rm = target(Math.max(16, W >> 1), Math.max(16, H >> 1), true, gl.MIRRORED_REPEAT);
+      if (!rm) rm = target(Math.max(16, FW >> 1), Math.max(16, FH >> 1), true, gl.MIRRORED_REPEAT);
       const pr = progs.raymarch;
       gl.bindFramebuffer(gl.FRAMEBUFFER, rm.fbo);
       gl.viewport(0, 0, rm.w, rm.h);
@@ -2681,9 +2783,9 @@ const Renderer = (() => {
     {
       const pr = progs.feedback;
       gl.bindFramebuffer(gl.FRAMEBUFFER, dst.fbo);
-      gl.viewport(0, 0, W, H);
+      gl.viewport(0, 0, FW, FH);
       use(pr);
-      setCommon(pr, W, H);
+      setCommon(pr, FW, FH);
       tex(0, src.tex); u1i(pr, 'uPrev', 0);
       tex(1, camTex); u1i(pr, 'uCam', 1);
       tex(2, rm ? rm.tex : camTex); u1i(pr, 'uRM', 2);
@@ -2692,6 +2794,7 @@ const Renderer = (() => {
       buildColorMat(f.decay, P.fbSat, f.hue);
       m3(pr, 'uColorMat', colorMat);
       u1f(pr, 'uFbRot', f.fbRot);
+      u2f(pr, 'uFbRotCS', Math.cos(f.fbRot), Math.sin(f.fbRot));
       u1f(pr, 'uFbZoom', f.fbZoom);
       u1f(pr, 'uFbSwirl', f.fbSwirl);
       u1f(pr, 'uFbWarp', f.fbWarp);
@@ -2727,7 +2830,7 @@ const Renderer = (() => {
       const copies = f.inkCopies;
       gl.vertexAttribDivisor(0, copies);
       gl.vertexAttribDivisor(1, copies);
-      u2f(pr, 'uRes', W, H);
+      u2f(pr, 'uRes', FW, FH);
       u1i(pr, 'uCopies', copies);
       u1i(pr, 'uInkMirror', fold.mirror ? 1 : 0);
       u1f(pr, 'uSym', fold.sym);
@@ -2743,7 +2846,7 @@ const Renderer = (() => {
 
     // 3b. mipmaps on the feedback texture, only when a fold will actually minify it
     const seamless = fold.mode === 0 || (fold.mode === 1 && fold.mirror);
-    if (fold.mode >= 2 || fold.vz * 0.65 > 1) {
+    if (fold.mode >= 2 || fold.vz * 0.65 * FS > 1) {
       gl.bindTexture(gl.TEXTURE_2D, fb[cur].tex);
       gl.generateMipmap(gl.TEXTURE_2D);
     }
@@ -2761,6 +2864,7 @@ const Renderer = (() => {
       u1f(pr, 'uSheen', P.sheen);
       u2f(pr, 'uSheenL', 0.6 * Math.cos(f.sheenT), 0.6 * Math.sin(f.sheenT));
       u1f(pr, 'uFisheye', fold.fish);
+      u1f(pr, 'uFbScale', FS);
       u1f(pr, 'uPalMap', P.paletteMap);
       u1f(pr, 'uPalShift', f.palPhase);
       u1f(pr, 'uVeil', veil ? veilAmt * veilAmt * (3 - 2 * veilAmt) : 0);
@@ -2853,6 +2957,7 @@ const Renderer = (() => {
   return {
     init, resize, clear, restore, startVeil, fadeVeil, setDetail, render, uploadCamera, inkData, MAX_SEG,
     get size() { return [W, H]; },
+    get echoSize() { return [FW, FH]; },
     get gl() { return gl; },
     get maxSize() { return gl.getParameter(gl.MAX_TEXTURE_SIZE); },
   };
@@ -2878,7 +2983,7 @@ const Pens = (() => {
   const data = Renderer.inkData;
   let canvasEl;
   const touches = new Map();    // fingers on the glass, for twist and pinch
-  let gd = 0, ga = 0, gt = 0, gdN = 0, gaN = 0;
+  let gd = 0, ga = 0, gt = 0, gdN = 0, gaN = 0, gAng = 0, gLog = 0;
   const tapQ = [];              // taps waiting to become ripples
   const rip = new Float32Array(16), ripAge = new Float32Array(4);
   let ripN = 0, energy = 0, moved = 0, painted = 0, taps = 0;
@@ -2920,7 +3025,7 @@ const Pens = (() => {
       canvas.setPointerCapture(e.pointerId);
       if (e.pointerType !== 'mouse') {
         touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
-        if (touches.size === 2) { measure(); gd = gdN; ga = gaN; gt = e.timeStamp; Motion.held = true; Motion.spinVel = 0; }
+        if (touches.size === 2) { measure(); gd = gdN; ga = gaN; gt = e.timeStamp; gAng = gLog = 0; Motion.drop('tA', 'tD'); Motion.held = true; Motion.spinVel = 0; }
       }
     });
     canvas.addEventListener('pointermove', (e) => {
@@ -2947,9 +3052,18 @@ const Pens = (() => {
       let da = gaN - ga;
       if (da > Math.PI) da -= TAU; else if (da < -Math.PI) da += TAU;
       const secs = Math.max(4, e.timeStamp - gt) / 1000;
-      fold.spin -= da;
-      Motion.spinVel += (Math.max(-8, Math.min(8, -da / secs)) - Motion.spinVel) * 0.3;
-      if (gd > 8 && gdN > 8) Motion.dive(Math.log(gdN / gd) * 9);
+      gAng += da;
+      const turn = Motion.take('tA', gAng, 0.02);
+      if (turn) {
+        Motion.used++;
+        Motion.feed(-turn);
+        Motion.spinVel += (Math.max(-3, Math.min(3, -turn / secs)) - Motion.spinVel) * 0.2;
+      }
+      if (gd > 8 && gdN > 8) {
+        gLog += Math.log(gdN / gd);
+        const push = Motion.take('tD', gLog, 0.015);
+        if (push) Motion.dive(push * 7);
+      }
       gd = gdN; ga = gaN; gt = e.timeStamp;
     });
     const up = (e) => {
@@ -2972,7 +3086,7 @@ const Pens = (() => {
       const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
       let dx = e.deltaX * k, dy = e.deltaY * k;
       if (e.shiftKey && !dx) { dx = dy; dy = 0; }
-      if (Math.abs(dy) >= Math.abs(dx)) Motion.dive(-dy * 0.004); else Motion.spin(dx * 0.006);
+      if (Math.abs(dy) >= Math.abs(dx)) Motion.dive(-dy * 0.004); else Motion.spin(dx * 0.004);
     }, { passive: false });
   }
 
@@ -3280,7 +3394,7 @@ const Inputs = (() => {
   const mkHand = () => ({ seen: false, pinch: false, ext: [false, false, false, false, false], gx: 0, gy: 0, ang: 0, scale: 1 });
   const hs = [mkHand(), mkHand()];
   const tipsOut = new Array(10).fill(null);
-  const grab = { mode: 0, ang: 0, dist: 1, t: 0 };
+  const grab = { mode: 0, ang: 0, dist: 1, t: 0, acc: 0, sm: 0, lacc: 0, lsm: 0 };
   const palm = { since: 0, fired: false, ax: 0, ay: 0, bx: 0, by: 0 };
   let sentAt = 0, seenAt = 0;
   let grabEls = null;
@@ -3402,7 +3516,7 @@ onmessage = async (e) => {
     worker = new Worker(url);
     worker.onmessage = (e) => {
       const m = e.data;
-      if (m.type === 'ready') { workerReady = true; mn.toast('Raise a finger to paint · pinch to hold the glass · show both palms for the next chamber', { timeout: 8000 }); }
+      if (m.type === 'ready') { workerReady = true; UI.toast('Hands ready · raise a finger to paint'); }
       else if (m.type === 'error') { UI.toast("Fingertip tracking couldn't start · check your connection"); console.warn(m.message); setHands(false); UI.refresh(); }
       else if (m.type === 'hands') { workerBusy = false; onHands(m.hands); }
     };
@@ -3474,6 +3588,7 @@ onmessage = async (e) => {
       if (mode && !grab.mode) { Motion.spinVel = 0; mn.haptic('tick'); }
       Motion.held = mode > 0;
       grab.mode = mode; grab.ang = ang; grab.dist = dist; grab.t = now;
+      grab.acc = grab.sm = grab.lacc = grab.lsm = 0; Motion.drop('cA', 'cD');
       return;
     }
     if (!mode) return;
@@ -3481,10 +3596,19 @@ onmessage = async (e) => {
     if (da > Math.PI) da -= TAU; else if (da < -Math.PI) da += TAU;
     const secs = Math.max(0.01, (now - grab.t) / 1000);
     if (Math.abs(da) < 0.6) {          // a larger jump is the tracker swapping hands, not a turn
-      Motion.feed(-da);
-      Motion.spinVel += (Math.max(-8, Math.min(8, -da / secs)) - Motion.spinVel) * 0.3;
+      // Smooth what the camera measured, then let only deliberate movement through.
+      grab.acc += da; grab.sm += (grab.acc - grab.sm) * 0.35;
+      const turn = Motion.take('cA', grab.sm, mode === 2 ? 0.03 : 0.045) * 0.85;
+      if (turn) {
+        Motion.feed(-turn);
+        Motion.spinVel += (Math.max(-2.5, Math.min(2.5, -turn / secs)) - Motion.spinVel) * 0.2;
+      }
       const r = Math.log(dist / grab.dist);
-      if (Math.abs(r) > 0.004 && Math.abs(r) < 0.5) Motion.dive(r * (mode === 2 ? 9 : 14));
+      if (Math.abs(r) < 0.5) {
+        grab.lacc += r; grab.lsm += (grab.lacc - grab.lsm) * 0.3;
+        const push = Motion.take('cD', grab.lsm, 0.035);
+        if (push) Motion.dive(push * (mode === 2 ? 7 : 9));
+      }
     }
     grab.ang = ang; grab.dist = dist; grab.t = now;
   }
@@ -3622,7 +3746,7 @@ const Sound = (() => {
   const state = { synth: false, mic: false };
   const level = { bass: 0, mid: 0, high: 0 };
   const SCALE = [0, 2, 4, 7, 9];
-  let ctx = null, out = null, bus = null, filt = null, drone = [];
+  let ctx = null, out = null, bus = null, filt = null, droneGain = null, drone = [];
   let an = null, micStream = null, micSrc = null, bins = null;
   let root = 65.41, lastPluck = 0, tick = 0;
   const peak = [0.15, 0.15, 0.15];
@@ -3663,7 +3787,7 @@ const Sound = (() => {
     bus.connect(out); bus.connect(delay);
     filt = ctx.createBiquadFilter();
     filt.type = 'lowpass'; filt.frequency.value = 260; filt.Q.value = 0.8;
-    const dg = ctx.createGain();
+    const dg = droneGain = ctx.createGain();
     dg.gain.value = 0.2;
     filt.connect(dg); dg.connect(bus);
     drone = [1, 1.498, 2.004].map((r, i) => {
@@ -3737,7 +3861,7 @@ const Sound = (() => {
     level[key] += (x - level[key]) * Math.min(1, dt * (x > level[key] ? 30 : 5));
   }
 
-  function update(dt, energy) {
+  function update(dt, energy, lung) {
     if (state.mic) {
       an.getByteFrequencyData(bins);
       follow('bass', 0, band(1, 4), dt);
@@ -3746,7 +3870,9 @@ const Sound = (() => {
     }
     // The drone opens up while you paint. Scheduled a few times a second, not per frame.
     if (state.synth && (tick = (tick + 1) % 8) === 0) {
-      filt.frequency.setTargetAtTime(240 + Math.min(energy, 5) * 420, ctx.currentTime, 0.25);
+      const swell = lung < 0 ? 0 : lung;
+      filt.frequency.setTargetAtTime(240 + Math.min(energy, 5) * 420 + swell * 320, ctx.currentTime, 0.25);
+      droneGain.gain.setTargetAtTime(lung < 0 ? 0.2 : 0.1 + 0.2 * lung, ctx.currentTime, 0.3);
     }
   }
 
@@ -3800,8 +3926,49 @@ const UI = (() => {
   function chamberTarget(i) {
     const t = { ...DEFAULTS, ...CHAMBERS[i].p };
     for (const k of STICKY) if (!(k in CHAMBERS[i].p)) t[k] = params[k];
+    // The calm you chose is yours, not the chamber's: it comes with you.
+    if (calmKey) Object.assign(t, CALM.find((c) => c.key === calmKey).p);
     return t;
   }
+
+  // Five ways for the glass to move, from winding down to letting go. Each is a
+  // whole feeling (pace, echo, softness, glow, breath) rather than a setting.
+  const CALM = [
+    { key: 'still', name: 'Still', line: 'Barely moving. For winding down.',
+      p: { pace: 0.35, fbDecay: 0.992, warpAmount: 0, fbWarp: 0, bloom: 0.75, inkGlow: 1.0, breath: 0.8 } },
+    { key: 'soft', name: 'Soft', line: 'Slow, with gentle edges. For resting.',
+      p: { pace: 0.6, fbDecay: 0.988, warpAmount: 0.08, fbWarp: 0.001, bloom: 1.0, inkGlow: 1.3, breath: 0.6 } },
+    { key: 'flow', name: 'Flowing', line: 'An easy current. For settling in.',
+      p: { pace: 1, fbDecay: 0.98, warpAmount: 0.16, fbWarp: 0.002, bloom: 1.0, inkGlow: 1.3, breath: 0.4 } },
+    { key: 'bright', name: 'Bright', line: 'Clear and lively. For waking up.',
+      p: { pace: 1.4, fbDecay: 0.96, warpAmount: 0.04, fbWarp: 0, bloom: 1.4, inkGlow: 1.7, breath: 0.25 } },
+    { key: 'wild', name: 'Wild', line: 'Fast and molten. For letting go.',
+      p: { pace: 2, fbDecay: 0.97, warpAmount: 0.32, fbWarp: 0.004, bloom: 1.6, inkGlow: 1.9, breath: 0.1 } },
+  ];
+  let calmKey = null;
+  // Without a choice, the nearest feeling to how the glass is moving right now.
+  const calmNow = () => CALM.find((c) => c.key === calmKey)
+    || CALM.reduce((a, b) => (Math.abs(b.p.pace - params.pace) < Math.abs(a.p.pace - params.pace) ? b : a));
+
+  // Small drawings, so a choice can be seen before it is read.
+  const line = (d) => `<svg class="line" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  const GLYPH = {
+    still: line('<circle cx="12" cy="12" r="2.2" fill="currentColor"/>'),
+    soft: line('<circle cx="12" cy="12" r="2.2" fill="currentColor"/><circle cx="12" cy="12" r="7.5"/>'),
+    flow: line('<path d="M3 9c3-3.4 6 3.4 9 0s6-3.4 9 0M3 15c3-3.4 6 3.4 9 0s6-3.4 9 0"/>'),
+    bright: line('<circle cx="12" cy="12" r="3.4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>'),
+    wild: line('<path d="M12 12c0-3 4-3 4 0s-6 5-8 0 3-9 8-7 7 8 3 12"/>'),
+    neon: line('<path d="M4 16c4-10 8 4 16-8"/>'),
+    dots: line('<circle cx="6" cy="14" r="1.6" fill="currentColor"/><circle cx="12" cy="10" r="1.6" fill="currentColor"/><circle cx="18" cy="13" r="1.6" fill="currentColor"/>'),
+    sparks: line('<path d="M12 4v5M12 15v5M4 12h5M15 12h5M7 7l2.5 2.5M14.5 14.5L17 17M7 17l2.5-2.5M14.5 9.5L17 7"/>'),
+    none: line('<circle cx="12" cy="12" r="7.5" stroke-dasharray="2 3.2"/>'),
+    rings: line('<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="9"/>'),
+    petals: line('<path d="M12 12c-3-4-3-8 0-9 3 1 3 5 0 9zM12 12c4-3 8-3 9 0-1 3-5 3-9 0zM12 12c3 4 3 8 0 9-3-1-3-5 0-9zM12 12c-4 3-8 3-9 0 1-3 5-3 9 0z"/>'),
+    cells: line('<path d="M12 3l4 2.5v4.5L12 12.5 8 10V5.5zM8 14l4 2.5V21M16 14l-4 2.5M4 12l4 2M20 12l-4 2"/>'),
+    orbs: line('<circle cx="8" cy="9" r="3"/><circle cx="16" cy="11" r="2.2"/><circle cx="11" cy="17" r="2.6"/>'),
+    fractal3d: line('<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5"/>'),
+  };
+  GLYPH.flowgen = GLYPH.flow;
 
   // Structural values switch behind an optical dissolve; continuous numbers glide.
   function morphTo(t, instant) {
@@ -3930,21 +4097,32 @@ const UI = (() => {
   const clamp01 = (v) => Math.max(0, Math.min(1, v));
   const echoSeconds = (d) => (d >= 0.9999 ? '∞' : d <= 0 ? '0 s' : `${(Math.log(0.5) / (60 * Math.log(d))).toFixed(1)} s`);
 
-  // ---------------- Chamber panel ----------------
+  // ---------------- halo building blocks ----------------
+  // A pip is one point on the ring: a disc, and a label beneath it.
+  function pip(cls, inner, label, attrs = {}) {
+    return el('button', { class: 'pip ' + cls, ...attrs },
+      `<span class="pip-disc">${inner}</span>${label ? `<span class="pip-label">${label}</span>` : ''}`);
+  }
+  // Spread a ring's pips evenly, starting from the top.
+  function arrange(ring) {
+    const n = ring.children.length;
+    [...ring.children].forEach((c, i) => { c.style.setProperty('--a', `${(i * 360 / n).toFixed(2)}deg`); c.style.setProperty('--i', i); });
+  }
+
+  // ---------------- Chamber: lenses on the ring ----------------
   function buildChambers() {
     const host = $('#chambers');
     CHAMBERS.forEach((c, i) => {
-      const b = el('button', { class: 'mn-card chamber', 'data-i': i },
-        `<div class="media"><img src="thumbs/${c.slug}.png" alt="" loading="lazy" decoding="async"></div>
-         <span class="mn-title-s">${c.name}</span><span class="mn-body-s mn-muted mn-clamp" style="--lines: 2">${c.line}</span>`);
-      b.addEventListener('click', () => enterChamber(i));
-      host.append(b);
+      host.append(pip('lens', `<img src="thumbs/${c.slug}.png" alt="" decoding="async">`, c.name, { onclick: () => enterChamber(i) }));
     });
+    arrange(host);
     refreshers.push(() => {
-      host.querySelectorAll('.chamber').forEach((b, i) => {
+      [...host.children].forEach((b, i) => {
         if (i === chamber) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
       });
-      $('#dockChamber').textContent = CHAMBERS[chamber].name;
+      const c = CHAMBERS[chamber];
+      $('#chamberName').textContent = c.name;
+      $('#chamberLine').textContent = c.line;
     });
     $('#turn').addEventListener('click', turn);
   }
@@ -3975,35 +4153,43 @@ const UI = (() => {
   }
   let shapePull = null;
 
-  // ---------------- Light panel ----------------
+  // ---------------- Light: what paints, drawn rather than named ----------------
+  const LIGHT_SAY = {
+    neon: 'A line of light follows you', dots: 'Light falls in drops', sparks: 'Sparks scatter from your touch',
+    none: 'Only your own light', rings: 'Rings spread from the centre', petals: 'Petals open and close',
+    flow: 'Light drifts like smoke', cells: 'Soft cells, slowly shifting', orbs: 'Lanterns circling', fractal3d: 'A crystal you fly through',
+  };
   function buildLight() {
-    const seg = $('#brushSeg');
-    for (const b of BRUSHES) {
-      seg.append(el('button', { 'aria-pressed': 'false', onclick: () => setParam('brush', b) }, name(b)));
+    const host = $('#lightRing'), S = Inputs.state;
+    const sayLight = (t) => { $('#lightLine').textContent = t; };
+    for (const b of BRUSHES) host.append(pip('', GLYPH[b], name(b), { 'aria-pressed': 'false', onclick: () => { setParam('brush', b); sayLight(LIGHT_SAY[b]); } }));
+    for (const g of GENERATORS) host.append(pip('', GLYPH[g === 'flow' ? 'flowgen' : g], g === 'none' ? 'Just you' : name(g), { 'aria-pressed': 'false', onclick: () => { setParam('gen', g); sayLight(LIGHT_SAY[g]); } }));
+    const toggles = [
+      { icon: 'image', label: 'Camera', on: () => S.cam, set: Inputs.setCam, say: 'What the camera sees becomes light' },
+      { icon: 'person', label: 'Hands', on: () => S.hands, set: Inputs.setHands, say: 'Paint in the air · raise a finger, pinch to hold the glass' },
+    ];
+    for (const t of toggles) {
+      const b = pip('', mn.icon(t.icon), t.label, { 'aria-pressed': 'false' });
+      b.addEventListener('click', async () => {
+        try { await t.set(!t.on()); if (t.on()) sayLight(t.say); } catch (err) { toast(err.message || "That isn't available here"); }
+        refresh();
+      });
+      refreshers.push(() => b.setAttribute('aria-pressed', t.on()));
+      host.append(b);
     }
+    arrange(host);
     dial($('#wanderersDial'), {
-      label: 'Wanderers', sub: 'Lights that paint on their own', ends: ['None', 'Many'], min: 0, max: 6, step: 1,
+      label: 'Lights that paint on their own', ends: ['None', 'Many'], min: 0, max: 6, step: 1,
       get: () => params.autoPens, set: (v) => setParam('autoPens', v), out: (v) => String(v),
     });
-    const chips = $('#genChips');
-    for (const g of GENERATORS) {
-      chips.append(el('button', { class: 'mn-chip', 'aria-pressed': 'false', onclick: () => setParam('gen', g) }, name(g)));
-    }
-    const sw = (id, fn) => $(id).addEventListener('change', async (e) => {
-      const on = e.target.checked;
-      try { await fn(on); } catch (err) { e.target.checked = false; toast(err.message || "That input isn't available here"); }
-      refresh();
-    });
-    sw('#camSwitch', Inputs.setCam);
-    sw('#handSwitch', Inputs.setHands);
     $('#clearGlass').addEventListener('click', clearGlass);
+    sayLight('What shines into the mirrors');
     refreshers.push(() => {
-      seg.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-pressed', BRUSHES[i] === params.brush));
-      chips.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-pressed', GENERATORS[i] === params.gen));
-      $('#camSwitch').checked = Inputs.state.cam;
-      $('#handSwitch').checked = Inputs.state.hands;
-      $('#dockLight').textContent = Inputs.state.hands ? 'Fingertips' : Inputs.state.cam ? 'Camera'
-        : params.gen !== 'none' ? name(params.gen) : name(params.brush);
+      [...host.children].forEach((b, i) => {
+        if (i < BRUSHES.length) b.setAttribute('aria-pressed', BRUSHES[i] === params.brush);
+        else if (i < BRUSHES.length + GENERATORS.length) b.setAttribute('aria-pressed', GENERATORS[i - BRUSHES.length] === params.gen);
+      });
+      $('#lightName').textContent = params.gen !== 'none' ? name(params.gen) : name(params.brush);
     });
   }
 
@@ -4013,25 +4199,37 @@ const UI = (() => {
     mn.toast('Glass cleared', { action: 'Undo', onAction: () => Renderer.restore() });
   }
 
-  // ---------------- Mood panel ----------------
+  // ---------------- Colour and Calm ----------------
   function buildMood() {
     const host = $('#swatches');
     for (const p of Object.keys(PALETTES)) {
-      const b = el('button', { class: 'swatch', 'aria-label': cap(p), title: cap(p), 'aria-pressed': 'false', onclick: () => setParam('palette', p) });
+      const b = pip('swatch', '', cap(p), { 'aria-label': cap(p), title: cap(p), 'aria-pressed': 'false', onclick: () => setParam('palette', p) });
       b.style.setProperty('--swatch', Palette.css(p));
       host.append(b);
     }
+    arrange(host);
+    const calm = $('#calmRing');
+    for (const c of CALM) {
+      calm.append(pip('', GLYPH[c.key], c.name, { 'aria-pressed': 'false', onclick: () => { calmKey = c.key; morphTo({ ...params, ...c.p }); } }));
+    }
+    arrange(calm);
+    $('#fineTune').addEventListener('click', () => togglePanel('tune'));
     refreshers.push(() => {
-      host.querySelectorAll('.swatch').forEach((b) => b.setAttribute('aria-pressed', b.title.toLowerCase() === params.palette));
+      [...host.children].forEach((b) => b.setAttribute('aria-pressed', b.title.toLowerCase() === params.palette));
       $('#paletteName').textContent = cap(params.palette);
-      $('#dockMood').textContent = cap(params.palette);
+      $('#orb').style.setProperty('--orb', Palette.css(params.palette));
+      document.body.classList.toggle('nohover', !params.inkHover);
+      const now = calmNow();
+      [...calm.children].forEach((b, i) => b.setAttribute('aria-pressed', CALM[i] === now));
+      $('#calmName').textContent = now.name;
+      $('#calmLine').textContent = now.line;
     });
     dial($('#paceDial'), {
       label: 'Pace', ends: ['Still', 'Lively'], min: 0.1, max: 2.5, step: 0.01,
       get: () => params.pace, set: (v) => setParam('pace', v), out: (v) => `${v.toFixed(1)}×`,
     });
     dial($('#echoDial'), {
-      label: 'Echo', sub: 'How long light lingers', ends: ['Fleeting', 'Lingering'], min: 0, max: 1, step: 0.005,
+      label: 'Echo', ends: ['Fleeting', 'Lingering'], min: 0, max: 1, step: 0.005,
       get: () => clamp01((params.fbDecay - 0.6) / 0.395), set: (v) => setParam('fbDecay', 0.6 + v * 0.395),
       out: () => echoSeconds(params.fbDecay),
     });
@@ -4046,17 +4244,6 @@ const UI = (() => {
       get: () => clamp01(params.bloom / 2.2),
       set: (v) => { setParam('bloom', v * 2.2); setParam('inkGlow', 0.4 + v * 1.8); },
       out: (v) => `${Math.round(v * 100)}%`,
-    });
-    const chip = (id, get, fn) => $(id).addEventListener('click', async () => {
-      try { await fn(!get()); } catch (err) { toast(err.message || "That isn't available here"); }
-      refresh();
-    });
-    chip('#soundSwitch', () => Sound.state.synth, setSound);
-    chip('#micSwitch', () => Sound.state.mic, setListen);
-    refreshers.push(() => {
-      $('#soundSwitch').setAttribute('aria-pressed', Sound.state.synth);
-      $('#micSwitch').setAttribute('aria-pressed', Sound.state.mic);
-      document.body.classList.toggle('nohover', !params.inkHover);
     });
   }
 
@@ -4247,78 +4434,183 @@ const UI = (() => {
     });
   }
 
-  // ---------------- panels ----------------
+  // ---------------- halo ----------------
   const compact = () => !matchMedia('(min-width: 840px)').matches;
+  const SUB_OF = { tune: 'calm' };              // where "back" leads, when it is not home
 
+  // Views: null (just the orb), 'home', and the places it leads; 'all' is the full list.
   function togglePanel(name) {
     const next = openPanel === name ? null : name;
-    document.querySelectorAll('dialog.panel[open]').forEach((d) => d.close());
-    document.querySelectorAll('.dock-tab').forEach((t) => t.setAttribute('aria-expanded', t.dataset.panel === next));
+    const halo = $('#halo'), inHalo = !!next && next !== 'all';
+    const all = $('#panel-all');
+    if (all.open) all.close();
+    halo.classList.toggle('open', inHalo);
+    halo.classList.remove('peek');
+    halo.dataset.view = next || '';
+    const ringOf = next === 'tune' ? 'calm' : next;
+    halo.querySelectorAll('.ring').forEach((n) => n.classList.toggle('on', n.dataset.view === ringOf));
+    halo.querySelectorAll('.core').forEach((n) => n.classList.toggle('on', n.dataset.view === next));
+    const orb = $('#orb');
+    orb.setAttribute('aria-expanded', inHalo);
+    orb.dataset.state = !next ? 'rest' : next === 'home' || next === 'all' ? 'home' : 'sub';
+    orb.setAttribute('aria-label', !next ? 'Controls' : orb.dataset.state === 'sub' ? 'Back' : 'Close');
     openPanel = next;
-    if (next) { $('#panel-' + next).show(); refresh(); }
+    if (next === 'all') all.show();
+    if (next === 'home') say();
+    if (next) refresh();
     document.body.classList.toggle('panel-open', !!next);
     wake();
   }
+  // The orb is always the way out: one step back from inside, closed from home.
+  function stepBack() {
+    if (!openPanel) togglePanel('home');
+    else if (openPanel === 'home' || openPanel === 'all') togglePanel(null);
+    else togglePanel(SUB_OF[openPanel] || 'home');
+  }
+
+  // The line at the centre of the home ring: what the thing you touched does.
+  const HOME_SAY = 'Breathe with the orb. Touch the light.';
+  function say(text) { $('#say').textContent = text || HOME_SAY; }
+
+  // The home ring, clockwise from the top. Four things shape the place you are in;
+  // four are ways of being in it; the last keeps a moment of it.
+  function buildHome() {
+    const items = [
+      { face: 'place', label: 'Place', go: 'chamber', say: 'Where you are' },
+      { face: 'colour', label: 'Colour', go: 'colour', say: 'The light you sit in' },
+      { face: 'calm', label: 'Calm', go: 'calm', say: 'How gently it moves' },
+      { inner: '<span class="lung"></span>', label: 'Breathe', on: () => system.breathGuide, set: setBreathe,
+        say: 'In as the orb grows, out as it falls' },
+      { icon: 'volume', label: 'Sound', on: () => Sound.state.synth, set: setSound, say: 'The glass sings as you paint' },
+      { icon: 'mic', label: 'Listen', on: () => Sound.state.mic, set: setListen, say: 'Music in the room moves the mirrors' },
+      { icon: 'play', label: 'Drift', on: () => system.autoVJ, set: setWander, say: 'It wanders on its own. Just watch.' },
+      { icon: 'download', label: 'Keep', go: 'keep', say: 'Take this moment with you' },
+      { icon: 'light', label: 'Light', go: 'light', say: 'What paints the picture' },
+    ];
+    const host = $('#homeRing'), faces = {};
+    for (const it of items) {
+      const b = pip((it.go ? 'go ' : '') + (it.face ? 'face' : ''), it.inner || (it.icon ? mn.icon(it.icon) : ''), it.label, it.on ? { 'aria-pressed': 'false' } : {});
+      if (it.face) faces[it.face] = b;
+      b.addEventListener('click', async () => {
+        if (it.go) { togglePanel(it.go); return; }
+        try { await it.set(!it.on()); } catch (err) { toast(err.message || "That isn't available here"); }
+        say(it.say);
+        refresh();
+      });
+      b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') say(it.say); });
+      b.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') say(); });
+      b.addEventListener('focus', () => say(it.say));
+      if (it.on) refreshers.push(() => b.setAttribute('aria-pressed', it.on()));
+      host.append(b);
+    }
+    arrange(host);
+    // The three things that shape the place show themselves, not an icon of themselves.
+    refreshers.push(() => {
+      faces.place.querySelector('.pip-disc').style.setProperty('--face', `url(thumbs/${CHAMBERS[chamber].slug}.png)`);
+      faces.colour.querySelector('.pip-disc').style.setProperty('--face', Palette.css(params.palette));
+      const d = faces.calm.querySelector('.pip-disc'), k = calmNow().key;
+      if (d.dataset.k !== k) { d.dataset.k = k; d.innerHTML = GLYPH[k]; }
+    });
+  }
+
+  function buildKeep() {
+    const host = $('#keepRing');
+    const items = [
+      { icon: 'image', label: 'Picture', set: () => actions.snapshot(), say: 'Saved as an image' },
+      { icon: 'record', label: 'Film', on: () => !!recorder, set: toggleRecord, say: 'Recording until you tap again' },
+      { icon: 'share', label: 'Link', set: () => actions.copyLink(), say: 'A link back to exactly this' },
+      { icon: 'open', label: 'Fill screen', on: () => !!document.fullscreenElement, set: () => actions.fullscreen(), say: 'Nothing but the glass' },
+    ];
+    for (const it of items) {
+      const b = pip('', mn.icon(it.icon), it.label, it.on ? { 'aria-pressed': 'false' } : {});
+      b.addEventListener('click', () => { it.set(); $('#keepLine').textContent = it.say; refresh(); });
+      if (it.on) refreshers.push(() => b.setAttribute('aria-pressed', it.on()));
+      host.append(b);
+    }
+    arrange(host);
+    document.addEventListener('fullscreenchange', refresh);
+  }
+
+  // Breathing guide: the orb swells for four seconds and falls for six, and the
+  // glass and the drone move with it. The words stop after a few breaths.
+  function setBreathe(on) {
+    system.breathGuide = on;
+    document.body.classList.toggle('breathing', on);
+    Main.breathe(on);
+  }
+  function breathCue(inhale, count) { if (count < 3) whisper(inhale ? 'Breathe in' : 'Breathe out', 3); }
 
   function buildPanels() {
-    // The Chamber button doubles as a strip: swipe or scroll it to step between chambers.
-    const tab = document.querySelector('.dock-tab[data-panel="chamber"]');
+    buildHome();
+    buildKeep();
+    const orb = $('#orb'), halo = $('#halo');
+    orb.dataset.state = 'rest';
+
+    // Tap the orb to open, step back, or close. Swipe or scroll it to change place.
     let sx = null, swiped = false, wheelAt = 0;
-    tab.addEventListener('pointerdown', (e) => { sx = e.clientX; swiped = false; tab.setPointerCapture(e.pointerId); });
-    tab.addEventListener('pointerup', (e) => {
+    orb.addEventListener('pointerdown', (e) => { sx = e.clientX; swiped = false; orb.setPointerCapture(e.pointerId); });
+    orb.addEventListener('pointerup', (e) => {
       if (sx !== null && Math.abs(e.clientX - sx) > 28) { swiped = true; enterChamber(chamber + (e.clientX < sx ? 1 : -1)); mn.haptic('tick'); }
       sx = null;
     });
-    tab.addEventListener('pointercancel', () => { sx = null; });
-    tab.addEventListener('wheel', (e) => {
+    orb.addEventListener('pointercancel', () => { sx = null; });
+    orb.addEventListener('wheel', (e) => {
       e.preventDefault();
       const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       if (Math.abs(d) < 4 || e.timeStamp - wheelAt < 380) return;
       wheelAt = e.timeStamp;
       enterChamber(chamber + (d > 0 ? 1 : -1));
     }, { passive: false });
-    document.querySelectorAll('.dock-tab').forEach((t) => t.addEventListener('click', () => {
-      if (t === tab && swiped) { swiped = false; return; }
-      togglePanel(t.dataset.panel);
-    }));
+    orb.addEventListener('click', () => {
+      if (swiped) { swiped = false; return; }
+      stepBack();
+    });
+    orb.addEventListener('focus', wake);
 
-    // While a slider is held, everything but that slider gets out of the way.
+    halo.addEventListener('click', (e) => {
+      const a = e.target.closest('[data-act]');
+      if (a) actions[a.dataset.act]();
+    });
+    document.querySelectorAll('dialog.panel [data-close]').forEach((b) => b.addEventListener('click', () => togglePanel(null)));
+
+    // The halo never takes the picture away. Reach past it and paint: it thins out
+    // so you can feel the place you are choosing, then returns when you pause.
+    let peekTimer = 0;
+    const peek = () => {
+      if (!halo.classList.contains('open')) return;
+      halo.classList.add('peek');
+      clearTimeout(peekTimer);
+      peekTimer = setTimeout(() => halo.classList.remove('peek'), 900);
+    };
+    canvas.addEventListener('pointerdown', peek);
+    canvas.addEventListener('pointermove', (e) => { if (e.buttons || e.pointerType !== 'mouse') peek(); }, { passive: true });
+    halo.addEventListener('pointerover', () => { clearTimeout(peekTimer); halo.classList.remove('peek'); });
+
+    // While a dial is held, everything but that dial gets out of the way.
     let adj = null;
     const settle = () => {
       if (!adj) return;
-      adj.panel.classList.remove('adjusting'); adj.row.classList.remove('live');
+      adj.host.classList.remove('adjusting'); adj.row.classList.remove('live');
       adj = null;
     };
     document.addEventListener('pointerdown', (e) => {
-      const r = e.target.closest && e.target.closest('dialog.panel input[type="range"]');
+      const r = e.target.closest && e.target.closest('.halo input[type="range"], dialog.panel input[type="range"]');
       const row = r && r.closest('.dial, .set-row');
       if (!row) return;
       settle();
-      adj = { panel: r.closest('dialog.panel'), row };
-      adj.panel.classList.add('adjusting'); row.classList.add('live');
+      adj = { host: r.closest('.halo, dialog.panel'), row };
+      adj.host.classList.add('adjusting'); row.classList.add('live');
     });
     window.addEventListener('pointerup', settle);
     window.addEventListener('pointercancel', settle);
     window.addEventListener('blur', settle);
-    $('#handle').addEventListener('click', wake);
-    document.querySelectorAll('dialog.panel [data-close]').forEach((b) => b.addEventListener('click', () => togglePanel(null)));
-    canvas.addEventListener('pointerdown', () => { if (openPanel && compact()) togglePanel(null); });
-    $('#wander').addEventListener('click', () => setWander(!system.autoVJ));
-    $('#more').addEventListener('click', (e) => {
-      const b = e.target.closest('[data-act]');
-      if (!b) return;
-      $('#more').hidePopover();
-      actions[b.dataset.act]();
-    });
   }
 
   function setWander(on) {
     system.autoVJ = on;
     vjTimer = 0;
     keepAwake();
-    const b = $('#wander');
-    b.setAttribute('aria-pressed', on);
-    b.innerHTML = on ? '<i data-icon="pause"></i><span>Wandering</span>' : '<i data-icon="play"></i><span>Wander</span>';
+    $('#orb').toggleAttribute('data-wander', on);
     if (on && !mn.store.get('wander-taught')) {
       toast(`A new view every ${system.autoVJInterval} s`);
       mn.store.set('wander-taught', 1);
@@ -4379,8 +4671,8 @@ const UI = (() => {
   }
 
   function setRecording(on) {
-    $('#recLabel').textContent = on ? 'Stop recording' : 'Record video';
     $('#recDot').hidden = !on;
+    refresh();
   }
 
   function toggleRecord() {
@@ -4412,7 +4704,7 @@ const UI = (() => {
     },
     fullscreen: () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.()),
     all: () => togglePanel('all'),
-    keys: () => mn.sheet('keys'),
+    keys: () => { if (openPanel) togglePanel(null); mn.sheet('keys'); },
   };
 
   function setHidden(h) {
@@ -4451,10 +4743,12 @@ const UI = (() => {
       case 'r': case 'R': toggleRecord(); break;
       case 'l': case 'L': actions.copyLink(); break;
       case 'e': case 'E': togglePanel('all'); break;
+      case 'o': case 'O': togglePanel(openPanel ? null : 'home'); break;
+      case 'g': case 'G': setBreathe(!system.breathGuide); refresh(); break;
       case 'h': case 'H': setHidden(!document.body.classList.contains('clean')); break;
       case 'f': case 'F': actions.fullscreen(); break;
       case '?': case '/': mn.sheet('keys'); break;
-      case 'Escape': if (openPanel) togglePanel(null); else return; break;
+      case 'Escape': if (!openPanel) return; stepBack(); break;
       default: return;
     }
     e.preventDefault();
@@ -4488,12 +4782,25 @@ const UI = (() => {
 
   // What the camera currently makes of your hands. Settles for a moment first,
   // so it reports poses rather than every flicker between them.
+  // Each thing is said once per session and then left alone: the light under your
+  // fingers and the ring where you hold the glass already show what is happening.
+  // Only losing sight of your hand is worth saying again, and only after a while.
   let handText = '', handTimer = 0;
+  const handSaid = new Set();
+  let lostAt = -1e9;
   function handStatus(text, sticky) {
     if (text === handText) return;
     handText = text;
     clearTimeout(handTimer);
-    handTimer = setTimeout(() => whisper(text, sticky ? 0 : 2.4), text ? 350 : 0);
+    if (!text) { whisper(''); return; }
+    const key = /finger/.test(text) ? 'paint' : text;
+    if (sticky) {
+      handTimer = setTimeout(() => { if (performance.now() - lostAt > 45000) { lostAt = performance.now(); whisper(text, 5); } }, 3000);
+      return;
+    }
+    if ($('#whisper').textContent.startsWith('Show your hand')) whisper('');
+    if (handSaid.has(key)) return;
+    handTimer = setTimeout(() => { handSaid.add(key); whisper(text, 2.4); }, 500);
   }
 
   // First-use hints, one at a time, each gone for good once you have done the thing
@@ -4503,7 +4810,7 @@ const UI = (() => {
     { text: coarse ? 'Drag a finger to paint with light' : 'Move to paint with light', done: (b) => Pens.painted - b.painted > 1.2 },
     { text: coarse ? 'Tap to drop a ripple' : 'Click to drop a ripple', done: (b) => Pens.taps > b.taps },
     { text: coarse ? 'Pinch to dive · twist to spin the glass' : 'Scroll to dive · Shift + scroll to spin the glass', done: (b) => Motion.used > b.used },
-    { text: coarse ? 'Everything else is below · swipe the first button for the next chamber' : 'Everything else is below · scroll on the first button for the next chamber', done: (b) => chamber !== b.chamber || !!openPanel },
+    { text: coarse ? 'Everything else lives in the orb below · swipe it for the next chamber' : 'Everything else lives in the orb below · scroll on it for the next chamber', done: (b) => chamber !== b.chamber || !!openPanel },
   ];
   let coachStep = +(mn.store.get('coach') || 0), coachT = 0, coachShown = false, coachBase = null;
   function updateCoach(dt) {
@@ -4511,7 +4818,7 @@ const UI = (() => {
     if (!coachBase) coachBase = { painted: Pens.painted, taps: Pens.taps, used: Motion.used, chamber };
     coachT += dt;
     const step = COACH[coachStep], did = step.done(coachBase);
-    if (!coachShown && !did && coachT > 2.5) { whisper(step.text); coachShown = true; }
+    if (!coachShown && !did && coachT > 2.5 && !openPanel) { whisper(step.text); coachShown = true; }
     if (did || coachT > 16) {
       if (coachShown) whisper('');
       coachStep++; coachT = did ? 1 : 0; coachShown = false; coachBase = null;
@@ -4539,7 +4846,6 @@ const UI = (() => {
     window.addEventListener('keydown', (e) => { if (e.key === 'Tab') wake(); onKey(e); });
     window.addEventListener('pointermove', wakeOnIntent, { passive: true });
     window.addEventListener('pointerdown', wakeOnIntent, { passive: true });
-    $('#dock').addEventListener('focusin', wake);
     document.addEventListener('visibilitychange', keepAwake);
     document.addEventListener('fullscreenchange', keepAwake);
     wake();
@@ -4567,7 +4873,7 @@ const UI = (() => {
   }
 
   return {
-    init, update, afterFrame, afterRender, toast, refresh, note, handStatus,
+    init, update, afterFrame, afterRender, toast, refresh, note, handStatus, breathCue,
     nextChamber: () => enterChamber(chamber + 1), setNormalized, stats,
     paused: false,
   };
@@ -4579,6 +4885,7 @@ const UI = (() => {
 const Main = (() => {
   const canvas = document.getElementById('c');
   let time = 0, last = 0;
+  let breathT = 0, breathIn = false, breathN = 0;   // guide clock: 4 s in, 6 s out
   const f = {
     n: 1, dt: 1 / 60, pace: 1, decay: 1, hue: 0, fbRot: 0, fbZoom: 1, fbSwirl: 0, fbWarp: 0, fbWarpT: 0,
     genT: 0, rmZ: 0, rmT: 0, palPhase: 0, camOn: false, inkCount: 0, inkCopies: 1,
@@ -4620,7 +4927,10 @@ const Main = (() => {
     const ch = Math.max(1, Math.round((devH || cssH * dpr) * k));
     if (force || canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
     const s = system.renderScale * quality;
-    Renderer.resize(cw * s, ch * s);
+    // Echo detail tops out at 1.5 device pixels per CSS pixel; past that it costs
+    // memory and fill rate for softness nobody can see.
+    const density = cw * s / Math.max(1, cssW);
+    Renderer.resize(cw * s, ch * s, density > 1.5 ? Math.max(0.6, 1.5 / density) : 1);
   }
 
   // Start near where this screen will settle, instead of stuttering down to it:
@@ -4647,7 +4957,14 @@ const Main = (() => {
     // Slow breathing, and whatever the room is playing. All of it moves the picture;
     // none of it changes brightness, so the flash guard has nothing new to catch.
     const a = Sound.level;
-    const breath = P.breath * Math.sin(time * 0.37);
+    let breath = P.breath * Math.sin(time * 0.37), lung = 0.5;
+    if (system.breathGuide) {
+      breathT = (breathT + dt) % 10;
+      const inh = breathT < 4;
+      lung = inh ? 0.5 - 0.5 * Math.cos(Math.PI * breathT / 4) : 0.5 + 0.5 * Math.cos(Math.PI * (breathT - 4) / 6);
+      breath = (lung * 2 - 1) * 1.5;
+      if (inh !== breathIn) { breathIn = inh; UI.breathCue(inh, breathN); if (!inh) breathN++; }
+    }
     fold.spin += a.mid * pdt * 0.3;
     fold.fish = P.fisheye + breath * 0.045 + a.bass * 0.12;
 
@@ -4657,7 +4974,7 @@ const Main = (() => {
     f.decay = Math.pow(P.fbDecay, n);
     f.hue = P.fbHueShift * rad * pdt;
     f.fbRot = P.fbRotate * rad * pdt + (Motion.held ? 0 : Motion.spinVel * dt * 0.35);
-    f.fbZoom = Math.pow(P.fbZoom, pn) * Math.exp(Motion.diveVel * dt + breath * 0.1 * pdt + a.bass * a.bass * 0.9 * dt);
+    f.fbZoom = Math.pow(P.fbZoom, pn) * Math.exp(Motion.diveVel * dt + breath * 0.1 * (system.breathGuide ? dt : pdt) + a.bass * a.bass * 0.9 * dt);
     f.fbSwirl = P.fbSwirl * pn;
     f.fbWarp = P.fbWarp * pn;
     f.fbWarpT += pdt * 0.5;
@@ -4677,7 +4994,7 @@ const Main = (() => {
     f.ripN = Pens.ripples;
     const gpuMirrors = fold.mode === 0 || (fold.mode === 1 && fold.warpAmt <= 0);
     f.inkCopies = gpuMirrors ? (fold.mirror ? 2 * fold.sym : fold.sym) : 1;
-    Sound.update(dt, Pens.energy);
+    Sound.update(dt, Pens.energy, system.breathGuide ? lung : -1);
     Renderer.render(f);
   }
 
@@ -4715,6 +5032,16 @@ const Main = (() => {
   function loop(now) {
     requestAnimationFrame(loop);
     const dt = Math.min((now - last) / 1000, 0.05);
+    // Not the window in front: tick over at about 30 fps and leave quality alone.
+    if (calib.length >= 30 && !UI.paused && !document.hasFocus()) {
+      if (now - last < 30) return;
+      last = now;
+      resize();
+      step(dt);
+      UI.afterRender();
+      UI.afterFrame(dt);
+      return;
+    }
     last = now;
     if (calib.length < 30) {
       if (dt > 0) calib.push(dt);
@@ -4749,7 +5076,9 @@ const Main = (() => {
     requestAnimationFrame((t) => { last = t; requestAnimationFrame(loop); });
   }
 
-  return { start, step, resize, get refreshHz() { return refreshHz; } };
+  function breathe(on) { breathT = 0; breathIn = false; breathN = 0; }
+
+  return { start, step, resize, breathe, get refreshHz() { return refreshHz; } };
 })();
 
 Main.start();
