@@ -2,7 +2,7 @@
 
 *Out on an infinite adventure.*
 
-A calm, GPU-driven kaleidoscope for the browser. It opens in its stillest mood with sound on (heard from your first touch, the earliest browsers allow; it fades out when you leave); Calm and Sound are both on the first ring of the orb, and your choices are remembered. One HTML file on raw WebGL2 (plus chamber thumbnails in `thumbs/`), with no build step and no dependencies.
+A calm, GPU-driven kaleidoscope for the browser. It opens in its stillest mood with sound and hand tracking off. While the orb is awake, a Sound button sits to its right and a Hands button to its left, so either is one tap away; they settle out of sight with the orb. Sound fades out when you leave, and comes back with your first touch if you had it on last time. Calm and Sound are also on the first ring of the orb. One HTML file on raw WebGL2 (plus chamber thumbnails in `thumbs/`), with no build step and no dependencies.
 
 **Live:** https://punitvthakkar.github.io/kaleidoscope/
 
@@ -51,7 +51,13 @@ The tracker runs only as hard as the hand needs: 30 times a second while it move
 
 ## Recording
 
-Record (Keep → Film, or R) captures the picture and, if Sound or Listen is on when you start, what you hear. The bitrate follows the size of the picture rather than a fixed 40 Mbps, and a more efficient codec is used where the device has one.
+Record (Keep → Film, or R) captures the picture and, if Sound or Listen is on when you start, what you hear. The bitrate follows the size of the picture rather than a fixed 40 Mbps. Films are H.264 in MP4, which opens everywhere and which every device encodes quickly; HEVC is not used, because Safari on a Mac encodes it in software at a few frames a second and runs out of memory.
+
+Browsers write MP4 in fragments, which phone galleries and editors cut off after the first couple of seconds. Before a film is saved it is rewritten as an ordinary MP4 (the picture and sound are not re-encoded), so it opens at full length everywhere. On a phone, the saved toast offers the share sheet, which is the way into Photos. The sound in a film fades in and out instead of starting and stopping mid-note. A film is capped near 2.6 million pixels (about 2000 × 1300 on a large screen), because full-size frames on a big display can outrun a browser's encoder; and the film is read back as it is written to see how far the encoder has got. If the encoder trails the clock by two seconds the recording pauses until it has caught up (the film skips instead of memory filling), and if it cannot keep up at all, or goes silent for several seconds, the film ends early and what exists is saved.
+
+## Sound
+
+The drone and the notes are set with room to spare rather than held down by a compressor: rumble below the lowest note is filtered off, the root of the drone sits under its fifth and octave, notes start rounded and ring on through two damped echo loops, and a soft ceiling at the very end keeps a pile-up of notes from ever reaching full scale.
 
 ## Privacy and security
 

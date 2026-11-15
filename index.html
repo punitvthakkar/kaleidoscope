@@ -874,6 +874,27 @@ body.breathing .pip .lung { animation: breathe 10s infinite; }
 .orb[data-wander] .orb-iris { animation-duration: 7s; }
 body.idle .orb:not([aria-expanded="true"]) .orb-eye { scale: .34; opacity: .6; }
 @keyframes orb-turn { to { rotate: 1turn; } }
+/* Two offers beside the orb, there whenever it is awake: sound to its right, hands
+   to its left. Small discs in the same glass as the halo's, picture only. They
+   leave with the orb when it settles, and while the halo is open. */
+.side {
+  position: fixed; z-index: 22; bottom: calc(22px + env(safe-area-inset-bottom)); width: 40px; height: 40px; padding: 0;
+  display: grid; place-items: center; border: 0; border-radius: var(--r-full); cursor: pointer;
+  background: color-mix(in srgb, var(--md-sys-color-surface-container-low) 62%, transparent);
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 16%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); -webkit-tap-highlight-color: transparent;
+  transition: opacity .35s, scale var(--mn-spatial-fast), color var(--mn-effects-default), box-shadow var(--mn-effects-default), visibility 0s;
+}
+.side svg { width: 20px; height: 20px; fill: currentColor; }
+.side-sound { left: calc(50% + 40px); }
+.side-hands { right: calc(50% + 40px); }
+.side:hover { scale: 1.1; color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 55%, transparent), 0 0 16px color-mix(in srgb, var(--glow) 35%, transparent); }
+.side:active { scale: .94; }
+.side:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }
+.side[aria-pressed="true"] { color: var(--glow); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--glow) 80%, transparent), 0 0 18px color-mix(in srgb, var(--glow) 45%, transparent); }
+body.idle .side, body:has(.orb[aria-expanded="true"]) .side { opacity: 0; scale: .5; visibility: hidden; pointer-events: none; transition: opacity .35s, scale .35s, visibility 0s .35s; }
+body.clean .side { display: none; }
 .rec-dot { position: absolute; top: 4px; right: 4px; background: var(--md-sys-color-error); }
 
 /* ---- Halo: choices on the ring, dials at the centre, the picture alive behind both ------ */
@@ -1112,6 +1133,9 @@ body.clean :is(.orb, .halo, .panel, .caption) { display: none; }
     <span class="orb-eye"><span class="orb-iris"></span><span class="orb-pupil"></span></span>
     <span class="mn-badge rec-dot" id="recDot" hidden></span>
   </button>
+
+  <button class="side side-hands" id="sideHands" aria-pressed="false"></button>
+  <button class="side side-sound" id="sideSound" aria-pressed="false"></button>
 
   <!-- Halo: every view is choices on the ring and dials at the centre -->
   <div class="halo" id="halo" role="dialog" aria-label="Controls">
@@ -2416,8 +2440,14 @@ void main() {
   vec2 uv = gl_FragCoord.xy / uOut;
   vec2 d = uv - 0.5;
   vec2 ca = d * uChroma * 0.01;
-  vec3 c = vec3(texture(uScene, uv - ca).r, texture(uScene, uv).g, texture(uScene, uv + ca).b);
-  c += texture(uBloomTex, uv).rgb * uBloom;
+  vec3 c = texture(uScene, uv).rgb;
+  if (uChroma > 0.0) { c.r = texture(uScene, uv - ca).r; c.b = texture(uScene, uv + ca).b; }
+  if (uBloom > 0.0) {
+    // The glow splits like light through a prism: faintly everywhere, more toward
+    // the edges, and further when the lens is set to fringe.
+    vec2 pr = d * (0.006 + uChroma * 0.012);
+    c += vec3(texture(uBloomTex, uv - pr).r, texture(uBloomTex, uv).g, texture(uBloomTex, uv + pr).b) * uBloom;
+  }
   // Highlight-only flash limiter: absorbs sudden upward brightness spikes without pumping darks.
   if (uGuard) {
     float cur = texelFetch(uLumCur, ivec2(0), 0).r;
@@ -3810,11 +3840,19 @@ const Sound = (() => {
   const state = { synth: false, mic: false };
   const level = { bass: 0, mid: 0, high: 0 };
   const SCALE = [0, 2, 4, 7, 9];
-  const LEVEL = 0.55;
-  let ctx = null, out = null, comp = null, recDest = null, bus = null, filt = null, droneGain = null, drone = [];
+  const LEVEL = 0.7;
+  const DRONE = 0.13;        // the drone's level at rest
+  let ctx = null, out = null, tail = null, recDest = null, recGain = null, bus = null, filt = null, droneGain = null, drone = [];
   let an = null, micStream = null, micSrc = null, bins = null;
   let root = 65.41, lastPluck = 0, tick = 0, voices = 0;
   const peak = [0.15, 0.15, 0.15];
+
+  // Input is halved before the shaper, so the curve covers levels up to twice full scale.
+  const CEILING = new Float32Array(1025);
+  for (let i = 0; i < 1025; i++) {
+    const x = (i - 512) / 256, a = Math.abs(x);
+    CEILING[i] = Math.sign(x) * (a <= 0.6 ? a : 0.6 + 0.38 * Math.tanh((a - 0.6) / 0.38));
+  }
 
   function ensure() {
     if (!ctx) {
@@ -3836,10 +3874,10 @@ const Sound = (() => {
     if (on === state.synth) return;
     if (!on) {
       state.synth = false;
-      const o = out, d = drone;
-      out = bus = filt = null; drone = [];
+      const o = out, d = drone, last = tail;
+      out = bus = filt = tail = null; drone = [];
       o.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
-      setTimeout(() => { d.forEach((x) => x.stop()); o.disconnect(); }, 1600);
+      setTimeout(() => { d.forEach((x) => x.stop()); o.disconnect(); last.disconnect(); }, 1600);
       return;
     }
     ensure();
@@ -3847,32 +3885,44 @@ const Sound = (() => {
     out = ctx.createGain();
     out.gain.value = 0;
     out.gain.setTargetAtTime(LEVEL, t, 0.9);
-    comp = ctx.createDynamicsCompressor();
-    // A gentle safety net, not an effect. The default settings clamp hard on every
-    // note and duck the drone underneath it, which is heard as the music cutting out.
-    comp.threshold.value = -9; comp.knee.value = 18; comp.ratio.value = 3;
-    comp.attack.value = 0.03; comp.release.value = 0.5;
-    out.connect(comp); comp.connect(ctx.destination);
-    if (recDest) comp.connect(recDest);
-    // One delay line with a damped loop stands in for a reverb.
-    const delay = ctx.createDelay(1), loop = ctx.createGain(), damp = ctx.createBiquadFilter();
-    delay.delayTime.value = 0.38; loop.gain.value = 0.4;
-    damp.type = 'lowpass'; damp.frequency.value = 2400;
-    delay.connect(damp); damp.connect(loop); loop.connect(delay); damp.connect(out);
+    // Mastering. Nothing here pushes the level up: there is no compressor adding
+    // gain and pumping the drone under each note. Levels are simply set with room
+    // to spare. Rumble below the lowest note is filtered off, because small speakers
+    // cannot play it and distort trying. Last in line is a soft ceiling: straight
+    // through at ordinary levels, bending over smoothly far above them, so even a
+    // pile-up of notes cannot reach full scale and crackle.
+    const low = ctx.createBiquadFilter(), pre = ctx.createGain(), soft = ctx.createWaveShaper();
+    low.type = 'highpass'; low.frequency.value = 48; low.Q.value = 0.7;
+    pre.gain.value = 0.5;
+    soft.curve = CEILING;
+    tail = soft;
+    out.connect(low); low.connect(pre); pre.connect(soft); soft.connect(ctx.destination);
+    if (recGain) soft.connect(recGain);
+    // Two damped delay loops of different lengths stand in for a room. Their echoes
+    // fall between each other, so a note rings on instead of repeating.
     bus = ctx.createGain();
     const send = ctx.createGain();
-    send.gain.value = 0.55;
-    bus.connect(out); bus.connect(send); send.connect(delay);
+    send.gain.value = 0.5;
+    bus.connect(out); bus.connect(send);
+    for (const [time, back, tone, wet] of [[0.38, 0.4, 2200, 1], [0.53, 0.32, 1500, 0.7]]) {
+      const delay = ctx.createDelay(1), loop = ctx.createGain(), damp = ctx.createBiquadFilter(), ret = ctx.createGain();
+      delay.delayTime.value = time; loop.gain.value = back; ret.gain.value = wet;
+      damp.type = 'lowpass'; damp.frequency.value = tone;
+      send.connect(delay); delay.connect(damp); damp.connect(loop); loop.connect(delay); damp.connect(ret); ret.connect(out);
+    }
     filt = ctx.createBiquadFilter();
     filt.type = 'lowpass'; filt.frequency.value = 260; filt.Q.value = 0.8;
     const dg = droneGain = ctx.createGain();
-    dg.gain.value = 0.16;
+    dg.gain.value = DRONE;
     filt.connect(dg); dg.connect(bus);
+    // Root, fifth and octave. The root sits a little under the other two, which
+    // keeps the chord and takes the weight out of the bottom.
     drone = [1, 1.498, 2.004].map((r, i) => {
-      const o = ctx.createOscillator();
+      const o = ctx.createOscillator(), g = ctx.createGain();
       o.type = i === 2 ? 'sine' : 'triangle';
       o.frequency.value = root * r;
-      o.connect(filt); o.start();
+      g.gain.value = [0.6, 0.8, 0.9][i];
+      o.connect(g); g.connect(filt); o.start();
       return o;
     });
     state.synth = true;
@@ -3890,20 +3940,25 @@ const Sound = (() => {
     if (!state.synth || ctx.state !== 'running') return;
     const t = ctx.currentTime;
     // Few enough notes, quiet enough each, that they never add up past full scale.
-    if (t - lastPluck < 0.09 || voices >= 8) return;
+    if (t - lastPluck < 0.09 || voices >= 12) return;
     lastPluck = t;
     const deg = Math.floor((Math.atan2(y, x) / TAU + 0.5) * 5) % 5;
     const oct = 2 + Math.min(2, Math.floor(Math.hypot(x, y) / 0.38));
     const o = ctx.createOscillator(), g = ctx.createGain();
     o.type = 'sine';
     o.frequency.value = root * Math.pow(2, oct + SCALE[deg] / 12);
+    // A rounded start and a long ring, like a struck bowl rather than a tap. Higher
+    // notes are played more quietly, since the ear hears them as louder.
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vel * 0.28, t + 0.02);
-    g.gain.setTargetAtTime(0, t + 0.02, 0.22);
-    o.connect(g); g.connect(bus);
-    o.start(t); o.stop(t + 1.7);
+    g.gain.setTargetAtTime(vel * 0.22 * [1, 0.8, 0.6][oct - 2], t, 0.012);
+    g.gain.setTargetAtTime(0, t + 0.05, 0.36);
+    // Each note sounds from where its light landed, left to right.
+    const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    if (pan) { pan.pan.value = Math.max(-0.85, Math.min(0.85, x * 0.7)); o.connect(g); g.connect(pan); pan.connect(bus); }
+    else { o.connect(g); g.connect(bus); }
+    o.start(t); o.stop(t + 2.8);
     voices++;
-    o.onended = () => { voices--; g.disconnect(); };
+    o.onended = () => { voices--; g.disconnect(); if (pan) pan.disconnect(); };
   }
 
   async function setMic(on) {
@@ -3925,7 +3980,7 @@ const Sound = (() => {
     if (!an) { an = ctx.createAnalyser(); an.fftSize = 512; an.smoothingTimeConstant = 0.45; bins = new Uint8Array(an.frequencyBinCount); }
     micSrc = ctx.createMediaStreamSource(micStream);
     micSrc.connect(an);
-    if (recDest) micSrc.connect(recDest);
+    if (recGain) micSrc.connect(recGain);
     state.mic = true;
   }
 
@@ -3952,8 +4007,11 @@ const Sound = (() => {
     // The drone opens up while you paint. Scheduled a few times a second, not per frame.
     if (state.synth && (tick = (tick + 1) % 8) === 0) {
       const swell = lung < 0 ? 0 : lung;
-      filt.frequency.setTargetAtTime(240 + Math.min(energy, 5) * 420 + swell * 320, ctx.currentTime, 0.25);
-      droneGain.gain.setTargetAtTime(lung < 0 ? 0.16 : 0.08 + 0.16 * lung, ctx.currentTime, 0.3);
+      // It brightens as you paint, and is turned down a little as it does, so
+      // brighter never means louder.
+      const e = Math.min(energy, 5);
+      filt.frequency.setTargetAtTime(240 + e * 260 + swell * 280, ctx.currentTime, 0.3);
+      droneGain.gain.setTargetAtTime((lung < 0 ? DRONE : DRONE * (0.5 + lung)) * (1 - 0.06 * e), ctx.currentTime, 0.35);
     }
   }
 
@@ -3962,15 +4020,33 @@ const Sound = (() => {
   function recordStream() {
     if (!state.synth && !state.mic) return null;
     recDest = ctx.createMediaStreamDestination();
-    if (state.synth && comp) comp.connect(recDest);
-    if (state.mic && micSrc) micSrc.connect(recDest);
+    // A film that starts or stops mid-note opens and closes on a click. The
+    // recording has its own fader: silent for the first instant, then up.
+    recGain = ctx.createGain();
+    const t = ctx.currentTime;
+    recGain.gain.setValueAtTime(0, t);
+    recGain.gain.setValueAtTime(0, t + 0.12);
+    recGain.gain.linearRampToValueAtTime(1, t + 0.5);
+    recGain.connect(recDest);
+    if (state.synth && tail) tail.connect(recGain);
+    if (state.mic && micSrc) micSrc.connect(recGain);
     return recDest.stream;
+  }
+  // Fade the recording's sound out; resolves once it is silent.
+  function fadeRecord() {
+    if (!recGain) return Promise.resolve();
+    const t = ctx.currentTime;
+    recGain.gain.cancelScheduledValues(t);
+    recGain.gain.setValueAtTime(recGain.gain.value, t);
+    recGain.gain.linearRampToValueAtTime(0, t + 0.3);
+    return new Promise((r) => setTimeout(r, 420));
   }
   function endRecord() {
     if (!recDest) return;
-    try { if (comp) comp.disconnect(recDest); } catch (e) {}
-    try { if (micSrc) micSrc.disconnect(recDest); } catch (e) {}
-    recDest = null;
+    try { if (tail) tail.disconnect(recGain); } catch (e) {}
+    try { if (micSrc) micSrc.disconnect(recGain); } catch (e) {}
+    try { recGain.disconnect(); } catch (e) {}
+    recDest = recGain = null;
   }
 
   // Leaving should sound like leaving, not like a switch: fade when the page is
@@ -3989,10 +4065,372 @@ const Sound = (() => {
   window.addEventListener('pageshow', unhush);
 
   const api = {
-    state, level, setSynth, setMic, setRoot, pluck, update, recordStream, endRecord, onstart: null,
+    state, level, setSynth, setMic, setRoot, pluck, update, recordStream, fadeRecord, endRecord, onstart: null,
     wake() { if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {}); },
   };
   return api;
+})();
+</script>
+  <script>
+// Browsers record MP4 in fragments (a short header, then the film in pieces, each
+// with its own index). Players that stream understand that; phone galleries and
+// editors read only the first piece, so a film looks two seconds long. flatten()
+// rewrites the file the ordinary way: one index up front that lists every frame,
+// then the frames. The picture and sound are not re-encoded, and are never loaded
+// into memory: the new file points at slices of the old one.
+
+const Mp4 = (() => {
+  const cc = (d, o) => String.fromCharCode(d.getUint8(o), d.getUint8(o + 1), d.getUint8(o + 2), d.getUint8(o + 3));
+  const u64 = (d, o) => d.getUint32(o) * 4294967296 + d.getUint32(o + 4);
+
+  function kids(d, from, to) {
+    const out = [];
+    let p = from;
+    while (p + 8 <= to) {
+      let size = d.getUint32(p), head = 8;
+      if (size === 1) { if (p + 16 > to) break; size = u64(d, p + 8); head = 16; } else if (size === 0) size = to - p;
+      if (size < head || p + size > to) break;
+      out.push({ type: cc(d, p + 4), start: p, body: p + head, end: p + size });
+      p += size;
+    }
+    return out;
+  }
+  const find = (list, t) => list.find((b) => b.type === t);
+
+  async function topLevel(blob) {
+    const boxes = [];
+    let p = 0;
+    while (p + 8 <= blob.size) {
+      const d = new DataView(await blob.slice(p, Math.min(blob.size, p + 16)).arrayBuffer());
+      let size = d.getUint32(0);
+      if (size === 1) { if (d.byteLength < 16) break; size = u64(d, 8); } else if (size === 0) size = blob.size - p;
+      if (size < 8) break;
+      boxes.push({ type: cc(d, 4), start: p, size: Math.min(size, blob.size - p) });
+      p += size;
+    }
+    return boxes;
+  }
+
+  // ---- writing ----
+  const u32a = (v) => { const a = new Uint8Array(v.length * 4), d = new DataView(a.buffer); for (let i = 0; i < v.length; i++) d.setUint32(i * 4, v[i] >>> 0); return a; };
+  const u32 = (...v) => u32a(v);
+  const str = (s) => Uint8Array.from(s, (c) => c.charCodeAt(0));
+  function join(parts) {
+    let n = 0;
+    for (const p of parts) n += p.length;
+    const out = new Uint8Array(n);
+    let o = 0;
+    for (const p of parts) { out.set(p, o); o += p.length; }
+    return out;
+  }
+  const box = (type, ...parts) => { const b = join(parts); return join([u32(b.length + 8), str(type), b]); };
+  const full = (type, version, flags, ...parts) => box(type, u32((version << 24) | flags), ...parts);
+  function setU64(d, o, v) { d.setUint32(o, Math.floor(v / 4294967296)); d.setUint32(o + 4, v >>> 0); }
+
+  // Run-length tables: [count, value] pairs.
+  function rle(values) {
+    const out = [];
+    let n = 0, last = null;
+    for (const v of values) {
+      if (n && v === last) n++;
+      else { if (n) out.push(n, last); n = 1; last = v; }
+    }
+    if (n) out.push(n, last);
+    return out;
+  }
+
+  // Samples a file already lists in its header (some recorders put the first
+  // stretch there and only the rest in fragments).
+  function listed(d, stbl, t) {
+    const b = (k) => find(stbl, k);
+    const stsz = b('stsz'), stsc = b('stsc'), stco = b('stco') || b('co64'), stts = b('stts');
+    if (!stsz || !stsc || !stco || !stts) return;
+    const uniform = d.getUint32(stsz.body + 4), n = d.getUint32(stsz.body + 8);
+    if (!n) return;
+    const durs = [], ctos = new Array(n).fill(0);
+    for (let i = 0, c = d.getUint32(stts.body + 4), p = stts.body + 8; i < c; i++, p += 8) {
+      for (let k = d.getUint32(p); k > 0; k--) durs.push(d.getUint32(p + 4));
+    }
+    const ctts = b('ctts');
+    if (ctts) {
+      let s = 0;
+      for (let i = 0, c = d.getUint32(ctts.body + 4), p = ctts.body + 8; i < c; i++, p += 8) {
+        for (let k = d.getUint32(p); k > 0 && s < n; k--) ctos[s++] = d.getInt32(p + 4);
+      }
+    }
+    const stss = b('stss');
+    let sync = null;
+    if (stss) { sync = new Set(); for (let i = 0, c = d.getUint32(stss.body + 4); i < c; i++) sync.add(d.getUint32(stss.body + 8 + i * 4) - 1); }
+    const wide = stco.type === 'co64', chunks = d.getUint32(stco.body + 4);
+    const entries = d.getUint32(stsc.body + 4);
+    let s = 0;
+    for (let e = 0; e < entries && s < n; e++) {
+      const p = stsc.body + 8 + e * 12;
+      const first = d.getUint32(p), per = d.getUint32(p + 4);
+      const next = e + 1 < entries ? d.getUint32(p + 12) : chunks + 1;
+      for (let c = first; c < next && s < n; c++) {
+        let off = wide ? u64(d, stco.body + 8 + (c - 1) * 8) : d.getUint32(stco.body + 8 + (c - 1) * 4);
+        const run = { off, n: 0, bytes: 0 };
+        for (let k = 0; k < per && s < n; k++, s++) {
+          const size = uniform || d.getUint32(stsz.body + 12 + s * 4);
+          t.sizes.push(size); t.durs.push(durs[s] || 0); t.ctos.push(ctos[s]); t.syncs.push(sync ? sync.has(s) : true);
+          t.next += durs[s] || 0;
+          run.n++; run.bytes += size; off += size;
+        }
+        t.runs.push(run);
+      }
+    }
+  }
+
+  function readHeader(d) {
+    const top = kids(d, 0, d.byteLength);
+    const mvhd = find(top, 'mvhd');
+    if (!mvhd) throw new Error('no mvhd');
+    const movie = { top, mvhd, timescale: d.getUint32(mvhd.body + (d.getUint8(mvhd.body) ? 20 : 12)), tracks: [] };
+    const mvex = find(top, 'mvex');
+    const trex = {};
+    if (mvex) for (const b of kids(d, mvex.body, mvex.end)) {
+      if (b.type === 'trex') trex[d.getUint32(b.body + 4)] = { dur: d.getUint32(b.body + 12), size: d.getUint32(b.body + 16), flags: d.getUint32(b.body + 20) };
+    }
+    for (const trak of top.filter((b) => b.type === 'trak')) {
+      const tk = kids(d, trak.body, trak.end);
+      const tkhd = find(tk, 'tkhd'), mdia = find(tk, 'mdia');
+      if (!tkhd || !mdia) continue;
+      const md = kids(d, mdia.body, mdia.end);
+      const mdhd = find(md, 'mdhd'), minf = find(md, 'minf');
+      if (!mdhd || !minf) continue;
+      const mi = kids(d, minf.body, minf.end);
+      const stblBox = find(mi, 'stbl');
+      if (!stblBox) continue;
+      const stbl = kids(d, stblBox.body, stblBox.end);
+      const id = d.getUint32(tkhd.body + (d.getUint8(tkhd.body) ? 20 : 12));
+      const hdlr = find(md, 'hdlr');
+      const t = {
+        id, tk, tkhd, md, mdhd, mi, stbl, stsd: find(stbl, 'stsd'),
+        video: !!hdlr && cc(d, hdlr.body + 8) === 'vide',
+        timescale: d.getUint32(mdhd.body + (d.getUint8(mdhd.body) ? 20 : 12)),
+        trex: trex[id] || { dur: 0, size: 0, flags: 0 },
+        mediaTime: 0, start: null, next: 0,
+        sizes: [], durs: [], ctos: [], syncs: [], runs: [],
+      };
+      // Where the recorder said the track really begins (encoder priming, frame reordering).
+      const edts = find(tk, 'edts'), elst = edts && find(kids(d, edts.body, edts.end), 'elst');
+      if (elst) {
+        const v = d.getUint8(elst.body);
+        for (let i = 0, c = d.getUint32(elst.body + 4), p = elst.body + 8; i < c; i++, p += v ? 20 : 12) {
+          const mt = v ? u64(d, p + 8) : d.getInt32(p + 4);
+          if (mt >= 0 && mt < 4294967295) { t.mediaTime = mt; break; }
+        }
+      }
+      listed(d, stbl, t);
+      if (t.sizes.length) t.start = 0;
+      if (t.stsd) movie.tracks.push(t);
+    }
+    return movie;
+  }
+
+  function readFragment(d, at, tracks) {
+    let prevEnd = at, firstTraf = true;
+    for (const traf of kids(d, 8, d.byteLength).filter((b) => b.type === 'traf')) {
+      const tf = kids(d, traf.body, traf.end);
+      const tfhd = find(tf, 'tfhd');
+      if (!tfhd) continue;
+      const flags = d.getUint32(tfhd.body) & 0xffffff;
+      let p = tfhd.body + 4;
+      const t = tracks.find((x) => x.id === d.getUint32(p));
+      p += 4;
+      if (!t) continue;
+      let base = null, dDur = t.trex.dur, dSize = t.trex.size, dFlags = t.trex.flags;
+      if (flags & 0x1) { base = u64(d, p); p += 8; }
+      if (flags & 0x2) p += 4;
+      if (flags & 0x8) { dDur = d.getUint32(p); p += 4; }
+      if (flags & 0x10) { dSize = d.getUint32(p); p += 4; }
+      if (flags & 0x20) { dFlags = d.getUint32(p); p += 4; }
+      if (base === null) base = (flags & 0x20000) || firstTraf ? at : prevEnd;
+      firstTraf = false;
+      const tfdt = find(tf, 'tfdt');
+      if (tfdt) {
+        const time = d.getUint8(tfdt.body) ? u64(d, tfdt.body + 4) : d.getUint32(tfdt.body + 4);
+        if (t.start === null) t.start = time;
+        else if (time > t.start + t.next && t.durs.length) t.durs[t.durs.length - 1] += time - (t.start + t.next);   // a gap: hold the last frame across it
+        t.next = Math.max(t.next, time - t.start);
+      } else if (t.start === null) t.start = 0;
+      let pos = null;
+      for (const trun of tf.filter((b) => b.type === 'trun')) {
+        const fl = d.getUint32(trun.body) & 0xffffff;
+        let q = trun.body + 4;
+        const n = d.getUint32(q); q += 4;
+        let off = pos === null ? base : pos;
+        if (fl & 0x1) { off = base + d.getInt32(q); q += 4; }
+        let first = null;
+        if (fl & 0x4) { first = d.getUint32(q); q += 4; }
+        const run = { off, n, bytes: 0 };
+        for (let i = 0; i < n; i++) {
+          let dur = dDur, size = dSize, sf = i === 0 && first !== null ? first : dFlags, cto = 0;
+          if (fl & 0x100) { dur = d.getUint32(q); q += 4; }
+          if (fl & 0x200) { size = d.getUint32(q); q += 4; }
+          if (fl & 0x400) { sf = d.getUint32(q); q += 4; }
+          if (fl & 0x800) { cto = d.getInt32(q); q += 4; }
+          t.sizes.push(size); t.durs.push(dur); t.ctos.push(cto); t.syncs.push(!(sf & 0x10000));
+          t.next += dur; run.bytes += size;
+        }
+        if (n) t.runs.push(run);
+        pos = prevEnd = off + run.bytes;
+      }
+    }
+  }
+
+  function writeHeader(d, movie, tracks, base) {
+    const raw = (b) => new Uint8Array(d.buffer, d.byteOffset + b.start, b.end - b.start);
+    const patched = (b, fn) => { const a = raw(b).slice(); fn(new DataView(a.buffer), b.body - b.start, a[b.body - b.start]); return a; };
+    const dur = (v0, v1, value) => (v, body, ver) => { if (ver) setU64(v, body + v1, value); else v.setUint32(body + v0, Math.min(value, 4294967295)); };
+    const toMovie = (ticks, t) => Math.round(ticks * movie.timescale / t.timescale);
+    const origin = Math.min(...tracks.map((t) => t.start / t.timescale));
+    let longest = 0;
+    const traks = tracks.map((t) => {
+      const total = t.durs.reduce((a, b) => a + b, 0);
+      const lead = Math.round((t.start / t.timescale - origin) * movie.timescale);   // starts later than the other track
+      const shown = Math.max(0, toMovie(total - t.mediaTime, t));
+      longest = Math.max(longest, lead + shown);
+      const edits = [];
+      if (lead > 0) edits.push(u32(lead, 0xffffffff, 0x10000));
+      if (lead > 0 || t.mediaTime > 0) edits.push(u32(shown, t.mediaTime, 0x10000));
+      const offsets = t.runs.map((r) => base + r.to);
+      const wide = offsets.some((o) => o > 4294967295);
+      const stts = rle(t.durs), ctts = rle(t.ctos), stsc = [];
+      t.runs.forEach((r, i) => { if (!i || r.n !== t.runs[i - 1].n) stsc.push(i + 1, r.n, 1); });
+      const keys = [];
+      t.syncs.forEach((s, i) => { if (s) keys.push(i + 1); });
+      const stbl = box('stbl',
+        raw(t.stsd),
+        full('stts', 0, 0, u32(stts.length / 2), u32a(stts)),
+        ...(t.ctos.some((c) => c) ? [full('ctts', t.ctos.some((c) => c < 0) ? 1 : 0, 0, u32(ctts.length / 2), u32a(ctts))] : []),
+        ...(keys.length < t.syncs.length ? [full('stss', 0, 0, u32(keys.length), u32a(keys))] : []),
+        full('stsc', 0, 0, u32(stsc.length / 3), u32a(stsc)),
+        full('stsz', 0, 0, u32(0, t.sizes.length), u32a(t.sizes)),
+        wide ? full('co64', 0, 0, u32(offsets.length), join(offsets.map((o) => u32(Math.floor(o / 4294967296), o)))) : full('stco', 0, 0, u32(offsets.length), u32a(offsets)));
+      const minf = box('minf', ...t.mi.map((b) => (b.type === 'stbl' ? stbl : raw(b))));
+      const mdia = box('mdia', ...t.md.map((b) => (b.type === 'mdhd' ? patched(b, dur(16, 24, total)) : b.type === 'minf' ? minf : raw(b))));
+      const parts = [];
+      for (const b of t.tk) {
+        if (b.type === 'edts') continue;
+        if (b.type === 'tkhd') {
+          parts.push(patched(b, (v, body, ver) => { v.setUint8(body + 3, v.getUint8(body + 3) | 3); dur(20, 28, lead + shown)(v, body, ver); }));
+          if (edits.length) parts.push(box('edts', full('elst', 0, 0, u32(edits.length), ...edits)));
+        } else parts.push(b.type === 'mdia' ? mdia : raw(b));
+      }
+      return box('trak', ...parts);
+    });
+    const parts = [];
+    let placed = false;
+    for (const b of movie.top) {
+      if (b.type === 'mvex') continue;
+      if (b.type === 'mvhd') parts.push(patched(b, dur(16, 24, longest)));
+      else if (b.type === 'trak') { if (!placed) { parts.push(...traks); placed = true; } }
+      else parts.push(raw(b));
+    }
+    return box('moov', ...parts);
+  }
+
+  async function flatten(blob) {
+    const top = await topLevel(blob);
+    const moovBox = find(top, 'moov');
+    if (!moovBox || !top.some((b) => b.type === 'moof')) return blob;   // already an ordinary file
+    const d = new DataView(await blob.slice(moovBox.start + 8, moovBox.start + moovBox.size).arrayBuffer());
+    const movie = readHeader(d);
+    for (const b of top) {
+      if (b.type !== 'moof') continue;
+      readFragment(new DataView(await blob.slice(b.start, b.start + b.size).arrayBuffer()), b.start, movie.tracks);
+    }
+    const tracks = movie.tracks.filter((t) => t.sizes.length);
+    if (!tracks.length) return blob;
+    // Lay the sound and picture out in the order they were recorded, in one block.
+    const runs = tracks.flatMap((t) => t.runs).sort((a, b) => a.off - b.off);
+    const slices = [];
+    let to = 0;
+    for (const r of runs) {
+      if (r.off + r.bytes > blob.size) return blob;                    // cut short: leave the file as it was
+      const last = slices[slices.length - 1];
+      if (last && last[1] === r.off) last[1] += r.bytes; else slices.push([r.off, r.off + r.bytes]);
+      r.to = to; to += r.bytes;
+    }
+    const hasAvc = tracks.some((t) => { const s = t.stsd; return s.end - s.body >= 16 && /^avc[13]$/.test(cc(d, s.body + 12)); });
+    const ftyp = box('ftyp', str('isom'), u32(512), str('isomiso2' + (hasAvc ? 'avc1' : '') + 'mp41'));
+    const big = to + 8 > 4294967295;
+    const lead = ftyp.length + (big ? 16 : 8);
+    const size = writeHeader(d, movie, tracks, 0).length;
+    let moov = writeHeader(d, movie, tracks, lead + size);
+    if (moov.length !== size) moov = writeHeader(d, movie, tracks, lead + moov.length);   // offsets crossed 4 GB
+    const mdat = big ? join([u32(1), str('mdat'), u32(Math.floor((to + 16) / 4294967296), to + 16)]) : join([u32(to + 8), str('mdat')]);
+    return new Blob([ftyp, moov, mdat, ...slices.map(([a, b]) => blob.slice(a, b))], { type: blob.type });
+  }
+
+  // Reads a film as it is being written, piece by piece, and reports how many
+  // seconds of picture the encoder has finished. Compared with the clock, that says
+  // how far behind the encoder is, which is the only warning a page gets before
+  // waiting frames fill memory. Pieces can end anywhere, mid-box included.
+  function meter() {
+    let rest = new Uint8Array(0), skip = 0, movie = null, ok = true;
+    const seconds = () => {
+      if (!movie) return 0;
+      const v = movie.tracks.find((t) => t.video) || movie.tracks[0];
+      return v ? v.next / v.timescale : 0;
+    };
+    function feed(buffer) {
+      if (!ok) return;
+      try {
+        let a = new Uint8Array(buffer);
+        if (skip) { const k = Math.min(skip, a.length); skip -= k; a = a.subarray(k); }
+        if (rest.length) { a = join([rest, a]); rest = new Uint8Array(0); }
+        while (a.length >= 16) {
+          const d = new DataView(a.buffer, a.byteOffset, a.byteLength);
+          let size = d.getUint32(0);
+          const type = cc(d, 4);
+          if (size === 1) size = u64(d, 8);
+          if (size < 8) { ok = false; return; }
+          if (type !== 'moov' && type !== 'moof') {             // picture and sound data: pass over it without keeping it
+            if (size > a.length) { skip = size - a.length; a = a.subarray(a.length); } else a = a.subarray(size);
+            continue;
+          }
+          if (size > a.length) break;                            // the rest of this box is still to come
+          if (type === 'moov') movie = readHeader(new DataView(a.buffer, a.byteOffset + 8, size - 8));
+          else if (movie) {
+            readFragment(new DataView(a.buffer, a.byteOffset, size), 0, movie.tracks);
+            for (const t of movie.tracks) { t.sizes.length = t.durs.length = t.ctos.length = t.syncs.length = t.runs.length = 0; }
+          }
+          a = a.subarray(size);
+        }
+        rest = a.slice();
+      } catch (e) { ok = false; }
+    }
+    return { feed, get seconds() { return seconds(); }, get ok() { return ok; } };
+  }
+
+  // Decides, a few times a second, whether a recording may carry on. `encoded` is
+  // the meter's reading. Lag is judged at the moments new film arrives, so a browser
+  // that writes in long pieces is not mistaken for a slow one.
+  //   lag over 2 s      → 'pause' (frames stop going in; the encoder catches up)
+  //   lag back under 0.7 → 'resume'
+  //   nothing at all for 5 s, a long silence later, or more waiting than filming → 'stop'
+  function pace() {
+    let last = null, run = 0, held = 0, seen = 0, quiet = 0, lag = 0, paused = false, gap = 0;
+    return {
+      get lag() { return lag; },
+      tick(now, encoded) {
+        const dt = last === null ? 0 : Math.min(1, (now - last) / 1000);
+        last = now;
+        if (paused) held += dt; else run += dt;
+        if (encoded > seen) { if (seen) gap = Math.max(gap, quiet); seen = encoded; quiet = 0; lag = run - encoded; } else quiet += dt;
+        if (quiet > (seen ? Math.max(4, gap * 2.5) : 5)) return 'stop';   // silent for far longer than this browser's usual rhythm
+        if (held > 5 && held > run * 0.4) return 'stop';
+        if (!paused && lag > 2) { paused = true; return 'pause'; }
+        if (paused && lag < 0.7) { paused = false; return 'resume'; }
+        return null;
+      },
+    };
+  }
+
+  return { flatten, meter, pace };
 })();
 </script>
   <script>
@@ -4386,8 +4824,11 @@ const UI = (() => {
     Sound.setRoot(chamber);
     if (remember) mn.store.set('sound', on ? '1' : '0');
   }
+  // Sound starts off. A browser will not let a page be heard before a touch anyway,
+  // so the offer sits beside the orb and one tap turns it on. If you had it on last
+  // time, it comes back with your first touch.
   function primeSound() {
-    if (mn.store.get('sound') === '0') return;
+    if (mn.store.get('sound') !== '1') return;
     try { setSound(true, false); } catch (e) { return; }
     Sound.onstart = () => mn.toast('Sound is on', { action: 'Turn off', onAction: () => { setSound(false); refresh(); }, timeout: 5000 });
     const wakeSound = () => {
@@ -4696,6 +5137,31 @@ const UI = (() => {
     const orb = $('#orb'), halo = $('#halo');
     orb.dataset.state = 'rest';
 
+    const sideSound = $('#sideSound'), sideHands = $('#sideHands');
+    sideSound.onclick = () => {
+      try { setSound(!soundOn()); Sound.wake(); } catch (err) { toast(err.message); }
+      refresh(); wake();
+    };
+    sideHands.onclick = () => {
+      Inputs.setHands(!Inputs.state.hands).then(() => { if (Inputs.state.hands) toast('Raise a finger to paint · pinch to hold the glass'); refresh(); }, (err) => { toast(err.message); refresh(); });
+      wake();
+    };
+    // A speaker that is crossed out until it sings; an open hand.
+    const svg = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
+    const MUTED = svg('M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z');
+    sideHands.innerHTML = svg('M23 5.5V20c0 2.2-1.8 4-4 4h-7.3c-1.08 0-2.1-.43-2.85-1.19L1 14.83s1.26-1.23 1.3-1.25c.22-.19.49-.29.79-.29.22 0 .42.06.6.16.04.01 4.31 2.46 4.31 2.46V4c0-.83.67-1.5 1.5-1.5S11 3.17 11 4v7h1V1.5c0-.83.67-1.5 1.5-1.5S15 .67 15 1.5V11h1V2.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V11h1V5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5z');
+    let shown = null;
+    refreshers.push(() => {
+      const snd = soundOn(), hands = Inputs.state.hands;
+      if (snd !== shown) { shown = snd; sideSound.innerHTML = snd ? mn.icon('volume') : MUTED; }
+      sideSound.setAttribute('aria-pressed', snd);
+      sideSound.title = snd ? 'Sound is on' : 'Turn sound on';
+      sideSound.setAttribute('aria-label', sideSound.title);
+      sideHands.setAttribute('aria-pressed', hands);
+      sideHands.title = hands ? 'Hands are painting' : 'Paint with your hands';
+      sideHands.setAttribute('aria-label', sideHands.title);
+    });
+
     // Tap the orb to open, step back, or close. Swipe or scroll it to change place.
     let sx = null, swiped = false, wheelAt = 0;
     orb.addEventListener('pointerdown', (e) => { sx = e.clientX; swiped = false; orb.setPointerCapture(e.pointerId); });
@@ -4844,25 +5310,55 @@ const UI = (() => {
     refresh();
   }
 
+  // Offer the film to the phone's share sheet, which is the way into Photos and
+  // into other apps; a download alone lands in Files.
+  function offerShare(blob, file, type) {
+    let f;
+    try { f = new File([blob], file, { type: type.split(';')[0] }); } catch (e) { return false; }
+    if (!matchMedia('(pointer: coarse)').matches || !navigator.canShare || !navigator.canShare({ files: [f] })) return false;
+    mn.toast('Video saved to downloads', { action: 'Share or save to Photos', onAction: () => navigator.share({ files: [f] }).catch(() => {}), timeout: 12000 });
+    return true;
+  }
+
+  let stopping = false;
+  async function stopRecord() {
+    if (stopping || !recorder) return;
+    stopping = true;
+    toast('Finishing the film…');
+    await Sound.fadeRecord();          // let the sound fall away instead of cutting it
+    try { recorder.stop(); } catch (e) { stopping = false; }
+  }
+
   function toggleRecord() {
-    if (recorder) { recorder.stop(); return; }
+    if (recorder === 'starting') return;
+    if (recorder) { stopRecord(); return; }
     if (!window.MediaRecorder || !canvas.captureStream) { toast("This browser can't record video · try Chrome"); return; }
+    Main.filming = true;               // the canvas takes its filming size on the next frame
+    recorder = 'starting';
+    setRecording(true);
+    setTimeout(beginRecord, 150);
+  }
+
+  function beginRecord() {
     const stream = canvas.captureStream(60);
-    const audio = Sound.recordStream();
+    let audio = null;
+    try { audio = Sound.recordStream(); } catch (e) {}
     if (audio) audio.getAudioTracks().forEach((t) => stream.addTrack(t));
-    // Newer codecs keep the same picture in far fewer bits. HEVC only where it is sure
-    // to play back (Apple devices); H.264 stays the fallback that opens everywhere.
-    const apple = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+    // H.264 in MP4 is the one that opens everywhere and that every device encodes
+    // quickly, so every MP4 choice is tried before WebM. HEVC is deliberately not
+    // asked for: Safari on a Mac encodes it in software at a few frames a second,
+    // and the frames waiting their turn fill memory until the page is killed.
     const video = [
-      apple && ['video/mp4', 'hvc1.1.6.L153.B0', 0.05],
-      ['video/mp4', 'avc1.640033', 0.085],
-      ['video/webm', 'vp9', 0.055],
-      ['video/webm', 'vp8', 0.1],
-    ].filter(Boolean);
+      ['video/mp4', 'avc1.640033', 'mp4a.40.2', 0.085],
+      ['video/mp4', 'avc1.64002A', 'mp4a.40.2', 0.085],
+      ['video/mp4', 'avc1.640033', 'opus', 0.085],
+      ['video/mp4', 'avc1.64002A', 'opus', 0.085],
+      ['video/webm', 'vp9', 'opus', 0.055],
+      ['video/webm', 'vp8', 'opus', 0.1],
+    ];
     let mime = '', bpp = 0.085;
-    for (const [box, codec, rate] of video) {
-      const a = box === 'video/mp4' ? 'mp4a.40.2' : 'opus';
-      const t = `${box};codecs=${codec}${audio ? ',' + a : ''}`;
+    for (const [box, codec, sound, rate] of video) {
+      const t = `${box};codecs=${codec}${audio ? ',' + sound : ''}`;
       if (MediaRecorder.isTypeSupported(t)) { mime = t; bpp = rate; break; }
     }
     if (!mime) mime = ['video/mp4', 'video/webm'].find((t) => MediaRecorder.isTypeSupported(t)) || '';
@@ -4870,20 +5366,75 @@ const UI = (() => {
     const fps = Math.min(60, Main.refreshHz);
     const bits = Math.max(4e6, Math.min(30e6, canvas.width * canvas.height * fps * bpp));
     const chunks = [];
-    const r = new MediaRecorder(stream, { ...(mime ? { mimeType: mime } : {}), videoBitsPerSecond: bits, audioBitsPerSecond: 160e3 });
-    r.ondataavailable = (e) => e.data.size && chunks.push(e.data);
-    r.onstop = () => {
-      const type = r.mimeType || mime || 'video/webm';
-      download(new Blob(chunks, { type }), `fractonaut-${CHAMBERS[chamber].slug}-${stamp()}.${type.includes('mp4') ? 'mp4' : 'webm'}`);
+    const slug = CHAMBERS[chamber].slug;
+    let got = 0, watch = 0, feeding = Promise.resolve(), warned = false;
+    let gauge = null, pace = null;
+    const end = () => {
+      clearInterval(watch);
       stream.getTracks().forEach((t) => t.stop());
       Sound.endRecord();
-      recorder = null;
+      recorder = null; stopping = false;
+      Main.filming = false;
       setRecording(false);
-      toast('Video saved to downloads');
+    };
+    let r;
+    try {
+      r = new MediaRecorder(stream, { ...(mime ? { mimeType: mime } : {}), videoBitsPerSecond: bits, audioBitsPerSecond: 160e3 });
+    } catch (e) { end(); toast("This browser can't record video · try Chrome"); return; }
+    // Memory safety. A browser hands every frame to its encoder uncompressed, and
+    // some keep an unlimited queue of them: an encoder that falls behind then eats
+    // memory until the page is killed. So the film is read back as it is written,
+    // to see how far the encoder has got. If it trails the clock by two seconds the
+    // recording pauses until it has caught up, and if it cannot keep up at all the
+    // film ends early and is saved. Waiting frames can never pile up without limit.
+    if ((r.mimeType || mime).includes('mp4')) { gauge = Mp4.meter(); pace = Mp4.pace(); }
+    r.ondataavailable = (e) => {
+      if (!e.data.size) return;
+      got += e.data.size; chunks.push(e.data);
+      if (gauge && gauge.ok) feeding = feeding.then(() => e.data.arrayBuffer()).then((buf) => gauge.feed(buf)).catch(() => {});
+    };
+    const began = performance.now();
+    const giveUp = () => {
+      chunks.length = 0;
+      r.onstop = () => { end(); toast('Recording stopped · this browser was not producing a film'); };
+      try { r.stop(); } catch (e) { end(); }
+    };
+    watch = setInterval(() => {
+      if (recorder !== r || stopping) return;
+      if (!pace || !gauge.ok) {                    // WebM, or a file that cannot be read back: only catch a dead encoder
+        if (got === 0 && performance.now() - began > 4000) giveUp();
+        return;
+      }
+      const act = pace.tick(performance.now(), gauge.seconds);
+      try {
+        if (act === 'pause') {
+          r.pause();
+          if (!warned) { warned = true; toast('This device is encoding slowly · the film will skip rather than run out of memory'); }
+        } else if (act === 'resume') r.resume();
+        else if (act === 'stop') {
+          if (gauge.seconds === 0) giveUp();
+          else { toast('This device could not keep up with filming, so the film ends here'); stopRecord(); }
+          return;
+        }
+        if (r.state === 'paused') r.requestData();   // keep reading how far the encoder has got
+      } catch (e) {}
+    }, 250);
+    r.onerror = () => { end(); toast('Recording stopped · the browser reported an error'); };
+    r.onstop = async () => {
+      const type = r.mimeType || mime || 'video/webm';
+      const mp4 = type.includes('mp4');
+      let film = new Blob(chunks, { type });
+      end();
+      // Browsers write MP4 in fragments, which galleries and editors cut off after
+      // the first couple of seconds. Rewrite it as an ordinary MP4 before saving.
+      if (mp4) { try { film = await Mp4.flatten(film); } catch (e) { console.warn('Could not rewrite the film; saving it as recorded', e); } }
+      const file = `fractonaut-${slug}-${stamp()}.${mp4 ? 'mp4' : 'webm'}`;
+      download(film, file);
+      if (!offerShare(film, file, type)) toast(mp4 ? 'Video saved to downloads' : 'Video saved to downloads · WebM, which some galleries cannot open');
     };
     r.start(250);
     recorder = r;
-    setRecording(true);
+    refresh();
     toast(audio ? 'Recording with sound · press R to stop' : 'Recording · press R to stop');
   }
 
@@ -5043,6 +5594,7 @@ const Main = (() => {
   // Detail ladder, cheapest savings first: supersampling taps go before resolution,
   // because on a dense screen fewer taps are invisible and a softer picture is not.
   const LEVELS = [[4, 1], [2, 1], [1, 1], [1, 0.85], [1, 0.72], [1, 0.6], [1, 0.5], [1, 0.42], [1, 0.35], [1, 0.3]];
+  let filming = false;
   let level = 0, quality = 1, refreshHz = 60, calib = [], fpsAcc = 0, fpsFrames = 0, good = 0;
   let trial = null, cooldown = 0, ceiling = 0, ceilingFor = 0;
 
@@ -5070,9 +5622,16 @@ const Main = (() => {
   }
 
   function resize(force) {
-    const dpr = window.devicePixelRatio || 1, k = Math.min(1, system.maxDpr / dpr);
-    const cw = Math.max(1, Math.round((devW || cssW * dpr) * k));
-    const ch = Math.max(1, Math.round((devH || cssH * dpr) * k));
+    const dpr = window.devicePixelRatio || 1;
+    let k = Math.min(1, system.maxDpr / dpr);
+    const fw = devW || cssW * dpr, fh = devH || cssH * dpr;
+    // A film is capped near 2.6 million pixels (about 2000 × 1300). Every recorded
+    // frame is handed to the browser's encoder uncompressed; at a large screen's full
+    // size that is more than some browsers can keep up with, and the backlog fills
+    // memory. Encoders also want even sizes.
+    if (filming) k = Math.min(k, Math.sqrt(2.6e6 / Math.max(1, fw * fh)));
+    let cw = Math.max(1, Math.round(fw * k)), ch = Math.max(1, Math.round(fh * k));
+    if (filming) { cw -= cw & 1; ch -= ch & 1; }
     if (force || canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
     const s = system.renderScale * quality;
     // Echo detail tops out at 1.5 device pixels per CSS pixel; past that it costs
@@ -5230,7 +5789,7 @@ const Main = (() => {
 
   function breathe(on) { breathT = 0; breathIn = false; breathN = 0; }
 
-  return { start, step, resize, breathe, get refreshHz() { return refreshHz; } };
+  return { start, step, resize, breathe, get refreshHz() { return refreshHz; }, set filming(v) { filming = v; } };
 })();
 
 Main.start();
