@@ -909,27 +909,52 @@ body.idle:not(.panel-open) .dock { opacity: 0; translate: -50% 12px; pointer-eve
 body.panel-open .caption { opacity: 0; transition-duration: .3s; }
 @media (max-width: 599.98px) { .caption { left: 16px; right: 16px; text-align: center; max-width: none; } }
 
-/* ---- First visit ----------------------------------------------------------------------- */
-.intro {
-  position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px;
-  background: color-mix(in srgb, var(--md-sys-color-scrim) 40%, transparent);
+/* ---- Whisper: one quiet line of guidance, never a blur over the picture ----------------- */
+.whisper {
+  position: fixed; z-index: 6; left: 50%; top: calc(16px + env(safe-area-inset-top)); translate: -50% -6px;
+  margin: 0; padding: 8px 16px; width: max-content; max-width: calc(100vw - 32px); text-align: center;
+  border-radius: var(--r-full); background: var(--glass-strong); color: var(--md-sys-color-on-surface);
+  pointer-events: none; opacity: 0; transition: opacity .6s ease, translate .6s ease;
 }
-.intro[hidden] { display: none; }
-.intro-card {
-  display: flex; flex-direction: column; gap: 14px; max-width: 440px; padding: 32px;
-  border-radius: var(--r-xl); background: var(--glass-strong); color: var(--md-sys-color-on-surface);
-  backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); box-shadow: var(--mn-depth-3);
+.whisper.show { opacity: 1; translate: -50% 0; }
+
+/* ---- Handle: all that remains of the dock while you paint ------------------------------- */
+.handle {
+  position: fixed; z-index: 9; left: 50%; bottom: env(safe-area-inset-bottom); translate: -50% 0;
+  width: 96px; height: 32px; padding: 0; border: 0; background: none; cursor: pointer;
+  opacity: 0; pointer-events: none; transition: opacity .8s ease;
 }
-.intro-card h1, .intro-card p { margin: 0; }
-.intro-kicker { color: var(--md-sys-color-primary); letter-spacing: 2px; text-transform: uppercase; }
-.intro-steps { margin: 4px 0 8px; padding-left: 20px; display: grid; gap: 6px; color: var(--md-sys-color-on-surface-variant); }
-.intro-steps b { color: var(--md-sys-color-on-surface); font-weight: 500; }
-.intro-card .mn-btn { align-self: flex-start; }
+.handle::before {
+  content: ""; position: absolute; left: 50%; bottom: 10px; translate: -50% 0; width: 44px; height: 4px;
+  border-radius: var(--r-full); background: var(--md-sys-color-on-surface); opacity: .32;
+  transition: opacity var(--mn-effects-default), width var(--mn-spatial-fast);
+}
+.handle:is(:hover, :focus-visible)::before { opacity: .8; width: 56px; }
+body.idle:not(.panel-open):not(.clean) .handle { opacity: 1; pointer-events: auto; }
+
+/* ---- While a slider is held, the panel steps aside so you can see what it does ---------- */
+.panel { transition: background-color .2s ease, box-shadow .2s ease; }
+.panel.adjusting { background: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.panel.adjusting::before { visibility: hidden; }
+.panel.adjusting * { visibility: hidden; }
+.panel.adjusting .live, .panel.adjusting .live * { visibility: visible; }
+.panel.adjusting .live { background: var(--glass-strong); border-radius: var(--r-m); box-shadow: 0 0 0 12px var(--glass-strong); }
+
+.dock-tab[data-panel="chamber"] { touch-action: none; }
+body.nohover:not(.clean) #c { cursor: crosshair; }
 
 /* ---- Keys sheet ------------------------------------------------------------------------ */
 .keys { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0; }
 .keys dt { color: var(--md-sys-color-primary); font-variant-numeric: tabular-nums; }
 .keys dd { margin: 0; }
+
+.grab {
+  position: fixed; z-index: 4; left: -18px; top: -18px; width: 36px; height: 36px; border-radius: var(--r-full);
+  border: 2px solid var(--md-sys-color-primary); box-shadow: 0 0 16px var(--md-sys-color-primary);
+  pointer-events: none; opacity: 0; scale: 1.6; will-change: transform, opacity;
+  transition: opacity .25s ease, scale .25s ease, transform .09s linear;
+}
+.grab.on { opacity: .9; scale: 1; }
 
 .fatal { position: fixed; inset: 0; z-index: 40; place-content: center; color: var(--md-sys-color-error); }
 .fatal[hidden] { display: none; }
@@ -960,20 +985,11 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
     <p class="mn-body-m" id="captionLine"></p>
   </div>
 
-  <!-- First visit only -->
-  <div class="intro" data-once="intro">
-    <div class="intro-card">
-      <p class="mn-label-l intro-kicker">Kaleidoscope</p>
-      <h1 class="mn-headline-m">Look through the glass</h1>
-      <p class="mn-body-l mn-muted">Move to paint with light. The mirrors do the rest.</p>
-      <ol class="intro-steps mn-body-m">
-        <li><b>Chamber</b> shapes the mirrors</li>
-        <li><b>Light</b> is what shines into them</li>
-        <li><b>Mood</b> is how it moves and fades</li>
-      </ol>
-      <button class="mn-btn lg" id="begin">Step inside</button>
-    </div>
-  </div>
+  <!-- One quiet line at the top: first-use hints, and what the camera sees of your hands -->
+  <p class="whisper mn-label-l" id="whisper" aria-live="polite"></p>
+
+  <!-- Shown only while the dock is tucked away -->
+  <button class="handle" id="handle" aria-label="Show controls"></button>
 
   <!-- Dock: the three ingredients of a kaleidoscope, plus the journey -->
   <nav class="dock" id="dock" aria-label="Kaleidoscope controls">
@@ -996,12 +1012,10 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
 
   <div popover class="mn-menu" id="more">
     <button data-act="snapshot"><i data-icon="image"></i>Save image</button>
-    <button data-act="export4k"><i data-icon="download"></i>Save 4K image</button>
     <button data-act="record"><i data-icon="play"></i><span id="recLabel">Record video</span></button>
     <hr>
     <button data-act="copyLink"><i data-icon="share"></i>Copy link to this view</button>
     <button data-act="fullscreen"><i data-icon="open"></i>Full screen</button>
-    <button data-act="hide"><i data-icon="close"></i>Hide controls</button>
     <hr>
     <button data-act="all"><i data-icon="settings"></i>All settings</button>
     <button data-act="keys"><i data-icon="info"></i>Keys and gestures</button>
@@ -1028,13 +1042,17 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
     </section>
     <div class="mn-list">
       <label class="mn-item"><span class="lead plain"><i data-icon="image"></i></span><span class="text"><span class="title">Camera</span><span class="sub">Your view becomes light</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="camSwitch"></span></label>
-      <label class="mn-item"><span class="lead plain"><i data-icon="person"></i></span><span class="text"><span class="title">Fingertips</span><span class="sub">Paint in the air</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="handSwitch"></span></label>
+      <label class="mn-item"><span class="lead plain"><i data-icon="person"></i></span><span class="text"><span class="title">Fingertips</span><span class="sub">Paint in the air · pinch to hold the glass</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="handSwitch"></span></label>
     </div>
     <button class="mn-btn text" id="clearGlass"><i data-icon="delete"></i>Clear the glass</button>
   </dialog>
 
   <dialog class="mn-sheet panel" id="panel-mood" aria-labelledby="h-mood">
     <header class="panel-head"><h2 class="mn-title-l" id="h-mood">Mood</h2><button class="mn-icon-btn" data-close aria-label="Close"><i data-icon="close"></i></button></header>
+    <div class="chip-wrap">
+      <button class="mn-chip" id="soundSwitch" aria-pressed="false" title="The glass sings as you paint"><i data-icon="volume"></i>Sound</button>
+      <button class="mn-chip" id="micSwitch" aria-pressed="false" title="Music in the room moves the mirrors"><i data-icon="mic"></i>Listen</button>
+    </div>
     <section class="block">
       <div class="block-head"><h3 class="mn-title-s">Color</h3><span class="mn-body-s mn-muted" id="paletteName"></span></div>
       <div class="swatches" id="swatches" role="group" aria-label="Palette"></div>
@@ -1043,10 +1061,6 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
     <div class="dial" id="echoDial"></div>
     <div class="dial" id="meltDial"></div>
     <div class="dial" id="glowDial"></div>
-    <div class="mn-list">
-      <label class="mn-item"><span class="lead plain"><i data-icon="volume"></i></span><span class="text"><span class="title">Sound</span><span class="sub">The glass sings as you paint</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="soundSwitch"></span></label>
-      <label class="mn-item"><span class="lead plain"><i data-icon="mic"></i></span><span class="text"><span class="title">Listen</span><span class="sub">Music in the room moves the mirrors</span></span><span class="trail"><input type="checkbox" class="mn-switch" role="switch" id="micSwitch"></span></label>
-    </div>
   </dialog>
 
   <dialog class="mn-sheet panel wide" id="panel-all" aria-labelledby="h-all">
@@ -1062,6 +1076,7 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
       <dt>Tap · click</dt><dd>Drop a ripple</dd>
       <dt>Scroll · pinch</dt><dd>Dive in or out</dd>
       <dt>Twist · Shift scroll</dt><dd>Spin the glass</dd>
+      <dt>In the air</dt><dd>Raised fingers paint · a fist rests · pinch to hold the glass, then turn or push · both palms held still for the next chamber</dd>
       <dt>Space</dt><dd>Turn the glass</dd>
       <dt>1 – 9 · ← →</dt><dd>Chambers</dd>
       <dt>↑ ↓</dt><dd>More or fewer mirrors</dd>
@@ -1078,6 +1093,8 @@ body.clean :is(.dock, .panel, .caption) { display: none; }
     <form method="dialog" class="actions"><button class="mn-btn text">Close</button></form>
   </dialog>
 
+  <div class="grab" id="grab0" aria-hidden="true"></div>
+  <div class="grab" id="grab1" aria-hidden="true"></div>
   <div id="fatal" class="mn-empty fatal" hidden></div>
 
   <script>
@@ -1691,11 +1708,14 @@ const Fold = (() => {
 // Momentum the viewer adds by hand: a twist spins the glass, a scroll or pinch
 // dives through the echo. Both coast and settle, and neither touches `params`.
 const Motion = {
-  spinVel: 0, diveVel: 0, held: false,
-  spin(v) { this.spinVel = Math.max(-8, Math.min(8, this.spinVel + v)); },
-  dive(v) { this.diveVel = Math.max(-1.6, Math.min(1.6, this.diveVel + v)); },
+  spinVel: 0, diveVel: 0, held: false, pend: 0, used: 0,
+  feed(a) { this.pend += a; },
+  spin(v) { this.used++; this.spinVel = Math.max(-8, Math.min(8, this.spinVel + v)); },
+  dive(v) { this.used++; this.diveVel = Math.max(-1.6, Math.min(1.6, this.diveVel + v)); },
   update(dt) {
     if (!this.held) fold.spin += this.spinVel * dt;
+    const turn = this.pend * (1 - Math.exp(-dt * 22));
+    fold.spin += turn; this.pend -= turn;
     this.spinVel *= Math.exp(-1.6 * dt);
     this.diveVel *= Math.exp(-2.6 * dt);
     if (Math.abs(this.spinVel) < 1e-4) this.spinVel = 0;
@@ -2861,13 +2881,13 @@ const Pens = (() => {
   let gd = 0, ga = 0, gt = 0, gdN = 0, gaN = 0;
   const tapQ = [];              // taps waiting to become ripples
   const rip = new Float32Array(16), ripAge = new Float32Array(4);
-  let ripN = 0, energy = 0, moved = 0;
+  let ripN = 0, energy = 0, moved = 0, painted = 0, taps = 0;
 
   const LISSAJOUS = [[3, 2], [5, 4], [3, 4], [5, 6], [7, 4], [2, 5], [7, 6], [4, 9]];
   const ROSE = [3, 5, 2, 7, 4, 6, 3, 5];
 
   function pen(kind, offset) {
-    return { kind, x: 0, y: 0, px: 0, py: 0, has: false, down: false, inside: false, hue: offset, offset, v: 0, vx: 0, vy: 0, q: [], acc: 0, t0: 0, sx: 0, sy: 0 };
+    return { kind, x: 0, y: 0, px: 0, py: 0, has: false, down: false, inside: false, hue: offset, offset, v: 0, vx: 0, vy: 0, q: [], acc: 0, t0: 0, sx: 0, sy: 0, tx: 0, ty: 0 };
   }
 
   function toP(clientX, clientY, out) {
@@ -3040,6 +3060,7 @@ const Pens = (() => {
       if (ripN === 4) { rip.copyWithin(0, 4, 16); ripAge.copyWithin(0, 1, 4); ripN = 3; }
       rip[ripN * 4] = f[0]; rip[ripN * 4 + 1] = f[1]; ripAge[ripN] = 0; ripN++;
     }
+    taps++;
     lastT += 0.07;
     Palette.write(lastT + palPhase, col, 0, P.inkBright);
     const R = 0.03 * P.inkSize, N = 14;
@@ -3140,21 +3161,22 @@ const Pens = (() => {
     }
   }
 
-  function setHands(list) {
+  // tips: ten slots (two hands × five fingers), each null (finger at rest) or a
+  // [u, v] screen position. A slot keeps its pen, so every finger keeps its color.
+  function setHands(tips) {
     const asp = canvasEl.clientWidth / canvasEl.clientHeight;
-    let k = 0;
-    for (const tips of list) {
-      for (const [x, y] of tips) {
-        if (!hands[k]) hands[k] = pen('hand', k * 0.11);
-        const p = hands[k];
-        const tx = (0.5 - x) * 2 * asp, ty = (0.5 - y) * 2;
-        if (!p.down) { p.x = tx; p.y = ty; }
-        p.x += (tx - p.x) * 0.6; p.y += (ty - p.y) * 0.6;
-        p.down = true;
-        k++;
-      }
+    for (let k = 0; k < 10; k++) {
+      if (!hands[k]) hands[k] = pen('hand', k * 0.11);
+      const p = hands[k], t = tips && tips[k];
+      if (!t) { p.down = false; continue; }
+      let x = (t[0] - 0.5) * 2 * asp, y = (0.5 - t[1]) * 2;
+      const fk = 1 + fold.fish * (x * x + y * y) * 0.3;
+      x *= fk; y *= fk;
+      if (!p.down) { p.tx = p.x = x; p.ty = p.y = y; p.down = true; p.has = false; continue; }
+      // Steady when the finger is still, immediate when it moves.
+      const k1 = Math.min(1, 0.22 + Math.hypot(x - p.tx, y - p.ty) * 14);
+      p.tx += (x - p.tx) * k1; p.ty += (y - p.ty) * k1;
     }
-    for (; k < hands.length; k++) hands[k].down = false;
   }
 
   function build(_dt, time, frame) {
@@ -3178,7 +3200,11 @@ const Pens = (() => {
       } else run(p, active);
       q.length = 0;
     }
-    for (const p of hands) run(p, p.down);
+    const glide = 1 - Math.exp(-dt * 26);
+    for (const p of hands) {
+      if (p.down) { p.x += (p.tx - p.x) * glide; p.y += (p.ty - p.y) * glide; }
+      run(p, p.down);
+    }
     for (let i = 0; i < tapQ.length; i += 2) burst(tapQ[i], tapQ[i + 1]);
     tapQ.length = 0;
     updateRipples();
@@ -3205,7 +3231,7 @@ const Pens = (() => {
     const P = params;
     // Movement is what the glass sings: wanderers murmur, hands ring out.
     const auto = p.kind === 'auto';
-    if (!auto) moved += d;
+    if (!auto) { moved += d; painted += d; }
     p.acc += d;
     if (p.acc > (auto ? 0.9 : 0.32)) { p.acc = 0; Sound.pluck(p.x, p.y, auto ? 0.13 : 0.3); }
     const rad = 0.006 * P.inkSize * (1 + P.inkSpeed * Math.min(p.v, 8) * 0.25);
@@ -3225,6 +3251,8 @@ const Pens = (() => {
     get particles() { return pCount; },
     get ripples() { return ripN; },
     get energy() { return energy; },
+    get painted() { return painted; },
+    get taps() { return taps; },
   };
 })();
 </script>
@@ -3235,13 +3263,12 @@ const Pens = (() => {
 const Inputs = (() => {
   const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
   const MODEL = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
-  const TIPS_ALL = [4, 8, 12, 16, 20];
-  const TIPS_INDEX = [8];
+  // [tip, lower joint] per finger, thumb first
+  const FINGERS = [[4, 3], [8, 6], [12, 10], [16, 14], [20, 18]];
 
   const state = {
     cam: false,
     hands: false,
-    allFingers: false,
     midi: false,
     tilt: false,
     tiltX: 0, tiltY: 0,
@@ -3250,15 +3277,31 @@ const Inputs = (() => {
 
   let video = null, stream = null, freshFrame = false;
   let worker = null, workerReady = false, workerBusy = false;
-  let pinched = [false, false];
+  const mkHand = () => ({ seen: false, pinch: false, ext: [false, false, false, false, false], gx: 0, gy: 0, ang: 0, scale: 1 });
+  const hs = [mkHand(), mkHand()];
+  const tipsOut = new Array(10).fill(null);
+  const grab = { mode: 0, ang: 0, dist: 1, t: 0 };
+  const palm = { since: 0, fired: false, ax: 0, ay: 0, bx: 0, by: 0 };
+  let sentAt = 0, seenAt = 0;
+  let grabEls = null;
 
   // ---------------- webcam ----------------
+  // The camera runs only as hard as its job needs: 30 fps always (the pens glide
+  // between samples, so a faster camera buys nothing), and VGA unless its picture
+  // is actually being shown in the mirrors.
+  let wantHD = false;
+  const camSpec = () => ({
+    width: { ideal: wantHD ? 1280 : 640 }, height: { ideal: wantHD ? 720 : 480 },
+    frameRate: { ideal: 30, max: 30 }, facingMode: 'user',
+  });
+  function tuneStream() {
+    const t = stream && stream.getVideoTracks()[0];
+    if (t && t.applyConstraints) t.applyConstraints(camSpec()).catch(() => {});
+  }
+
   async function openStream() {
-    if (stream) return;
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 60 }, facingMode: 'user' },
-      audio: false,
-    });
+    if (stream) { tuneStream(); return; }
+    stream = await navigator.mediaDevices.getUserMedia({ video: camSpec(), audio: false });
     video = document.createElement('video');
     video.muted = true;
     video.playsInline = true;
@@ -3286,12 +3329,14 @@ const Inputs = (() => {
   }
 
   async function setCam(on) {
+    wantHD = on;
     if (on) {
       await openStream();
       state.cam = true;
     } else {
       state.cam = false;
       closeStreamIfUnused();
+      tuneStream();
     }
   }
 
@@ -3330,7 +3375,8 @@ onmessage = async (e) => {
     if (lm) {
       try {
         const r = lm.detectForVideo(m.bitmap, m.t);
-        hands = r.landmarks.map((h) => h.map((p) => [p.x, p.y]));
+        const sides = r.handednesses || r.handedness || [];
+        hands = r.landmarks.map((h, i) => ({ p: h.map((p) => [p.x, p.y]), side: sides[i] && sides[i][0] ? sides[i][0].categoryName : '' }));
       } catch (err) {}
     }
     m.bitmap.close();
@@ -3343,18 +3389,20 @@ onmessage = async (e) => {
       state.hands = false;
       if (worker) { worker.terminate(); worker = null; }
       workerReady = false; workerBusy = false;
-      Pens.setHands([]);
+      onHands([]);
+      UI.handStatus('');
       closeStreamIfUnused();
       return;
     }
     await openStream();
     state.hands = true;
+    seenAt = performance.now();
     UI.toast('Loading fingertip tracking…');
     const url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
     worker = new Worker(url);
     worker.onmessage = (e) => {
       const m = e.data;
-      if (m.type === 'ready') { workerReady = true; UI.toast('Fingertips draw · pinch to add a mirror'); }
+      if (m.type === 'ready') { workerReady = true; mn.toast('Raise a finger to paint · pinch to hold the glass · show both palms for the next chamber', { timeout: 8000 }); }
       else if (m.type === 'error') { UI.toast("Fingertip tracking couldn't start · check your connection"); console.warn(m.message); setHands(false); UI.refresh(); }
       else if (m.type === 'hands') { workerBusy = false; onHands(m.hands); }
     };
@@ -3363,10 +3411,15 @@ onmessage = async (e) => {
   }
 
   async function sendHandFrame() {
-    if (!worker || !workerReady || workerBusy || !video || video.readyState < 2) return;
+    if (!worker || !workerReady || workerBusy || !video || video.readyState < 2 || document.hidden) return;
+    // Track at camera rate while a hand is in view; only glance a few times a
+    // second while waiting for one. The model is the expensive part of this mode.
+    const now = performance.now();
+    if (now - sentAt < (now - seenAt < 1500 ? 30 : 140)) return;
+    sentAt = now;
     workerBusy = true;
     try {
-      const w = 640, h = Math.round(640 * video.videoHeight / Math.max(1, video.videoWidth));
+      const w = 480, h = Math.round(480 * video.videoHeight / Math.max(1, video.videoWidth));
       const bitmap = await createImageBitmap(video, { resizeWidth: w, resizeHeight: h });
       if (!worker) { bitmap.close(); return; }
       worker.postMessage({ type: 'frame', bitmap, t: performance.now() }, [bitmap]);
@@ -3375,15 +3428,116 @@ onmessage = async (e) => {
     }
   }
 
+  // Reads each hand the way you would expect a hand to be read:
+  //   a raised finger is a painter (point for one light, open the hand for five),
+  //   a curled finger rests, so a fist lifts every pen,
+  //   a pinch holds the glass. One pinched hand turns it like a dial and dives by
+  //   moving toward the camera; two pinched hands turn and stretch it like a wheel,
+  //   the same twist and pinch as two fingers on a touch screen.
+  // The view is mirrored, and the middle 80% of the camera reaches the whole screen.
+  const reach = (u) => 0.5 + (u - 0.5) * 1.25;
+
+  function track(H, p, va) {
+    const D = (a, b) => Math.hypot((p[a][0] - p[b][0]) * va, p[a][1] - p[b][1]);
+    const size = Math.max(D(0, 9), 1e-3);
+    const pr = D(4, 8) / size;
+    H.pinch = H.pinch ? pr < 0.5 : pr < 0.3;
+    let open = true;
+    for (let f = 1; f < 5; f++) {
+      const r = D(FINGERS[f][0], 0) / Math.max(D(FINGERS[f][1], 0), 1e-3);
+      H.ext[f] = H.ext[f] ? r > 1.08 : r > 1.2;
+      open = open && H.ext[f];
+    }
+    // A thumb wanders when you point, so it only paints as part of an open hand.
+    const tr = D(4, 17) / Math.max(D(3, 17), 1e-3);
+    H.ext[0] = open && (H.ext[0] ? tr > 1.02 : tr > 1.1);
+    H.seen = true;
+    H.scale = size;
+    H.gx = reach(1 - (p[4][0] + p[8][0]) / 2);
+    H.gy = reach((p[4][1] + p[8][1]) / 2);
+    H.ang = Math.atan2(p[9][1] - p[0][1], -(p[9][0] - p[0][0]) * va);
+  }
+
+  function holdGlass() {
+    const a = hs[0], b = hs[1], now = performance.now();
+    const pa = a.seen && a.pinch, pb = b.seen && b.pinch;
+    const mode = pa && pb ? 2 : pa || pb ? 1 : 0;
+    let ang = 0, dist = 1;
+    if (mode === 2) {
+      const dx = (b.gx - a.gx) * innerWidth / innerHeight, dy = b.gy - a.gy;
+      ang = Math.atan2(dy, dx); dist = Math.max(Math.hypot(dx, dy), 1e-3);
+    } else if (mode === 1) {
+      const H = pa ? a : b;
+      ang = H.ang; dist = H.scale;
+    }
+    if (mode !== grab.mode) {
+      if (mode && !grab.mode) { Motion.spinVel = 0; mn.haptic('tick'); }
+      Motion.held = mode > 0;
+      grab.mode = mode; grab.ang = ang; grab.dist = dist; grab.t = now;
+      return;
+    }
+    if (!mode) return;
+    let da = ang - grab.ang;
+    if (da > Math.PI) da -= TAU; else if (da < -Math.PI) da += TAU;
+    const secs = Math.max(0.01, (now - grab.t) / 1000);
+    if (Math.abs(da) < 0.6) {          // a larger jump is the tracker swapping hands, not a turn
+      Motion.feed(-da);
+      Motion.spinVel += (Math.max(-8, Math.min(8, -da / secs)) - Motion.spinVel) * 0.3;
+      const r = Math.log(dist / grab.dist);
+      if (Math.abs(r) > 0.004 && Math.abs(r) < 0.5) Motion.dive(r * (mode === 2 ? 9 : 14));
+    }
+    grab.ang = ang; grab.dist = dist; grab.t = now;
+  }
+
   function onHands(list) {
-    const tips = state.allFingers ? TIPS_ALL : TIPS_INDEX;
-    Pens.setHands(list.map((h) => tips.map((i) => h[i])));
-    list.forEach((h, i) => {
-      if (i > 1) return;
-      const d = Math.hypot(h[4][0] - h[8][0], h[4][1] - h[8][1]);
-      if (!pinched[i] && d < 0.045) { pinched[i] = true; UI.pinch(); }
-      else if (pinched[i] && d > 0.08) pinched[i] = false;
-    });
+    const va = video ? video.videoWidth / Math.max(1, video.videoHeight) : 16 / 9;
+    hs[0].seen = hs[1].seen = false;
+    for (let i = 0; i < list.length && i < 2; i++) {
+      // Left and right keep their own slot, so fingers keep their colors when hands cross.
+      let slot = list[i].side === 'Left' ? 0 : list[i].side === 'Right' ? 1 : -1;
+      if (slot < 0 || hs[slot].seen) slot = hs[0].seen ? 1 : 0;
+      if (hs[slot].seen) continue;
+      track(hs[slot], list[i].p, va);
+      const H = hs[slot], p = list[i].p;
+      for (let f = 0; f < 5; f++) {
+        const t = FINGERS[f][0];
+        tipsOut[slot * 5 + f] = !H.pinch && H.ext[f] ? [reach(1 - p[t][0]), reach(p[t][1])] : null;
+      }
+    }
+    if (!grabEls) grabEls = [document.getElementById('grab0'), document.getElementById('grab1')];
+    for (let sl = 0; sl < 2; sl++) {
+      const H = hs[sl];
+      if (!H.seen) { H.pinch = false; H.ext.fill(false); for (let f = 0; f < 5; f++) tipsOut[sl * 5 + f] = null; }
+      const on = H.seen && H.pinch;
+      grabEls[sl].classList.toggle('on', on);
+      if (on) grabEls[sl].style.transform = `translate3d(${H.gx * innerWidth}px, ${H.gy * innerHeight}px, 0)`;
+    }
+    holdGlass();
+    Pens.setHands(tipsOut);
+    if (!state.hands) return;
+
+    const a = hs[0], b = hs[1], now = performance.now();
+    if (a.seen || b.seen) seenAt = now;
+
+    // Both palms shown and held still: step to the next chamber, hands-free.
+    const flat = (H) => H.seen && !H.pinch && H.ext[1] && H.ext[2] && H.ext[3] && H.ext[4];
+    if (!flat(a) || !flat(b)) { palm.since = 0; palm.fired = false; }
+    else if (!palm.since || Math.hypot(a.gx - palm.ax, a.gy - palm.ay) + Math.hypot(b.gx - palm.bx, b.gy - palm.by) > 0.06) {
+      palm.since = now; palm.ax = a.gx; palm.ay = a.gy; palm.bx = b.gx; palm.by = b.gy;
+    } else if (!palm.fired && now - palm.since > 900) {
+      palm.fired = true;
+      UI.nextChamber();
+      mn.haptic('confirm');
+    }
+
+    let n = 0;
+    for (let k = 0; k < 10; k++) if (tipsOut[k]) n++;
+    const seen = a.seen || b.seen;
+    UI.handStatus(!seen ? 'Show your hand to the camera'
+      : grab.mode === 2 ? 'Both hands on the glass · turn or stretch'
+      : grab.mode === 1 ? 'Holding the glass · turn or push'
+      : n === 0 ? 'Raise a finger to paint'
+      : n === 1 ? '1 finger painting' : `${n} fingers painting`, !seen);
   }
 
   // ---------------- MIDI ----------------
@@ -3453,7 +3607,7 @@ onmessage = async (e) => {
   }
 
   return {
-    state, setCam, setHands, setMidi, setTilt, learn, takeFrame,
+    state, setCam, setHands, setMidi, setTilt, learn, takeFrame, feedHands: onHands,
     get video() { return video; },
   };
 })();
@@ -3709,7 +3863,6 @@ const UI = (() => {
     morphTo(t);
   }
 
-  function pinch() { setParam('symmetry', params.symmetry >= 16 ? 3 : params.symmetry + 1); }
   function note(n) { enterChamber(n % CHAMBERS.length); }
 
   // ---------------- URL hash ----------------
@@ -3894,15 +4047,16 @@ const UI = (() => {
       set: (v) => { setParam('bloom', v * 2.2); setParam('inkGlow', 0.4 + v * 1.8); },
       out: (v) => `${Math.round(v * 100)}%`,
     });
-    const sw = (id, fn) => $(id).addEventListener('change', async (e) => {
-      try { await fn(e.target.checked); } catch (err) { e.target.checked = false; toast(err.message || "That isn't available here"); }
+    const chip = (id, get, fn) => $(id).addEventListener('click', async () => {
+      try { await fn(!get()); } catch (err) { toast(err.message || "That isn't available here"); }
       refresh();
     });
-    sw('#soundSwitch', setSound);
-    sw('#micSwitch', setListen);
+    chip('#soundSwitch', () => Sound.state.synth, setSound);
+    chip('#micSwitch', () => Sound.state.mic, setListen);
     refreshers.push(() => {
-      $('#soundSwitch').checked = Sound.state.synth;
-      $('#micSwitch').checked = Sound.state.mic;
+      $('#soundSwitch').setAttribute('aria-pressed', Sound.state.synth);
+      $('#micSwitch').setAttribute('aria-pressed', Sound.state.mic);
+      document.body.classList.toggle('nohover', !params.inkHover);
     });
   }
 
@@ -4042,7 +4196,6 @@ const UI = (() => {
     host.append(group('Devices', [
       switchRow('MIDI controller', () => S.midi, Inputs.setMidi, 'midi controller knobs'),
       learnRow,
-      switchRow('All five fingertips paint', () => S.allFingers, (v) => { S.allFingers = v; }, 'fingertips hands'),
       switchRow('Tilt to steer', () => S.tilt, Inputs.setTilt, 'tilt phone motion'),
     ]));
 
@@ -4104,10 +4257,50 @@ const UI = (() => {
     openPanel = next;
     if (next) { $('#panel-' + next).show(); refresh(); }
     document.body.classList.toggle('panel-open', !!next);
+    wake();
   }
 
   function buildPanels() {
-    document.querySelectorAll('.dock-tab').forEach((t) => t.addEventListener('click', () => togglePanel(t.dataset.panel)));
+    // The Chamber button doubles as a strip: swipe or scroll it to step between chambers.
+    const tab = document.querySelector('.dock-tab[data-panel="chamber"]');
+    let sx = null, swiped = false, wheelAt = 0;
+    tab.addEventListener('pointerdown', (e) => { sx = e.clientX; swiped = false; tab.setPointerCapture(e.pointerId); });
+    tab.addEventListener('pointerup', (e) => {
+      if (sx !== null && Math.abs(e.clientX - sx) > 28) { swiped = true; enterChamber(chamber + (e.clientX < sx ? 1 : -1)); mn.haptic('tick'); }
+      sx = null;
+    });
+    tab.addEventListener('pointercancel', () => { sx = null; });
+    tab.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(d) < 4 || e.timeStamp - wheelAt < 380) return;
+      wheelAt = e.timeStamp;
+      enterChamber(chamber + (d > 0 ? 1 : -1));
+    }, { passive: false });
+    document.querySelectorAll('.dock-tab').forEach((t) => t.addEventListener('click', () => {
+      if (t === tab && swiped) { swiped = false; return; }
+      togglePanel(t.dataset.panel);
+    }));
+
+    // While a slider is held, everything but that slider gets out of the way.
+    let adj = null;
+    const settle = () => {
+      if (!adj) return;
+      adj.panel.classList.remove('adjusting'); adj.row.classList.remove('live');
+      adj = null;
+    };
+    document.addEventListener('pointerdown', (e) => {
+      const r = e.target.closest && e.target.closest('dialog.panel input[type="range"]');
+      const row = r && r.closest('.dial, .set-row');
+      if (!row) return;
+      settle();
+      adj = { panel: r.closest('dialog.panel'), row };
+      adj.panel.classList.add('adjusting'); row.classList.add('live');
+    });
+    window.addEventListener('pointerup', settle);
+    window.addEventListener('pointercancel', settle);
+    window.addEventListener('blur', settle);
+    $('#handle').addEventListener('click', wake);
     document.querySelectorAll('dialog.panel [data-close]').forEach((b) => b.addEventListener('click', () => togglePanel(null)));
     canvas.addEventListener('pointerdown', () => { if (openPanel && compact()) togglePanel(null); });
     $('#wander').addEventListener('click', () => setWander(!system.autoVJ));
@@ -4117,7 +4310,6 @@ const UI = (() => {
       $('#more').hidePopover();
       actions[b.dataset.act]();
     });
-    $('#begin').addEventListener('click', () => { mn.done('intro'); showCaption(); });
   }
 
   function setWander(on) {
@@ -4156,7 +4348,7 @@ const UI = (() => {
     if (!snapRequested) return;
     snapRequested = false;
     canvas.toBlob((b) => b && download(b, `kaleidoscope-${CHAMBERS[chamber].slug}-${stamp()}.png`), 'image/png');
-    toast('Image saved to downloads');
+    mn.toast('Image saved to downloads', { action: 'Save in 4K', onAction: () => exportHiRes(3840) });
   }
 
   async function exportHiRes(longEdge) {
@@ -4213,21 +4405,19 @@ const UI = (() => {
 
   const actions = {
     snapshot: () => { snapRequested = true; },
-    export4k: () => exportHiRes(3840),
     record: toggleRecord,
     copyLink: () => {
       writeHash();
       navigator.clipboard.writeText(location.href).then(() => toast('Link copied · it opens this exact view'), () => toast(location.href));
     },
     fullscreen: () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.()),
-    hide: () => setHidden(true),
     all: () => togglePanel('all'),
     keys: () => mn.sheet('keys'),
   };
 
   function setHidden(h) {
     document.body.classList.toggle('clean', h);
-    if (h) { togglePanel(null); toast('Controls hidden · press H to bring them back'); }
+    if (h) { togglePanel(null); toast('Controls hidden · press H to bring them back'); } else wake();
   }
 
   // ---------------- keyboard ----------------
@@ -4276,9 +4466,57 @@ const UI = (() => {
   function refresh() { for (const f of refreshers) f(); }
   function refreshSoon() { if (refreshTimer <= 0) refreshTimer = 0.15; }
 
+  // The dock comes back when you ask for it, not whenever the pointer moves:
+  // painting is pointer movement, and the picture is the point.
   function wake() {
-    idleTimer = 5;
+    idleTimer = 3.5;
     document.body.classList.remove('idle');
+  }
+  function wakeOnIntent(e) {
+    if (e.target !== canvas) wake();
+    else if (e.type === 'pointermove' && e.pointerType === 'mouse' && !e.buttons && e.clientY > innerHeight - 88) wake();
+  }
+
+  // ---------------- whisper: one quiet line ----------------
+  let whisperTimer = 0;
+  function whisper(text, secs = 0) {
+    const w = $('#whisper');
+    if (text) w.textContent = text;
+    w.classList.toggle('show', !!text);
+    whisperTimer = text ? secs : 0;
+  }
+
+  // What the camera currently makes of your hands. Settles for a moment first,
+  // so it reports poses rather than every flicker between them.
+  let handText = '', handTimer = 0;
+  function handStatus(text, sticky) {
+    if (text === handText) return;
+    handText = text;
+    clearTimeout(handTimer);
+    handTimer = setTimeout(() => whisper(text, sticky ? 0 : 2.4), text ? 350 : 0);
+  }
+
+  // First-use hints, one at a time, each gone for good once you have done the thing
+  // (or after a while, so nothing nags).
+  const coarse = matchMedia('(pointer: coarse)').matches;
+  const COACH = [
+    { text: coarse ? 'Drag a finger to paint with light' : 'Move to paint with light', done: (b) => Pens.painted - b.painted > 1.2 },
+    { text: coarse ? 'Tap to drop a ripple' : 'Click to drop a ripple', done: (b) => Pens.taps > b.taps },
+    { text: coarse ? 'Pinch to dive · twist to spin the glass' : 'Scroll to dive · Shift + scroll to spin the glass', done: (b) => Motion.used > b.used },
+    { text: coarse ? 'Everything else is below · swipe the first button for the next chamber' : 'Everything else is below · scroll on the first button for the next chamber', done: (b) => chamber !== b.chamber || !!openPanel },
+  ];
+  let coachStep = +(mn.store.get('coach') || 0), coachT = 0, coachShown = false, coachBase = null;
+  function updateCoach(dt) {
+    if (coachStep >= COACH.length || Inputs.state.hands || document.body.classList.contains('clean')) return;
+    if (!coachBase) coachBase = { painted: Pens.painted, taps: Pens.taps, used: Motion.used, chamber };
+    coachT += dt;
+    const step = COACH[coachStep], did = step.done(coachBase);
+    if (!coachShown && !did && coachT > 2.5) { whisper(step.text); coachShown = true; }
+    if (did || coachT > 16) {
+      if (coachShown) whisper('');
+      coachStep++; coachT = did ? 1 : 0; coachShown = false; coachBase = null;
+      mn.store.set('coach', coachStep);
+    }
   }
 
   function init(c) {
@@ -4298,17 +4536,19 @@ const UI = (() => {
     renderShapeDial();
     buildPanels();
     refresh();
-    window.addEventListener('keydown', (e) => { wake(); onKey(e); });
-    window.addEventListener('pointermove', wake, { passive: true });
-    window.addEventListener('pointerdown', wake, { passive: true });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Tab') wake(); onKey(e); });
+    window.addEventListener('pointermove', wakeOnIntent, { passive: true });
+    window.addEventListener('pointerdown', wakeOnIntent, { passive: true });
+    $('#dock').addEventListener('focusin', wake);
     document.addEventListener('visibilitychange', keepAwake);
     document.addEventListener('fullscreenchange', keepAwake);
     wake();
-    if (mn.store.get('done:intro') || document.querySelector('[data-once="intro"]')?.hidden) showCaption();
+    showCaption();
   }
 
   function update(dt) {
     updateMorph(dt);
+    updateCoach(dt);
     if (system.autoVJ) {
       vjTimer += dt;
       if (vjTimer >= system.autoVJInterval) {
@@ -4322,11 +4562,13 @@ const UI = (() => {
     if (hashTimer > 0 && (hashTimer -= dt) <= 0) writeHash();
     if (refreshTimer > 0 && (refreshTimer -= dt) <= 0) refresh();
     if (captionTimer > 0 && (captionTimer -= dt) <= 0) $('#caption').classList.remove('show');
+    if (whisperTimer > 0 && (whisperTimer -= dt) <= 0) $('#whisper').classList.remove('show');
     if (idleTimer > 0 && (idleTimer -= dt) <= 0 && !openPanel) document.body.classList.add('idle');
   }
 
   return {
-    init, update, afterFrame, afterRender, toast, refresh, pinch, note, setNormalized, stats,
+    init, update, afterFrame, afterRender, toast, refresh, note, handStatus,
+    nextChamber: () => enterChamber(chamber + 1), setNormalized, stats,
     paused: false,
   };
 })();
