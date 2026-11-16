@@ -1184,7 +1184,6 @@ body.clean :is(.orb, .halo, .panel, .caption) { display: none; }
       <h2 class="core-title">Keep</h2>
       <p class="core-line" id="keepLine">Take this moment with you</p>
       <div class="core-links">
-        <button class="link" data-act="all">All settings</button>
         <button class="link" data-act="keys">Keys</button>
       </div>
     </div>
@@ -3466,9 +3465,11 @@ const Inputs = (() => {
     tilt: false,
     tiltX: 0, tiltY: 0,
     learnKey: null,
+    camera: '',          // the chosen camera's id; '' lets the browser pick the one facing you
   };
 
   try { if (localStorage.getItem('mn:twohands') === '0') state.twoHands = false; } catch (e) {}
+  try { state.camera = localStorage.getItem('mn:camera') || ''; } catch (e) {}
   let video = null, stream = null, freshFrame = false;
   let worker = null, workerReady = false, workerBusy = false;
   const mkHand = () => ({ seen: false, pinch: false, ext: [false, false, false, false, false], gx: 0, gy: 0, ang: 0, scale: 1, ix: 0, iy: 0, was: false });
@@ -3484,42 +3485,102 @@ const Inputs = (() => {
   // between samples, so a faster camera buys nothing), and VGA unless its picture
   // is actually being shown in the mirrors.
   let wantHD = false;
-  const camSpec = () => ({
+  const camSpec = (device = state.camera) => ({
     width: { ideal: wantHD ? 1280 : 640 }, height: { ideal: wantHD ? 720 : 480 },
-    frameRate: { ideal: 30, max: 30 }, facingMode: 'user',
+    frameRate: { ideal: 30, max: 30 }, ...(device ? { deviceId: { exact: device } } : { facingMode: 'user' }),
   });
   function tuneStream() {
     const t = stream && stream.getVideoTracks()[0];
-    if (t && t.applyConstraints) t.applyConstraints(camSpec()).catch(() => {});
+    if (t && t.applyConstraints) t.applyConstraints(camSpec(usingCamera)).catch(() => {});
   }
+
+  // Which cameras there are. Browsers name them only once one has been allowed, so
+  // the list is read again whenever a stream opens or a device comes or goes.
+  let cameras = [], usingCamera = '';
+  async function listCameras() {
+    const md = navigator.mediaDevices;
+    if (!md || !md.enumerateDevices) return;
+    try {
+      cameras = (await md.enumerateDevices()).filter((d) => d.kind === 'videoinput' && d.deviceId)
+        .map((d, i) => ({ id: d.deviceId, label: d.label || `Camera ${i + 1}` }));
+    } catch (e) { return; }
+    if (typeof UI !== 'undefined') UI.refresh();
+  }
+  if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) navigator.mediaDevices.addEventListener('devicechange', listCameras);
+  listCameras();
 
   async function openStream() {
     if (stream) { tuneStream(); return; }
-    stream = await navigator.mediaDevices.getUserMedia({ video: camSpec(), audio: false });
-    video = document.createElement('video');
-    video.muted = true;
-    video.playsInline = true;
-    video.srcObject = stream;
-    await video.play();
-    if ('requestVideoFrameCallback' in video) {
+    const md = navigator.mediaDevices;
+    if (!md || !md.getUserMedia) throw new Error('The camera needs HTTPS or localhost');
+    let s;
+    usingCamera = state.camera;
+    try { s = await md.getUserMedia({ video: camSpec(), audio: false }); }
+    catch (err) {
+      // The chosen camera is gone (unplugged): use whichever one is there.
+      if (!state.camera || !['OverconstrainedError', 'NotFoundError'].includes(err.name)) throw err;
+      usingCamera = '';
+      s = await md.getUserMedia({ video: camSpec(''), audio: false });
+    }
+    if (stream) { s.getTracks().forEach((t) => t.stop()); return; }   // another call opened it meanwhile
+    const v = document.createElement('video');
+    stream = s;
+    video = v;
+    v.muted = true;
+    v.playsInline = true;
+    v.srcObject = s;
+    // A camera unplugged while in use: carry on with another, or switch off cleanly.
+    s.getVideoTracks()[0].addEventListener('ended', () => {
+      if (stream !== s) return;
+      dropStream();
+      if (!state.cam && !state.hands) return;
+      openStream().catch(async () => {
+        state.cam = false;
+        await setHands(false);
+        UI.toast('The camera was disconnected');
+        UI.refresh();
+      });
+    });
+    await v.play();
+    if ('requestVideoFrameCallback' in v) {
       const onFrame = () => {
-        if (!video) return;
+        if (video !== v) return;
         freshFrame = true;
         sendHandFrame();
-        video.requestVideoFrameCallback(onFrame);
+        v.requestVideoFrameCallback(onFrame);
       };
-      video.requestVideoFrameCallback(onFrame);
+      v.requestVideoFrameCallback(onFrame);
     } else {
-      const poll = () => { if (!video) return; freshFrame = true; sendHandFrame(); setTimeout(poll, 33); };
+      const poll = () => { if (video !== v) return; freshFrame = true; sendHandFrame(); setTimeout(poll, 33); };
       poll();
     }
+    listCameras();
   }
 
-  function closeStreamIfUnused() {
-    if (state.cam || state.hands || !stream) return;
+  function dropStream() {
+    if (!stream) return;
     stream.getTracks().forEach((t) => t.stop());
     stream = null;
     video = null;
+  }
+
+  function closeStreamIfUnused() {
+    if (state.cam || state.hands) return;
+    dropStream();
+  }
+
+  // Choose a camera ('' for automatic). If one is running, it changes over at once.
+  async function setCamera(id) {
+    state.camera = id;
+    try { if (id) localStorage.setItem('mn:camera', id); else localStorage.removeItem('mn:camera'); } catch (e) {}
+    if (!stream) return;
+    dropStream();
+    try { await openStream(); }
+    catch (err) {
+      state.cam = false;
+      await setHands(false);
+      throw new Error("That camera couldn't be opened");
+    }
   }
 
   async function setCam(on) {
@@ -3824,7 +3885,11 @@ onmessage = async (e) => {
   }
 
   return {
-    state, setCam, setHands, setMidi, setTilt, learn, takeFrame, feedHands: onHands,
+    state, setCam, setHands, setMidi, setTilt, learn, takeFrame, feedHands: onHands, setCamera,
+    get cameras() { return cameras; },
+    // The camera actually in use: the chosen one, unless it is not there.
+    get camera() { return stream ? usingCamera : cameras.some((c) => c.id === state.camera) ? state.camera : ''; },
+    get camerasNote() { return cameras.length ? '' : 'Others appear once the camera is on'; },
     setTwoHands(v) { state.twoHands = v; try { localStorage.setItem('mn:twohands', v ? '1' : '0'); } catch (e) {} if (worker) worker.postMessage({ type: 'opts', numHands: v ? 2 : 1 }); },
     async setHandsCpu(v) { state.handsCpu = v; if (state.hands) { await setHands(false); await setHands(true); } },
     get video() { return video; },
@@ -4949,10 +5014,32 @@ const UI = (() => {
     return settingRow(label, sw, { inline: true, search });
   }
 
+  // Which camera: the built-in one, or anything else that is plugged in.
+  function cameraRow() {
+    const sel = el('select', { id: 's-camera', class: 'set-select' });
+    let shown = null;
+    sel.addEventListener('change', async () => {
+      try { await Inputs.setCamera(sel.value); } catch (err) { toast(err.message); }
+      refresh();
+    });
+    refreshers.push(() => {
+      const list = Inputs.cameras, note = Inputs.camerasNote || '';
+      const sig = JSON.stringify([list, note]);
+      if (sig !== shown) {
+        shown = sig;
+        sel.replaceChildren(el('option', { value: '' }, 'Automatic'));
+        list.forEach((c) => { const o = el('option', { value: c.id }); o.textContent = c.label; sel.append(o); });
+        if (note) sel.append(el('option', { value: '-', disabled: '' }, note));
+      }
+      if (document.activeElement !== sel) sel.value = Inputs.camera;
+    });
+    return settingRow('Camera to use', sel, { inline: true, search: 'camera to use webcam device source external usb select choose' });
+  }
+
   function buildAll() {
     const host = $('#allGroups');
     GROUPS.forEach(([title, keyGroups], gi) => {
-      const rows = [];
+      const rows = title === 'Camera' ? [cameraRow()] : [];
       for (const [k, s] of Object.entries(SCHEMA)) if (keyGroups.includes(s[4])) rows.push(paramRow(k, MODE_OF_GROUP[s[4]]));
       host.append(group(title, rows, gi === 0));
     });
@@ -5064,7 +5151,7 @@ const UI = (() => {
   function say(text) { $('#say').textContent = text || HOME_SAY; }
 
   // The home ring, clockwise from the top. Four things shape the place you are in;
-  // four are ways of being in it; the last keeps a moment of it.
+  // four are ways of being in it; then keeping a moment, the light, and every setting.
   function buildHome() {
     const items = [
       { face: 'place', label: 'Place', go: 'chamber', say: 'Where you are' },
@@ -5077,6 +5164,7 @@ const UI = (() => {
       { icon: 'play', label: 'Drift', on: () => system.autoVJ, set: setWander, say: 'It wanders on its own. Just watch.' },
       { icon: 'download', label: 'Keep', go: 'keep', say: 'Take this moment with you' },
       { icon: 'light', label: 'Light', go: 'light', say: 'What paints the picture' },
+      { icon: 'settings', label: 'Settings', go: 'all', say: 'Every setting, in one list' },
     ];
     const host = $('#homeRing'), faces = {};
     for (const it of items) {
