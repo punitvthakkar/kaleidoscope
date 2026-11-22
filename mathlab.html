@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>fractonaut · mathematics lab</title>
+<style>
+  :root { --text: #eeeaf7; --dim: #b3adc4; --card: rgba(16, 14, 24, 0.72); --line: rgba(255, 255, 255, 0.12); --accent: #00e5c8; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #000; color: var(--text); overflow: hidden;
+    font: 15px/1.45 ui-rounded, "SF Pro Rounded", "Avenir Next", system-ui, sans-serif; }
+  canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+  canvas#gl.dragging { cursor: grabbing; }
+  .rooms { position: fixed; top: 14px; left: 50%; translate: -50% 0; display: flex; gap: 6px; padding: 6px; border-radius: 99px;
+    background: var(--card); backdrop-filter: blur(14px); border: 1px solid var(--line); z-index: 3; max-width: calc(100vw - 24px); overflow-x: auto; }
+  .rooms button { border: 0; background: none; color: var(--dim); font: inherit; font-size: 14px; padding: 7px 14px; border-radius: 99px; cursor: pointer; white-space: nowrap; }
+  .rooms button[aria-pressed="true"] { background: rgba(255, 255, 255, 0.14); color: var(--text); }
+  .card { position: fixed; left: 16px; bottom: 16px; width: min(400px, calc(100vw - 32px)); padding: 16px 18px; border-radius: 18px;
+    background: var(--card); backdrop-filter: blur(14px); border: 1px solid var(--line); z-index: 3; }
+  .card h1 { font-size: 22px; margin: 0 0 4px; font-weight: 600; }
+  .card .what { color: var(--dim); margin: 0 0 10px; font-size: 14px; }
+  .card .formula { font: 14px/1.4 ui-monospace, "SF Mono", monospace; color: #fff; background: rgba(255,255,255,0.06); border-radius: 10px; padding: 8px 10px; margin: 0 0 10px; }
+  .card .formula .live { color: var(--accent); }
+  .card ul { margin: 0; padding: 0; list-style: none; font-size: 13.5px; color: var(--dim); display: grid; gap: 4px; }
+  .card li b { color: var(--text); font-weight: 600; }
+  .dial { position: fixed; right: 18px; top: 50%; translate: 0 -50%; width: 74px; height: min(56vh, 440px); z-index: 3;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .dial .name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); text-align: center; }
+  .dial .track { position: relative; flex: 1; width: 44px; border-radius: 22px; background: var(--card); border: 1px solid var(--line);
+    backdrop-filter: blur(14px); touch-action: none; cursor: ns-resize; overflow: hidden; }
+  .dial .fill { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,229,200,.35), rgba(0,229,200,.08)); }
+  .dial .knob { position: absolute; left: 4px; right: 4px; height: 34px; border-radius: 17px; background: #fff; box-shadow: 0 0 18px rgba(0,229,200,.8); translate: 0 50%; }
+  .dial .value { font: 600 14px ui-monospace, monospace; color: var(--accent); }
+  .map { position: fixed; right: 110px; bottom: 16px; width: 220px; height: 220px; border-radius: 16px; overflow: hidden; z-index: 3;
+    border: 1px solid var(--line); background: #000; cursor: crosshair; touch-action: none; display: none; }
+  .map canvas { width: 100%; height: 100%; display: block; }
+  .map .dot { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 12px var(--accent); pointer-events: none; }
+  .map .cap { position: absolute; left: 8px; top: 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 3px #000; pointer-events: none; }
+  .hint { position: fixed; left: 50%; top: 50%; translate: -50% -50%; padding: 12px 18px; border-radius: 14px; background: var(--card); backdrop-filter: blur(10px);
+    border: 1px solid var(--line); z-index: 4; font-size: 15px; transition: opacity .6s; pointer-events: none; }
+  .err { position: fixed; inset: auto 16px 16px auto; color: #ff8a8a; z-index: 5; white-space: pre-wrap; font-size: 12px; max-width: 50vw; }
+  @media (max-width: 700px) { .card { bottom: auto; top: 70px; } .map { right: 100px; width: 160px; height: 160px; } }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<nav class="rooms" id="rooms"></nav>
+<section class="card" id="card"><h1 id="title"></h1><p class="what" id="what"></p><p class="formula" id="formula"></p><ul id="howto"></ul></section>
+<div class="dial" id="dial"><div class="name" id="dialName"></div><div class="track" id="track"><div class="fill" id="fill"></div><div class="knob" id="knob"></div></div><div class="value" id="dialValue"></div></div>
+<div class="map" id="map"><canvas id="mapcv"></canvas><div class="dot" id="dot"></div><div class="cap">c: pick a point</div></div>
+<div class="hint" id="hint"></div>
+<div class="err" id="err"></div>
+<script>
+// ================================================================ rooms
+// Each room: one shape, one dial (what the right-hand slider does), optionally the c-map.
+const ROOMS = [
+  { key: 'sinequat', name: 'Sine quaternion', shape: 1, orbit: true, look: 0, hue: 0.62,
+    what: 'Every point in space is a 4D number q (a quaternion). Repeat q ← c·sin(q) again and again. Points that stay small make the shape; it is a 3D slice of a 4D object.',
+    formula: (s) => `q ← c · sin(q)   w = <span class="live">${s.dial.toFixed(2)}</span>`,
+    dial: { name: '4th dimension', min: -1.2, max: 1.2, v: 0, fmt: (v) => 'w ' + v.toFixed(2) },
+    howto: ['<b>Drag</b> to turn it in your hand', '<b>Slide the dial</b> to travel through the 4th dimension', '<b>Scroll / pinch</b> to zoom', '<b>Tap</b> to send a pulse of light through it'] },
+  { key: 'julia', name: 'Quaternion Julia', shape: 2, orbit: true, look: 0, hue: 0.05, map: true,
+    what: 'Repeat q ← q² + c in four dimensions. Every c gives a different shape: inside the black on the map they are solid, near its edge they turn to lace, outside they fall to dust.',
+    formula: (s) => `q ← q² + c   c = <span class="live">${s.c[0].toFixed(2)} ${s.c[1] >= 0 ? '+' : '−'} ${Math.abs(s.c[1]).toFixed(2)}i</span>`,
+    dial: { name: '4th dimension', min: -1, max: 1, v: 0, fmt: (v) => 'w ' + v.toFixed(2) },
+    howto: ['<b>Pick a point on the map</b> to choose c and watch it morph', '<b>Drag</b> the shape to turn it', '<b>Slide the dial</b> through the 4th dimension', '<b>Tap</b> for a pulse'] },
+  { key: 'bulb', name: 'Mandelbulb', shape: 3, orbit: true, look: 0, hue: 0.0,
+    what: 'The Mandelbrot set lifted into 3D: each point is raised to a power in spherical coordinates and added back. Low powers are smooth blobs; high powers bloom into cauliflower.',
+    formula: (s) => `v ← v<sup>${s.dial.toFixed(1)}</sup> + p   power = <span class="live">${s.dial.toFixed(1)}</span>`,
+    dial: { name: 'Power', min: 2, max: 12, v: 8, fmt: (v) => v.toFixed(1) },
+    howto: ['<b>Slide the dial</b> to change the power and watch it bloom', '<b>Drag</b> to turn it', '<b>Scroll / pinch</b> to zoom', '<b>Tap</b> for a pulse'] },
+  { key: 'gyroid', name: 'Gyroid', shape: 4, orbit: false, look: 3, hue: 0.45,
+    what: 'One sum of sines, sin x cos y + sin y cos z + sin z cos x = level, makes an endless surface that splits space into two interlocking labyrinths. You are flying through it.',
+    formula: (s) => `sin x cos y + sin y cos z + sin z cos x = <span class="live">${s.dial.toFixed(2)}</span>`,
+    dial: { name: 'Level', min: -1.2, max: 1.2, v: 0, fmt: (v) => v.toFixed(2) },
+    howto: ['<b>Drag</b> to steer', '<b>Slide the dial</b> to change the level: the walls thicken or open', '<b>Scroll</b> to fly faster or slower', '<b>Tap</b> for a pulse'] },
+  { key: 'box', name: 'Mandelbox', shape: 5, orbit: true, look: 2, hue: 0.55,
+    what: 'Fold space at the walls of a box, invert it inside a sphere, scale it, repeat. The scale decides everything: a cube of cities, or a cloud of fragments.',
+    formula: (s) => `fold → invert → v ← <span class="live">${s.dial.toFixed(2)}</span>·v + p`,
+    dial: { name: 'Scale', min: -2.8, max: -1.3, v: -2.0, fmt: (v) => v.toFixed(2) },
+    howto: ['<b>Slide the dial</b> to change the scale', '<b>Drag</b> to turn it', '<b>Scroll / pinch</b> to zoom', '<b>Tap</b> for a pulse'] },
+  { key: 'apollo', name: 'Apollonian', shape: 6, orbit: false, look: 1, hue: 0.85,
+    what: 'Fill the gaps between spheres with smaller spheres, then the gaps between those, forever: an inversion repeated in every cell of space. You are flying through the foam.',
+    formula: (s) => `p ← p · <span class="live">${s.dial.toFixed(2)}</span> / |p|²`,
+    dial: { name: 'Bubble size', min: 1.0, max: 1.5, v: 1.2, fmt: (v) => v.toFixed(2) },
+    howto: ['<b>Drag</b> to steer', '<b>Slide the dial</b> to change the bubbles', '<b>Scroll</b> to fly faster or slower', '<b>Tap</b> for a pulse'] },
+];
+
+// ================================================================ shader
+const VS = `#version 300 es
+void main() { vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2); gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0); }`;
+const FS = `#version 300 es
+precision highp float;
+out vec4 o;
+uniform vec2 uRes;
+uniform float uT, uDial, uYaw, uPitch, uZoom, uFly, uHue, uPulseAge;
+uniform vec4 uC;
+uniform int uShape, uLook;
+uniform vec3 uPulse;   // where the pulse started (on the object), in its space
+
+vec3 pal(float t) { return 0.5 + 0.5 * cos(6.28318 * (t + uHue + vec3(0.0, 0.33, 0.67))); }
+mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
+vec4 qmul(vec4 a, vec4 b) { return vec4(a.x * b.x - dot(a.yzw, b.yzw), a.x * b.yzw + b.x * a.yzw + cross(a.yzw, b.yzw)); }
+vec4 qsq(vec4 a) { return vec4(a.x * a.x - dot(a.yzw, a.yzw), 2.0 * a.x * a.yzw); }
+vec4 qsin(vec4 q) { float l = length(q.yzw); vec3 v = l > 1e-6 ? q.yzw / l : vec3(0.0); return vec4(sin(q.x) * cosh(l), cos(q.x) * sinh(l) * v); }
+float qcosLen(vec4 q) { float l = length(q.yzw), ca = cos(q.x), sa = sin(q.x), ch = cosh(l), sh = sinh(l); return sqrt(ca * ca * ch * ch + sa * sa * sh * sh); }
+
+float deSine(vec3 p, out float trap) {
+  vec4 q = vec4(p, uDial), c = uC; float dr = 1.0, r2 = dot(q, q), cl = length(c); trap = 1e9;
+  for (int i = 0; i < 9; i++) { dr *= cl * qcosLen(q); q = qmul(c, qsin(q)); r2 = dot(q, q); trap = min(trap, r2); if (r2 > 200.0) break; }
+  float r = sqrt(r2); return 0.15 * log(max(r, 1.0001)) * r / max(dr, 1e-6);
+}
+float deJulia(vec3 p, out float trap) {
+  vec4 z = vec4(p, uDial), c = uC; float m2 = dot(z, z), dz2 = 1.0; trap = 1e9;
+  for (int i = 0; i < 11; i++) { dz2 *= 4.0 * m2; z = qsq(z) + c; m2 = dot(z, z); trap = min(trap, m2); if (m2 > 16.0) break; }
+  return 0.25 * sqrt(m2 / dz2) * log(max(m2, 1.0001));
+}
+float deBulb(vec3 p, out float trap) {
+  float n = uDial; vec3 z = p; float dr = 1.0, r = length(z); trap = 1e9;
+  for (int i = 0; i < 8; i++) {
+    r = length(z); if (r > 2.0) break;
+    float th = acos(clamp(z.z / max(r, 1e-6), -1.0, 1.0)), ph = atan(z.y, z.x);
+    dr = pow(r, n - 1.0) * n * dr + 1.0; float zr = pow(r, n); th *= n; ph *= n;
+    z = zr * vec3(sin(th) * cos(ph), sin(th) * sin(ph), cos(th)) + p; trap = min(trap, dot(z, z));
+  }
+  return 0.5 * log(max(r, 1.0001)) * r / dr;
+}
+float deGyroid(vec3 p, out float trap) {
+  float f = 4.2; vec3 q = p * f; float g = dot(sin(q), cos(q.yzx)) - uDial;
+  vec3 s2 = sin(q * 0.5); trap = dot(s2, s2) + 0.05;
+  return max((abs(g) - 0.16) / (f * 1.9), 0.1 - length(p.xy - vec2(0.0)));
+}
+float deBox(vec3 p, out float trap) {
+  float s = uDial; vec3 z = p; float dr = 1.0; trap = 1e9;
+  for (int i = 0; i < 11; i++) {
+    z = clamp(z, -1.0, 1.0) * 2.0 - z; float r2 = dot(z, z);
+    if (r2 < 0.25) { z *= 4.0; dr *= 4.0; } else if (r2 < 1.0) { z /= r2; dr /= r2; }
+    z = s * z + p; dr = dr * abs(s) + 1.0; trap = min(trap, r2);
+  }
+  return length(z) / abs(dr);
+}
+float deApollo(vec3 p, out float trap) {
+  float s = uDial, scale = 1.0; trap = 1e9;
+  for (int i = 0; i < 7; i++) { p = -1.0 + 2.0 * fract(0.5 * p + 0.5); float r2 = dot(p, p); trap = min(trap, r2); float k = s / r2; p *= k; scale *= k; }
+  return 0.25 * abs(p.y) / scale;
+}
+float de(vec3 p, out float trap) {
+  if (uShape == 1) return deSine(p, trap);
+  if (uShape == 2) return deJulia(p, trap);
+  if (uShape == 3) return deBulb(p, trap);
+  if (uShape == 4) return deGyroid(p, trap);
+  if (uShape == 5) return deBox(p, trap);
+  return deApollo(p, trap);
+}
+
+vec3 shade(vec3 pos, vec3 n, vec3 rd, float trap, float t, float ao) {
+  float facing = max(dot(n, -rd), 0.0), fres = pow(1.0 - facing, 3.0);
+  vec3 L = normalize(vec3(0.5, 0.8, -0.4)), r = reflect(rd, n);
+  float spec = pow(max(dot(r, L), 0.0), 50.0);
+  vec3 c;
+  if (uLook == 1) c = pal(facing * 1.6 + sqrt(trap) * 0.4 + uT * 0.04) * (0.1 + 1.7 * fres) + spec * 1.4;
+  else if (uLook == 2) c = pal(r.y * 0.45 + 0.5 + uT * 0.02) * (0.55 + 0.9 * smoothstep(-0.3, 1.0, r.y)) * (0.55 + 0.45 * fres) * (0.4 + 0.6 * ao) + spec * 1.6;
+  else if (uLook == 3) { float v = sqrt(trap) * 5.0 + t * 0.5 - uT * 0.3; c = pal(floor(v) * 0.13) * smoothstep(0.07, 0.0, abs(fract(v) - 0.5)) * 2.2 + pal(0.5 + t * 0.1) * fres * 0.6 + 0.02; }
+  else c = pal(sqrt(trap) * 0.35 + t * 0.05 + uT * 0.04) * (0.35 + 0.65 * facing) * ao * ao * 2.0 + fres * pal(t * 0.1 + 0.5) * 0.8;
+  // A tapped pulse: a bright band of light spreading over the surface from where you tapped.
+  if (uPulseAge >= 0.0) {
+    float d = length(pos - uPulse), band = exp(-pow((d - uPulseAge * 1.6) * 9.0, 2.0)) * exp(-uPulseAge * 1.2);
+    c += vec3(1.0, 0.97, 0.9) * band * 3.0;
+  }
+  return c;
+}
+
+void main() {
+  vec2 p = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y * 2.0;
+  bool orbit = uShape == 1 || uShape == 2 || uShape == 3 || uShape == 5;
+  vec3 ro, rd; float far = 14.0, t = 0.05;
+  if (orbit) {
+    float base = uShape == 1 ? 6.8 : uShape == 2 ? 2.6 : uShape == 3 ? 2.5 : 6.0, dist = base / uZoom;
+    float pitch = clamp(uPitch, -1.4, 1.4);
+    ro = dist * vec3(cos(pitch) * sin(uYaw), sin(pitch), cos(pitch) * cos(uYaw));
+    vec3 fw = normalize(-ro), rt = normalize(cross(vec3(0, 1, 0), fw)), up = cross(fw, rt);
+    rd = normalize(p.x * rt + p.y * up + 1.7 * fw);
+    float R = uShape == 1 ? 3.2 : uShape == 5 ? 4.5 : 1.7, b = dot(ro, rd), c = dot(ro, ro) - R * R, h = b * b - c;
+    if (h < 0.0) { o = vec4(0.0, 0.0, 0.0, 1.0); return; }
+    t = max(0.05, -b - sqrt(h)); far = -b + sqrt(h);
+  } else {
+    ro = vec3(0.0, uShape == 6 ? 0.55 : 0.0, uFly);
+    rd = normalize(vec3(p, 1.4));
+    rd.yz = rot(uPitch * 0.8) * rd.yz; rd.xz = rot(uYaw * 0.8) * rd.xz;
+  }
+  float glow = 0.0, trap = 0.0, steps = 0.0; bool hit = false;
+  for (int i = 0; i < 160; i++) {
+    float d = de(ro + rd * t, trap); glow += exp(-d * 75.0); steps += 1.0;
+    if (d < (uShape == 1 ? 0.0016 : 0.0006) * t) { hit = true; break; }
+    t += d * (uShape <= 2 ? 0.5 : orbit ? 0.7 : 0.85);
+    if (t > far) break;
+  }
+  vec3 c = pal(t * 0.08) * glow * 0.003;
+  if (hit) {
+    vec3 pos = ro + rd * t; vec2 e = vec2(0.0006 * t, 0.0); float tr;
+    vec3 n = normalize(vec3(de(pos + e.xyy, tr) - de(pos - e.xyy, tr), de(pos + e.yxy, tr) - de(pos - e.yxy, tr), de(pos + e.yyx, tr) - de(pos - e.yyx, tr)));
+    c += shade(pos, n, rd, trap, t, 1.0 - steps / 160.0) * (orbit ? 1.0 : exp(-t * 0.3));
+  }
+  c = c / (1.0 + c * 0.6);                       // soft tone
+  c = pow(c, vec3(0.85));
+  o = vec4(c, 1.0);
+}`;
+// The c-map: the Mandelbrot set (the 2D shadow of where Julia sets are solid).
+const MAP_FS = `#version 300 es
+precision highp float; out vec4 o; uniform vec2 uRes;
+void main() {
+  vec2 c = (gl_FragCoord.xy / uRes - 0.5) * vec2(3.0, 3.0) + vec2(-0.6, 0.0), z = vec2(0.0); float i = 0.0;
+  for (int k = 0; k < 80; k++) { z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + c; if (dot(z, z) > 16.0) break; i += 1.0; }
+  float f = i / 80.0; vec3 col = i >= 80.0 ? vec3(0.0) : 0.5 + 0.5 * cos(6.28318 * (f * 3.0 + vec3(0.0, 0.33, 0.67)));
+  o = vec4(col * (i >= 80.0 ? 0.0 : 0.25 + 0.75 * sqrt(f)), 1.0);
+}`;
+
+// ================================================================ plumbing
+const errEl = document.getElementById('err');
+function fail(m) { errEl.textContent += m + '\n'; console.error(m); }
+function program(gl, vs, fs) {
+  const sh = (t, s) => { const x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); if (!gl.getShaderParameter(x, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(x)); return x; };
+  const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const loc = {}; return { p, u: (n) => (n in loc ? loc[n] : (loc[n] = gl.getUniformLocation(p, n))) };
+}
+const cv = document.getElementById('gl'), gl = cv.getContext('webgl2', { antialias: false });
+const mapcv = document.getElementById('mapcv'), mgl = mapcv.getContext('webgl2');
+let P, M;
+try { P = program(gl, VS, FS); M = program(mgl, VS, MAP_FS); } catch (e) { fail(e.message); }
+const vao = gl.createVertexArray(), mvao = mgl.createVertexArray();
+function drawMap() {
+  const r = mapcv.getBoundingClientRect(); mapcv.width = r.width * 2; mapcv.height = r.height * 2;
+  mgl.viewport(0, 0, mapcv.width, mapcv.height); mgl.useProgram(M.p); mgl.uniform2f(M.u('uRes'), mapcv.width, mapcv.height);
+  mgl.bindVertexArray(mvao); mgl.drawArrays(mgl.TRIANGLES, 0, 3);
+}
+
+// ================================================================ state and input
+const S = { room: 0, yaw: 0.6, pitch: 0.25, vYaw: 0.15, vPitch: 0, zoom: 1, fly: 0, speed: 0.35, dial: 0, c: [-0.2, 0.6], t: 0, pulse: [0, 0, 0], pulseAge: -1, lastInput: 0 };
+const $ = (id) => document.getElementById(id);
+function setRoom(i) {
+  S.room = i; const R = ROOMS[i];
+  S.dial = R.dial.v; S.zoom = 1; S.fly = 0; S.yaw = 0.6; S.pitch = R.orbit ? 0.25 : 0; S.vYaw = R.orbit ? 0.15 : 0; S.vPitch = 0;
+  if (R.key === 'sinequat') S.c = [1.05, 0.25];
+  if (R.key === 'julia') S.c = [-0.12, 0.74];
+  [...$('rooms').children].forEach((b, k) => b.setAttribute('aria-pressed', k === i));
+  $('title').textContent = R.name; $('what').textContent = R.what;
+  $('howto').innerHTML = R.howto.map((h) => `<li>${h}</li>`).join('');
+  $('dialName').textContent = R.dial.name;
+  $('map').style.display = R.map ? 'block' : 'none';
+  if (R.map) { drawMap(); placeDot(); }
+  hint(R.howto[0].replace(/<[^>]+>/g, ''));
+  ui();
+}
+ROOMS.forEach((R, i) => { const b = document.createElement('button'); b.textContent = R.name; b.onclick = () => setRoom(i); $('rooms').append(b); });
+let hintT = 0;
+function hint(txt) { const h = $('hint'); h.textContent = txt; h.style.opacity = 1; clearTimeout(hintT); hintT = setTimeout(() => { h.style.opacity = 0; }, 2600); }
+function ui() {
+  const R = ROOMS[S.room], d = R.dial, f = (S.dial - d.min) / (d.max - d.min);
+  $('knob').style.bottom = (f * 100) + '%'; $('fill').style.height = (f * 100) + '%';
+  $('dialValue').textContent = d.fmt(S.dial);
+  $('formula').innerHTML = R.formula(S);
+}
+// The dial: drag anywhere on it, or use the arrow keys.
+function dialFrom(e) {
+  const r = $('track').getBoundingClientRect(), R = ROOMS[S.room], f = 1 - Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+  S.dial = R.dial.min + f * (R.dial.max - R.dial.min); ui(); S.lastInput = S.t;
+}
+$('track').addEventListener('pointerdown', (e) => { $('track').setPointerCapture(e.pointerId); dialFrom(e); });
+$('track').addEventListener('pointermove', (e) => { if (e.buttons) dialFrom(e); });
+// The c-map: the Mandelbrot plane; the point you pick is c.
+function placeDot() { const x = (S.c[0] + 0.6) / 3 + 0.5, y = 0.5 - S.c[1] / 3; $('dot').style.left = (x * 100) + '%'; $('dot').style.top = (y * 100) + '%'; }
+function mapFrom(e) { const r = $('map').getBoundingClientRect(); S.c = [((e.clientX - r.left) / r.width - 0.5) * 3 - 0.6, -((e.clientY - r.top) / r.height - 0.5) * 3]; placeDot(); ui(); S.lastInput = S.t; }
+$('map').addEventListener('pointerdown', (e) => { $('map').setPointerCapture(e.pointerId); mapFrom(e); });
+$('map').addEventListener('pointermove', (e) => { if (e.buttons) mapFrom(e); });
+// The picture: drag turns (or steers), a still click is a pulse, the wheel zooms (or sets speed).
+let drag = null;
+cv.addEventListener('pointerdown', (e) => { cv.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, t: performance.now(), moved: 0 }; cv.classList.add('dragging'); S.vYaw = S.vPitch = 0; });
+cv.addEventListener('pointermove', (e) => {
+  if (!drag) return;
+  const dx = (e.clientX - drag.x) / innerHeight, dy = (e.clientY - drag.y) / innerHeight;
+  drag.moved += Math.abs(dx) + Math.abs(dy); drag.x = e.clientX; drag.y = e.clientY;
+  S.yaw += dx * 3.2; S.pitch = Math.max(-1.4, Math.min(1.4, S.pitch + dy * 3.2));
+  S.vYaw = dx * 3.2 * 60; S.vPitch = dy * 3.2 * 60; S.lastInput = S.t;
+});
+cv.addEventListener('pointerup', (e) => {
+  cv.classList.remove('dragging');
+  if (drag && drag.moved < 0.01 && performance.now() - drag.t < 350) pulseAt(e.clientX, e.clientY);
+  drag = null;
+});
+cv.addEventListener('wheel', (e) => {
+  e.preventDefault(); const R = ROOMS[S.room];
+  if (R.orbit) S.zoom = Math.max(0.4, Math.min(4, S.zoom * Math.exp(-e.deltaY * 0.0015)));
+  else S.speed = Math.max(0, Math.min(2, S.speed - e.deltaY * 0.001));
+  S.lastInput = S.t;
+}, { passive: false });
+addEventListener('keydown', (e) => {
+  const R = ROOMS[S.room], step = (R.dial.max - R.dial.min) / 40;
+  if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { S.dial = Math.min(R.dial.max, S.dial + step); ui(); }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { S.dial = Math.max(R.dial.min, S.dial - step); ui(); }
+  if (e.key >= '1' && e.key <= '6') setRoom(+e.key - 1);
+});
+// A pulse starts where the tap meets the shape (found on the CPU-free side: near the centre of view).
+function pulseAt(x, y) {
+  const R = ROOMS[S.room];
+  if (R.orbit) {
+    // The point on the object's bounding sphere under the tap, pulled halfway in.
+    const px = (x - innerWidth / 2) / innerHeight * 2, py = -(y - innerHeight / 2) / innerHeight * 2;
+    const base = R.shape === 1 ? 6.8 : R.shape === 2 ? 2.6 : R.shape === 3 ? 2.5 : 6.0, dist = base / S.zoom;
+    const cp = Math.cos(S.pitch), ro = [dist * cp * Math.sin(S.yaw), dist * Math.sin(S.pitch), dist * cp * Math.cos(S.yaw)];
+    const fw = ro.map((v) => -v / dist), rt = norm([fw[2], 0, -fw[0]]), up = cross(fw, rt);
+    const rd = norm([px * rt[0] + py * up[0] + 1.7 * fw[0], px * rt[1] + py * up[1] + 1.7 * fw[1], px * rt[2] + py * up[2] + 1.7 * fw[2]]);
+    const tt = dist * 0.85; S.pulse = [ro[0] + rd[0] * tt, ro[1] + rd[1] * tt, ro[2] + rd[2] * tt];
+  } else S.pulse = [0, 0, S.fly + 1.0];
+  S.pulseAge = 0;
+}
+const norm = (v) => { const l = Math.hypot(...v) || 1; return v.map((x) => x / l); };
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+
+// ================================================================ frame
+let last = 0;
+function frame(now) {
+  const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now; S.t += dt;
+  const R = ROOMS[S.room];
+  if (!drag) {
+    S.yaw += S.vYaw * dt; S.pitch = Math.max(-1.4, Math.min(1.4, S.pitch + S.vPitch * dt));
+    S.vYaw *= Math.exp(-dt * 1.2); S.vPitch *= Math.exp(-dt * 2.5);
+    if (R.orbit && S.t - S.lastInput > 4) S.vYaw += (0.15 - S.vYaw) * Math.min(1, dt * 0.5);   // left alone, it turns slowly
+  }
+  if (!R.orbit) S.fly += dt * S.speed;
+  if (S.pulseAge >= 0) { S.pulseAge += dt; if (S.pulseAge > 3) S.pulseAge = -1; }
+  // The sine quaternion's c drifts slowly, so the shape breathes even untouched.
+  let c4 = [S.c[0], S.c[1], 0.0, 0.0];
+  if (R.key === 'sinequat') c4 = [1.05 + 0.06 * Math.sin(S.t * 0.2), 0.25 * Math.sin(S.t * 0.15), 0.2 * Math.cos(S.t * 0.11), 0.1];
+  const dpr = Math.min(devicePixelRatio || 1, 2), scale = 0.55;
+  const w = Math.round(innerWidth * dpr * scale), h = Math.round(innerHeight * dpr * scale);
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  if (P) {
+    gl.viewport(0, 0, w, h); gl.useProgram(P.p); gl.bindVertexArray(vao);
+    gl.uniform2f(P.u('uRes'), w, h); gl.uniform1f(P.u('uT'), S.t); gl.uniform1f(P.u('uDial'), S.dial);
+    gl.uniform1f(P.u('uYaw'), S.yaw); gl.uniform1f(P.u('uPitch'), S.pitch); gl.uniform1f(P.u('uZoom'), S.zoom); gl.uniform1f(P.u('uFly'), S.fly);
+    gl.uniform1f(P.u('uHue'), R.hue); gl.uniform1f(P.u('uPulseAge'), S.pulseAge); gl.uniform3fv(P.u('uPulse'), S.pulse);
+    gl.uniform4fv(P.u('uC'), c4); gl.uniform1i(P.u('uShape'), R.shape); gl.uniform1i(P.u('uLook'), R.look);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  requestAnimationFrame(frame);
+}
+setRoom(0);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

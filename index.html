@@ -12,7 +12,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>fractonaut 2026 · out on an infinite adventure</title>
+  <title>Fractonaut 2026. Come visit, O wanderer</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='9 9 82 82'%3E%3Cdefs%3E%3Cfilter id='g' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='2'/%3E%3C/filter%3E%3C/defs%3E%3Crect x='9' y='9' width='82' height='82' rx='18' fill='%2312060f'/%3E%3Cg filter='url(%23g)' opacity='.8'%3E%3Cg fill='%23ff3d9a' fill-opacity='.14' stroke='%23ff3d9a' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(0 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(36 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(108 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(252 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(288 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(324 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='4.5' fill='none' stroke='%23ff9ccd' stroke-width='2.4'/%3E%3C/g%3E%3Cg fill='%23ff3d9a' fill-opacity='.14' stroke='%23ff3d9a' stroke-width='2.2' stroke-linejoin='round'%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(0 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(36 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(108 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(180 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(252 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(288 50 50)'/%3E%3Cpath d='M50 41C44.5 34 45 23 50 13 55 23 55.5 34 50 41Z' transform='rotate(324 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='4.5' fill='none' stroke='%23ff9ccd' stroke-width='2.4'/%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <style>
@@ -563,7 +563,7 @@ html[data-scrolled] .mn-top-bar { background: var(--md-sys-color-surface-contain
   transition: background-color var(--mn-effects-fast), border-radius var(--mn-spatial-fast), padding var(--mn-spatial-fast);
 }
 .mn-chip > [data-icon] { width: 18px; height: 18px; margin-inline-start: -8px; }
-.mn-chip[aria-pressed="true"], .mn-chip:has(> input:checked) {
+.mn-chip[aria-pressed="true"], .mn-chip[aria-checked="true"], .mn-chip:has(> input:checked) {
   background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); box-shadow: none;
 }
 .mn-chip > input { position: absolute; opacity: 0; pointer-events: none; }
@@ -894,7 +894,9 @@ body.idle .orb:not([aria-expanded="true"]) .orb-eye { scale: .34; opacity: .6; }
 .side:active { scale: .94; }
 .side:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }
 .side[aria-pressed="true"] { color: var(--glow); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--glow) 80%, transparent), 0 0 18px color-mix(in srgb, var(--glow) 45%, transparent); }
-body.idle .side, body:has(.orb[aria-expanded="true"]) .side { opacity: 0; scale: .5; visibility: hidden; pointer-events: none; transition: opacity .35s, scale .35s, visibility 0s .35s; }
+.side-hands[data-look="true"] { color: var(--ink); box-shadow: inset 0 0 0 2px var(--glow), 0 0 26px color-mix(in srgb, var(--glow) 70%, transparent); }
+/* Sound and Hands stay beside the orb while the menu is open: they are not in it. */
+body.idle .side { opacity: 0; scale: .5; visibility: hidden; pointer-events: none; transition: opacity .35s, scale .35s, visibility 0s .35s; }
 body.clean .side { display: none; }
 .rec-dot { position: absolute; top: 4px; right: 4px; background: var(--md-sys-color-error); }
 
@@ -912,7 +914,7 @@ body.clean .side { display: none; }
 .halo.peek .ring, .halo.peek .halo-track { opacity: .5; }
 .halo.peek .core { opacity: 0; }
 /* Choosing a place or a colour is about seeing it: no veil, nothing in the middle but a name */
-.halo[data-view="chamber"]::before, .halo[data-view="colour"]::before, .halo[data-view="calm"]::before {
+.halo[data-view="chamber"]::before, .halo[data-view="colour"]::before, .halo[data-view="hands"]::before, .halo[data-view="calm"]::before {
   background: radial-gradient(circle at 50% var(--cy), transparent calc(var(--R) * .72), color-mix(in srgb, var(--md-sys-color-scrim) 50%, transparent) calc(var(--R) * 1), transparent calc(var(--R) * 1.5));
 }
 .halo::before {
@@ -994,7 +996,7 @@ body.clean .side { display: none; }
 }
 .halo.open .core.on { display: flex; animation: core-in .45s ease both; }
 /* Where there is no veil, the words carry their own small shadow instead */
-.halo:is([data-view="chamber"], [data-view="colour"], [data-view="calm"]) .core::before {
+.halo:is([data-view="chamber"], [data-view="colour"], [data-view="hands"], [data-view="calm"]) .core::before {
   content: ""; position: absolute; inset: -18% -12%; z-index: -1; border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--md-sys-color-scrim) 78%, transparent) 40%, transparent);
 }
@@ -1089,6 +1091,93 @@ body.panel-open .caption { opacity: 0; transition-duration: .3s; }
 }
 .whisper.show { opacity: 1; translate: -50% 0; }
 
+/* The visit and the shelf: a storybook voice over the picture. Warm paper-white and
+   candle gold in a book serif, never the interface's own colours. */
+.visit, .shelf {
+  --ink: #f6ecd9; --dim: #cbbfa8; --gold: #e9c98b;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Noto Serif", Georgia, serif;
+  color: var(--ink);
+}
+#dusk { position: fixed; inset: 0; z-index: 3; background: #000; opacity: 0; pointer-events: none; transition: opacity 2.6s ease-in-out; }
+#dusk.on { opacity: 1; }
+.visit {
+  position: fixed; z-index: 5; left: 50%; top: calc(11vh + env(safe-area-inset-top)); translate: -50% 0;
+  width: min(90vw, 680px); display: grid; justify-items: center; gap: 18px; text-align: center; pointer-events: none;
+  text-shadow: 0 1px 18px #000, 0 0 4px #000;
+}
+.visit[hidden], .visit [hidden] { display: none; }
+.visit-line {
+  margin: 0; font-size: clamp(22px, 3.1vw, 34px); line-height: 1.35; font-weight: 400; letter-spacing: .012em; text-wrap: balance;
+  opacity: 0; translate: 0 6px; transition: opacity 1.8s ease, translate 1.8s ease;
+}
+.visit-line.ask { font-style: italic; font-size: clamp(25px, 3.7vw, 40px); }
+.visit-line.show { opacity: 1; translate: 0 0; }
+.flask { width: 34px; height: 48px; overflow: visible; transition: filter 1.4s ease; }
+.flask .glass { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round; opacity: .8; }
+.flask .liquid { fill: var(--potion, var(--gold)); transform-box: fill-box; transform: translateY(calc((1 - var(--fill, 0)) * 100%)); transition: transform .5s linear; }
+.flask.full { filter: drop-shadow(0 0 10px var(--potion, var(--gold))) drop-shadow(0 0 26px var(--potion, var(--gold))); }
+.visit-potion { margin: 0; font-size: clamp(16px, 2vw, 20px); color: var(--dim); opacity: 0; transition: opacity 1.8s ease; }
+.visit-potion.show { opacity: 1; }
+.visit-potion b { font-weight: 400; font-variant: small-caps; letter-spacing: .12em; color: var(--potion, var(--gold)); }
+.visit-form { display: grid; justify-items: center; gap: 12px; width: 100%; pointer-events: auto; }
+.visit-form input {
+  width: min(100%, 520px); padding: 8px 4px; font: inherit; font-style: italic; font-size: clamp(18px, 2.3vw, 24px); text-align: center;
+  color: var(--ink); background: none; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--gold) 55%, transparent); outline: 0; text-shadow: inherit;
+}
+.visit-form input::placeholder { color: color-mix(in srgb, var(--dim) 70%, transparent); }
+.visit-form input:focus { border-bottom-color: var(--gold); }
+.story-btn {
+  font: inherit; font-size: 15px; font-variant: small-caps; letter-spacing: .14em; color: var(--gold); background: none; border: 0;
+  padding: 10px 14px; cursor: pointer; pointer-events: auto; text-shadow: inherit; opacity: .85; transition: opacity .3s ease;
+}
+.story-btn:hover, .story-btn:focus-visible { opacity: 1; outline: 0; text-decoration: underline; text-underline-offset: 5px; }
+.story-btn.quiet { color: var(--dim); }
+body.panel-open .visit, body.clean .visit { display: none; }
+
+.shelf {
+  width: min(94vw, 880px); max-height: 88dvh; padding: 36px clamp(20px, 5vw, 48px) 28px; border: 0; border-radius: 6px; overflow: auto;
+  background: radial-gradient(120% 90% at 50% 0%, #1d1711, #0a0807 70%); box-shadow: 0 30px 90px #000, inset 0 0 0 1px #3a2f22;
+}
+.shelf::backdrop { background: rgb(0 0 0 / .78); }
+.shelf h2 { margin: 0; font-weight: 400; font-size: clamp(26px, 4vw, 38px); text-align: center; }
+.shelf .sub { margin: 6px 0 28px; text-align: center; font-style: italic; color: var(--dim); }
+.shelf-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 30px 26px; }
+.bottle { display: grid; justify-items: center; gap: 8px; text-align: center; padding-bottom: 16px; border-bottom: 3px solid #3a2f22; }
+.bottle .flask { width: 46px; height: 64px; }
+.bottle .name { margin: 4px 0 0; font-variant: small-caps; letter-spacing: .14em; color: var(--potion); }
+.bottle .q { margin: 0; font-style: italic; font-size: 14px; color: var(--dim); }
+.bottle .words { margin: 4px 0 0; font-size: 19px; line-height: 1.4; text-wrap: balance; }
+.bottle .when { margin: 0; font-size: 12px; letter-spacing: .08em; color: color-mix(in srgb, var(--dim) 65%, transparent); }
+.shelf .empty { grid-column: 1 / -1; text-align: center; font-style: italic; color: var(--dim); padding: 30px 0; }
+.shelf .actions { display: flex; justify-content: center; margin-top: 22px; }
+
+/* Every place at once: a wall of pictures to choose from, grouped by kind. */
+.places {
+  --ink: #f2f0ea; --dim: #a9a59b; --gold: #e9c98b;
+  width: min(96vw, 1180px); height: min(92dvh, 900px); padding: 0; border: 0; border-radius: 10px; overflow: hidden; color: var(--ink);
+  background: rgb(10 9 12 / .94); box-shadow: 0 30px 90px #000, inset 0 0 0 1px #2c2a30;
+}
+.places[open] { display: grid; grid-template-rows: auto 1fr; }
+.places::backdrop { background: rgb(0 0 0 / .7); }
+.places header { display: flex; align-items: center; justify-content: space-between; padding: 18px 26px 10px; }
+.places h2 { margin: 0; font-size: 24px; font-weight: 500; letter-spacing: .01em; }
+.places .story-btn { font-family: inherit; }
+#placesWall { overflow-y: auto; overscroll-behavior: contain; padding: 0 26px 28px; }
+.places h3 { margin: 22px 0 12px; font-size: 13px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+.places-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+.place {
+  display: grid; gap: 4px; padding: 0 0 10px; text-align: left; font: inherit; color: inherit; cursor: pointer;
+  background: #16151a; border: 0; border-radius: 10px; overflow: hidden; outline: 2px solid transparent; outline-offset: 2px;
+  transition: scale .25s ease, outline-color .2s ease, box-shadow .25s ease;
+}
+.place img { width: 100%; aspect-ratio: 280 / 176; object-fit: cover; display: block; background: #000; }
+.place .n { padding: 6px 12px 0; font-size: 16px; font-weight: 600; }
+.place .l { padding: 0 12px; font-size: 12.5px; line-height: 1.35; color: var(--dim); }
+.place:hover, .place:focus-visible { scale: 1.035; outline-color: color-mix(in srgb, var(--ink) 55%, transparent); box-shadow: 0 10px 30px #000; }
+.place[aria-current] { outline-color: var(--gold); }
+
+.vial-pip { display: block; width: 12px; height: 18px; border-radius: 2px 2px 6px 6px; border: 1.5px solid currentColor; background: linear-gradient(0deg, currentColor 45%, transparent 45%); }
+
 /* ---- Keys sheet ------------------------------------------------------------------------ */
 .keys { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0; }
 .keys dt { color: var(--md-sys-color-primary); font-variant-numeric: tabular-nums; }
@@ -1101,6 +1190,8 @@ body.panel-open .caption { opacity: 0; transition-duration: .3s; }
   transition: opacity .25s ease, scale .25s ease, transform .09s linear;
 }
 .grab.on { opacity: .9; scale: 1; }
+#handHz { position: fixed; left: 14px; top: 12px; z-index: 4; pointer-events: none; font: 600 13px ui-monospace, monospace; color: #fff; text-shadow: 0 1px 3px #000; }
+#handHz[hidden] { display: none; }
 
 .fatal { position: fixed; inset: 0; z-index: 40; place-content: center; color: var(--md-sys-color-error); }
 .fatal[hidden] { display: none; }
@@ -1128,6 +1219,31 @@ body.clean :is(.orb, .halo, .panel, .caption) { display: none; }
 
   <!-- One quiet line at the top, used only for the first few breaths of the breathing guide -->
   <p class="whisper mn-label-l" id="whisper" aria-live="polite"></p>
+  <div id="dusk" aria-hidden="true"></div>
+  <div class="visit" id="visit" hidden>
+    <p class="visit-line" id="visitLine" aria-live="polite"></p>
+    <div id="flaskBox" hidden><svg class="flask" id="flask" viewBox="0 0 40 56" role="progressbar" aria-label="The glass filling" aria-valuemin="0" aria-valuemax="100">
+      <clipPath id="flaskClip"><path d="M15 4h10v16l11 22a8 8 0 0 1-7 12H11a8 8 0 0 1-7-12l11-22z"/></clipPath>
+      <g clip-path="url(#flaskClip)"><rect class="liquid" x="0" y="20" width="40" height="36"/></g>
+      <path class="glass" d="M15 4h10v16l11 22a8 8 0 0 1-7 12H11a8 8 0 0 1-7-12l11-22z"/>
+    </svg></div>
+    <p class="visit-potion" id="visitPotion"></p>
+    <form class="visit-form" id="visitForm" hidden>
+      <input id="visitText" type="text" maxlength="140" placeholder="Write what came to you, if anything did" autocomplete="off" aria-label="Write what came to you">
+      <div><button class="story-btn" type="submit">Bottle it</button><button class="story-btn quiet" type="button" id="visitOn">Leave it unwritten</button></div>
+    </form>
+    <button class="story-btn" type="button" id="visitShelf" hidden>Go to the shelf</button>
+  </div>
+  <dialog class="places" id="places" aria-labelledby="h-places">
+    <header><h2 id="h-places">Where to?</h2><form method="dialog"><button class="story-btn" aria-label="Close">Close</button></form></header>
+    <div id="placesWall"></div>
+  </dialog>
+  <dialog class="shelf" id="shelf" aria-labelledby="h-shelf">
+    <h2 id="h-shelf">The shelf</h2>
+    <p class="sub">What the rooms gave you, in your own words</p>
+    <div class="shelf-list" id="shelfList"></div>
+    <form method="dialog" class="actions"><button class="story-btn">Back to the palace</button></form>
+  </dialog>
 
   <!-- The orb is the whole interface at rest. Tap it for the halo; swipe it for the next chamber. -->
   <button class="orb" id="orb" aria-label="Controls" aria-expanded="false" aria-controls="halo">
@@ -1144,6 +1260,7 @@ body.clean :is(.orb, .halo, .panel, .caption) { display: none; }
     <div class="ring" data-view="home" id="homeRing"></div>
     <div class="ring" data-view="chamber" id="chambers"></div>
     <div class="ring" data-view="colour" id="swatches" role="group" aria-label="Colour"></div>
+    <div class="ring" data-view="hands" id="handsRing" role="group" aria-label="Hands look"></div>
     <div class="ring" data-view="calm" id="calmRing" role="group" aria-label="Calm"></div>
     <div class="ring" data-view="light" id="lightRing"></div>
     <div class="ring" data-view="keep" id="keepRing"></div>
@@ -1157,11 +1274,16 @@ body.clean :is(.orb, .halo, .panel, .caption) { display: none; }
       <h2 class="core-title" id="chamberName"></h2>
       <p class="core-line" id="chamberLine"></p>
       <div class="dial" id="shapeDial"></div>
-      <button class="link" id="turn">Turn the glass</button>
+      <button class="link" id="turn">Turn the kaleidoscope</button>
     </div>
     <div class="core" data-view="colour">
       <h2 class="core-title" id="paletteName"></h2>
-      <p class="core-line">The light you are sitting in</p>
+      <p class="core-line">Live your light</p>
+    </div>
+    <div class="core" data-view="hands">
+      <h2 class="core-title" id="handsName"></h2>
+      <p class="core-line" id="handsLine"></p>
+      <button class="link" id="handsFeed" aria-pressed="true"></button>
     </div>
     <div class="core" data-view="calm">
       <h2 class="core-title" id="calmName"></h2>
@@ -1222,6 +1344,7 @@ body.clean :is(.orb, .halo, .panel, .caption) { display: none; }
 
   <div class="grab" id="grab0" aria-hidden="true"></div>
   <div class="grab" id="grab1" aria-hidden="true"></div>
+  <div id="handHz" aria-hidden="true" hidden></div>
   <div id="fatal" class="mn-empty fatal" hidden></div>
 
   <script>
@@ -1446,17 +1569,28 @@ body.clean :is(.orb, .halo, .panel, .caption) { display: none; }
 // Parameter schema, palettes and chambers. Everything visual lives in `params`;
 // the UI, chambers, URL hash, MIDI and morphing all work off this one schema.
 
-const MODES = ['none', 'kaleido', 'kifs', 'hyperbolic', 'droste', 'tiles'];
+const MODES = ['none', 'kaleido', 'kifs', 'hyperbolic', 'droste', 'tiles', 'lens', 'wormhole', 'pearls', 'poles', 'pool', 'whirl', 'planet', 'corridor', 'julia'];
+// Mode numbers by name (fold.mode, uMode); the GLSL has the same as M_<NAME> #defines.
+const M = Object.fromEntries(MODES.map((m, i) => [m, i]));
 const GENERATORS = ['none', 'rings', 'petals', 'flow', 'cells', 'orbs', 'fractal3d'];
 const BRUSHES = ['neon', 'dots', 'sparks'];
 const INK_COLORS = ['cycle', 'speed', 'angle', 'solid'];
 const PEN_PATHS = ['lissajous', 'rose', 'noise', 'spiral'];
+const STAR_KINDS = ['galaxy', 'nebula', 'pulsar', 'quasar', 'supernova', 'aurora'];
+// The 3D pattern's shape (mac/render/shaders/raymarch.metal; Mac only for now beyond the lattice)
+// and how it is lit.
+const RM_SHAPES = ['lattice', 'sinequat', 'quatjulia', 'bulb', 'gyroid', 'box', 'apollo'];
+const RM_LOOKS = ['glow', 'glass', 'metal', 'contour'];   // mac/render/shaders/stars.metal
 
 // Plain-language names for option values (internal values stay stable for URLs).
 const OPTION_NAMES = {
-  none: 'None', kaleido: 'Mandala mirrors', kifs: 'Fractal folds', hyperbolic: 'Circle limit', droste: 'Spiral', tiles: 'Maze',
+  none: 'None', kaleido: 'Mandala mirrors', kifs: 'Fractal folds', hyperbolic: 'Circle limit', droste: 'Spiral', tiles: 'Maze', lens: 'Black hole', wormhole: 'Glass ball', pearls: 'Pearls', poles: 'Poles and zeros',
+  pool: 'Pool', whirl: 'Whirlpool', planet: 'Planet', corridor: 'Hyperspace', julia: 'Julia',
+  galaxy: 'Galaxy', nebula: 'Nebula', pulsar: 'Pulsar', quasar: 'Quasar', supernova: 'Supernova', aurora: 'Aurora',
   rings: 'Rings', petals: 'Petals', flow: 'Flow lines', cells: 'Cells', orbs: 'Orbs', fractal3d: 'Lattice',
   neon: 'Line', dots: 'Dots', sparks: 'Sparks',
+  lattice: 'Lattice', sinequat: 'Sine quaternion', quatjulia: 'Quaternion Julia', bulb: 'Mandelbulb', gyroid: 'Gyroid', box: 'Mandelbox', apollo: 'Apollonian',
+  glow: 'Glow', glass: 'Glass', metal: 'Metal', contour: 'Neon contours',
   cycle: 'Shifting', speed: 'By speed', angle: 'By angle', solid: 'Steady',
   lissajous: 'Weave', rose: 'Petal', noise: 'Drift', spiral: 'Spiral',
 };
@@ -1502,6 +1636,9 @@ const SCHEMA = {
   drosteScale:   [3, 1.5, 10, 0.01, 'Spiral', 'Repeat ratio', [2, 4.5]],
   drosteSpeed:   [0.12, -1.5, 1.5, 0.01, 'Spiral', 'Zoom speed', [-0.25, 0.25]],
   tileScale:     [2, 0.5, 8, 0.01, 'Maze', 'Tiles', [1.5, 3.5]],
+  lensRing:      [0.42, 0.15, 0.9, 0.01, 'Black hole', 'Ring size', [0.34, 0.52]],
+  pearlScale:    [1.25, 0.8, 1.9, 0.01, 'Pearls', 'Pearl size', [1.05, 1.5]],
+  placeAmount:   [0.6, 0, 1, 0.01, 'Chamber', 'Strength (places a finger steers)', false],
 
   // Echo: the feedback loop that remembers light
   fbDecay:       [0.94, 0, 1, 0.001, 'Echo', 'Echo length', [0.88, 0.975]],
@@ -1513,6 +1650,7 @@ const SCHEMA = {
   fbSat:         [1, 0, 2, 0.01, 'Echo', 'Saturation', [0.95, 1.15]],
   fbSharpen:     [0.12, 0, 1, 0.01, 'Echo', 'Sharpen', false],
   fbDream:       [0, 0, 1, 0.01, 'Echo', 'Dream current', [0, 0.3]],
+  fbComb:        [0, 0, 1.5, 0.01, 'Echo', 'Wet paint', false],
 
   // Light: what you paint with, and the wanderers that paint on their own
   brush:         ['neon', BRUSHES, null, null, 'Light', 'Brush', false],
@@ -1526,6 +1664,8 @@ const SCHEMA = {
   autoPath:      ['lissajous', PEN_PATHS, null, null, 'Light', 'Wanderer path', true],
   autoSpeed:     [0.35, 0.05, 3, 0.01, 'Light', 'Wanderer speed', [0.22, 0.5]],
   ripple:        [1, 0, 2, 0.01, 'Light', 'Tap ripples', false],
+  stars:         [0, 0, 2, 0.01, 'Light', 'Stars', false],
+  starKind:      ['galaxy', STAR_KINDS, null, null, 'Light', 'Sky', false],
 
   gen:           ['none', GENERATORS, null, null, 'Patterns', 'Pattern', false],
   genMix:        [0.3, 0, 2, 0.01, 'Patterns', 'Strength', [0.22, 0.55]],
@@ -1534,6 +1674,11 @@ const SCHEMA = {
   genRadius:     [0, 0, 1.5, 0.01, 'Patterns', 'Source size (0 = everywhere)', false],
   rmScale:       [2.6, 1.5, 3.5, 0.01, 'Patterns', 'Lattice fold', [2.2, 3]],
   rmFly:         [0.25, -2, 2, 0.01, 'Patterns', 'Lattice flight speed', [-0.3, 0.4]],
+  rmShape:       ['lattice', RM_SHAPES, null, null, 'Patterns', '3D shape', false],
+  rmLook:        ['glow', RM_LOOKS, null, null, 'Patterns', '3D render', false],
+  rmSlice:       [0, -1.5, 1.5, 0.01, 'Patterns', 'Fourth dimension', [-0.5, 0.5]],
+  rmMorph:       [0.3, 0, 2, 0.01, 'Patterns', '3D morph speed', [0.15, 0.6]],
+  rmDetail:      [0.5, 0, 1, 0.01, 'Patterns', '3D detail', [0.3, 0.7]],
 
   camMix:        [0.8, 0, 2, 0.01, 'Camera', 'Strength', false],
   camZoom:       [1, 0.2, 4, 0.01, 'Camera', 'Zoom', false],
@@ -1569,36 +1714,106 @@ const SYSTEM_DEFAULTS = {
   autoVJ: false,
   breathGuide: false,
   coolHands: false,    // optional: trade smoothness for heat while the hand tracker is running
+  handLook: 5,         // how hands look when shown (HAND_LOOKS): 0 ink only, 1 constellation, 2 neon, 3 aurora, 4 ribbons, 5 aura
+  handLookOn: false,   // the look is shown (the second press of the Hands button)
+  handLookFeed: true,  // a share of its light goes into the picture's echoes where the chamber mirrors (Mandala, None)
+  handDebug: false,    // dev: show how many hands are seen and the tracker's rate
   autoVJInterval: 40,
 };
 
 const DEFAULTS = Object.fromEntries(Object.entries(SCHEMA).map(([k, s]) => [k, s[0]]));
 const params = { ...DEFAULTS };
 const system = { ...SYSTEM_DEFAULTS };
+const HAND_LOOKS = ['Ink only', 'Constellation', 'Neon', 'Aurora', 'Ribbons', 'Aura'];
+
+
 
 // Chambers: the places the explorer visits. `line` says what the mirrors do.
+// The sky places need the native star renderer: the Mac app (its bridge) and the
+// Android app (whose bridge object, fxAndroid, is there before any script runs; the
+// webkit shim it installs comes later). Left out in the browser (build tools, which run
+// without a window, see them all).
+const STARS_OK = typeof window === 'undefined' || !!window.fxAndroid || !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.fx);
+// The places only the Mac app draws yet (build tools, without a window, see them all).
+const MAC_OK = typeof window === 'undefined' || (!window.fxAndroid && !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.fx));
 const CHAMBERS = [
-  { name: 'Mandala', slug: 'mandala', line: 'Mirrors meeting at a single point',
+  { name: 'Mandala', slug: 'mandala', line: 'Meet the mirrors',
     p: { symmetry: 8, fbDecay: 0.994, fbZoom: 1.007, fbRotate: 5, fbSwirl: 0.004, autoPens: 4, autoPath: 'rose', autoSpeed: 0.55, bloom: 1.1, inkSize: 1.2, inkGlow: 1.5, fbHueShift: 14, spinSpeed: 1.5, sheen: 0.35 } },
-  { name: 'Tunnel', slug: 'tunnel', line: 'Light streaming from a vanishing point',
+  { name: 'Tunnel', slug: 'tunnel', line: 'Find the light at the end',
     p: { symmetry: 8, foldInLoop: false, fbZoom: 1.016, fbRotate: 7, fbDecay: 0.986, gen: 'petals', genRadius: 0.35, genMix: 0.6, fbHueShift: 16, autoPens: 3, sheen: 0.3 } },
-  { name: 'Fractal', slug: 'fractal', line: 'Mirrors folded inside mirrors',
+  { name: 'Fractal', slug: 'fractal', line: 'Fold your conscience',
     p: { mode: 'kifs', kifsIters: 5, kifsScale: 1.42, kifsAngle: 24, kifsOffX: 0.72, kifsOffY: 0.28, kifsAngleSpeed: 1.2, fbZoom: 1.003, fbRotate: 4, fbDecay: 0.94, gen: 'cells', genMix: 0.38, palette: 'magenta', chroma: 0.35, bloom: 1.05, autoPens: 2, autoPath: 'rose' } },
-  { name: 'Circle limit', slug: 'circle-limit', line: 'Tiles shrinking forever toward the edge',
+  { name: 'Circle limit', slug: 'circle-limit', line: 'Approach the edge',
     p: { mode: 'hyperbolic', symmetry: 7, hypQ: 3, foldInLoop: false, fbZoom: 1.003, fbRotate: 3, gen: 'petals', genMix: 0.5, genSpeed: 0.2, fbDecay: 0.94, hypDrift: 0.2, palette: 'vapor', exposure: 1.15, autoPens: 2 } },
-  { name: 'Spiral', slug: 'spiral', line: 'A picture that contains itself',
+  { name: 'Spiral', slug: 'spiral', line: 'Contain yourself within',
     p: { mode: 'droste', drosteScale: 3.0, drosteSpeed: 0.15, foldInLoop: false, fbRotate: 4, gen: 'flow', genMix: 0.4, fbDecay: 0.94, palette: 'sunset', autoPens: 2 } },
-  { name: 'Liquid', slug: 'liquid', line: 'Mirrors that melt as you watch',
+  { name: 'Liquid', slug: 'liquid', line: 'Melt away into the visions',
     p: { symmetry: 12, warpAmount: 0.32, fbWarp: 0.004, fbDecay: 0.97, fbZoom: 1.005, fbRotate: 2.5, palette: 'ocean', paletteMap: 0.35, gen: 'flow', genMix: 0.35, autoPens: 3, sheen: 0.75 } },
-  { name: 'Crystal', slug: 'crystal', line: 'Drifting through a folded lattice',
+  { name: 'Crystal', slug: 'crystal', line: 'Drift in peace',
     p: { symmetry: 6, gen: 'fractal3d', genMix: 0.65, fbDecay: 0.82, fbZoom: 1.002, bloom: 1.05, chroma: 0.45, fbHueShift: 8, palette: 'ice' } },
-  { name: 'Maze', slug: 'maze', line: 'A wallpaper of mirrored tiles',
+  { name: 'Maze', slug: 'maze', line: 'Your own path',
     p: { mode: 'tiles', tileScale: 2.2, gen: 'cells', genMix: 0.42, chroma: 0.45, fbDecay: 0.93, fbRotate: 4, fbZoom: 1.003, palette: 'toxic', autoPens: 2 } },
-  { name: 'Dissolve', slug: 'dissolve', line: 'Curved space folding back on itself',
+  { name: 'Dissolve', slug: 'dissolve', line: 'Disappear into nothingness',
     p: { mode: 'hyperbolic', symmetry: 5, hypQ: 4, foldInLoop: true, fbZoom: 1.003, fbRotate: 3, fbDecay: 0.94, chroma: 0.5, fisheye: 0.18, gen: 'flow', genMix: 0.45, genSpeed: 0.22, hypDrift: 0.15, fbHueShift: 10, autoPens: 2, exposure: 1.15, bloom: 1.05, palette: 'neon' } },
-  { name: 'Dream', slug: 'dream', line: 'Light carried on a slow current',
+  { name: 'Dream', slug: 'dream', line: 'Lull yourself into joy',
     p: { symmetry: 6, fbDream: 0.6, fbDecay: 0.988, fbZoom: 1.0, fbRotate: 0, fbHueShift: 22, fbSharpen: 0.5, gen: 'flow', genMix: 0.4, genScale: 1.4, autoPens: 4, autoPath: 'noise', autoSpeed: 0.55, sheen: 0.6, bloom: 1.1, chroma: 0.4, palette: 'magenta' } },
-];
+  // What you paint orbits, shears and falls inward; on its way in it lights the ring.
+  { name: 'Black hole', slug: 'black-hole', line: 'Bend your light',
+    p: { mode: 'lens', lensRing: 0.42, foldInLoop: false, fbZoom: 0.997, fbRotate: 9, fbSwirl: -0.002, fbDecay: 0.99, fbHueShift: 24, fbSat: 1, fbSharpen: 0, autoPens: 4, autoPath: 'rose', autoSpeed: 0.6, inkSize: 0.6, inkGlow: 2, bloom: 1.6, chroma: 0.7, exposure: 1.15, sheen: 0, vignette: 0.2, palette: 'neon' } },
+  { name: 'Glass ball', slug: 'glass-ball', line: 'Reflect on reality',
+    p: { mode: 'wormhole', lensRing: 0.5, foldInLoop: false, fbZoom: 1.003, fbRotate: 5, fbDecay: 0.988, fbHueShift: 16, fbSharpen: 0, autoPens: 4, autoPath: 'lissajous', autoSpeed: 0.55, inkSize: 0.7, inkGlow: 1.8, bloom: 1.4, chroma: 0.5, exposure: 1.15, sheen: 0, vignette: 0.2, palette: 'vapor' } },
+  { name: 'Many worlds', slug: 'pearls', line: 'Explore the multiverse',
+    p: { mode: 'pearls', pearlScale: 1.25, hypDrift: 0.25, spinSpeed: 0.6, foldInLoop: false, fbZoom: 1.002, fbRotate: 1.5, fbDecay: 0.975, fbHueShift: 8, fbSharpen: 0, gen: 'rings', genMix: 0.9, genScale: 0.8, genSpeed: 0.12, autoPens: 3, autoSpeed: 0.35, inkSize: 1.6, bloom: 1.5, chroma: 0.3, sheen: 0.35, grain: 0, exposure: 1.3, palette: 'sunset' } },
+  { name: 'Poles', slug: 'poles', line: 'Play with your vision',
+    p: { mode: 'poles', drosteSpeed: 0.4, foldInLoop: false, fbZoom: 1.004, fbRotate: 4, fbDecay: 0.95, fbHueShift: 14, gen: 'petals', genMix: 0.4, genSpeed: 0.25, autoPens: 3, bloom: 1.2, chroma: 0.4, exposure: 1.15, palette: 'sunset' } },
+  // The sky places: kaleidoscopes of real points of light (mac/render/shaders/stars.metal).
+  // Each sky lives in one wedge of the mirrors (symmetry and mirror say how many, and
+  // the points draw their own reflections, so the chamber itself does not fold), so every
+  // finger, and a cursor that only hovers, acts at all of its reflections at once. Next
+  // to no colour fringing: it would split every sharp star into three.
+  ...[
+    { name: 'Galaxy', slug: 'galaxy', line: 'Go far out',
+      p: { starKind: 'galaxy', symmetry: 4, mirror: false, spinSpeed: 1.5, fbDecay: 0.9, bloom: 1.4, chroma: 0.04, exposure: 1.2, palette: 'neon' } },
+    { name: 'Nebula', slug: 'nebula', line: 'See time itself',
+      p: { starKind: 'nebula', symmetry: 6, spinSpeed: 1, fbZoom: 1.001, fbRotate: 1.5, fbDecay: 0.975, bloom: 1.3, chroma: 0.04, exposure: 1.15, palette: 'magenta' } },
+    { name: 'Pulsar', slug: 'pulsar', line: 'A dead star but still alive',
+      p: { starKind: 'pulsar', symmetry: 4, spinSpeed: 0, fbDecay: 0.93, bloom: 1.2, chroma: 0.04, exposure: 1.2, palette: 'ice' } },
+    { name: 'Quasar', slug: 'quasar', line: 'Light is everything',
+      p: { starKind: 'quasar', symmetry: 3, mirror: false, spinSpeed: -1.5, fbDecay: 0.92, bloom: 1.5, chroma: 0.04, exposure: 1.2, palette: 'sunset' } },
+    { name: 'Supernova', slug: 'supernova', line: 'The energy within',
+      p: { starKind: 'supernova', symmetry: 6, spinSpeed: 1, fbDecay: 0.93, bloom: 1.6, chroma: 0.04, exposure: 1.2, palette: 'neon' } },
+    { name: 'Aurora', slug: 'aurora', line: 'A gust of light',
+      p: { starKind: 'aurora', symmetry: 8, spinSpeed: 2, fbZoom: 1.002, fbDecay: 0.93, bloom: 1.4, chroma: 0.04, exposure: 1.15, palette: 'rainbow', paletteSpeed: 0 } },
+  ].map((c) => ({ ...c, p: { mode: 'none', mirror: true, stars: 1, fbZoom: 1, fbRotate: 0, fbHueShift: 0, fbSharpen: 0, fbSat: 1, autoPens: 0, inkBright: 0.35, inkSize: 0.35, inkGlow: 1.2, ripple: 0.6, sheen: 0, grain: 0, vignette: 0.12, ...c.p } })),
+  // Places a finger steers: wherever you touch is the centre of what happens.
+  { name: 'Pool', slug: 'pool', line: 'Liquid brain waves',
+    p: { mode: 'pool', placeAmount: 0.75, drosteSpeed: 1, spinSpeed: 0, foldInLoop: false, fbZoom: 1.002, fbRotate: 1, fbDecay: 0.985, fbHueShift: 8, fbSharpen: 0, gen: 'orbs', genMix: 0.5, genSpeed: 0.2, autoPens: 3, autoSpeed: 0.4, inkGlow: 1.6, bloom: 1.4, chroma: 0.35, sheen: 0.6, exposure: 1.15, palette: 'ocean' } },
+  { name: 'Whirlpool', slug: 'whirlpool', line: 'A destroyer of worries',
+    p: { mode: 'whirl', symmetry: 6, placeAmount: 0.7, drosteSpeed: 0.6, spinSpeed: 1, foldInLoop: false, fbZoom: 1.004, fbRotate: 4, fbDecay: 0.975, fbHueShift: 14, gen: 'petals', genMix: 0.45, genSpeed: 0.2, autoPens: 3, bloom: 1.25, chroma: 0.35, sheen: 0.3, exposure: 1.1, palette: 'magenta' } },
+  { name: 'Planet', slug: 'planet', line: 'Your home',
+    p: { mode: 'planet', drosteSpeed: 0.8, spinSpeed: 0, foldInLoop: false, fbZoom: 1, fbRotate: 0, fbDecay: 0.992, fbHueShift: 6, fbWarp: 0.002, fbSharpen: 0, gen: 'cells', genMix: 0.45, genScale: 1.6, genSpeed: 0.15, autoPens: 4, autoPath: 'noise', autoSpeed: 0.4, inkSize: 1.4, inkGlow: 1.6, bloom: 1.5, chroma: 0.4, sheen: 0, vignette: 0.15, exposure: 1.2, palette: 'toxic' } },
+  { name: 'Hyperspace', slug: 'hyperspace', line: 'Longest journey, shortest time',
+    p: { mode: 'corridor', drosteSpeed: 1.2, spinSpeed: 0, foldInLoop: false, fbZoom: 1.002, fbRotate: 0, fbDecay: 0.97, fbHueShift: 18, fbSharpen: 0, gen: 'rings', genMix: 0.5, genSpeed: 0.3, autoPens: 4, autoSpeed: 0.6, inkGlow: 1.8, bloom: 1.45, chroma: 0.6, sheen: 0, exposure: 1.15, palette: 'neon' } },
+  { name: 'Julia', slug: 'julia', line: 'Everything everywhere all at once',
+    p: { mode: 'julia', spinSpeed: 0, foldInLoop: false, fbZoom: 1.003, fbRotate: 3, fbDecay: 0.96, fbHueShift: 12, fbSharpen: 0, gen: 'flow', genMix: 0.6, genSpeed: 0.2, autoPens: 3, bloom: 1.25, chroma: 0.4, sheen: 0.3, exposure: 1.2, palette: 'vapor' } },
+  // A plain sheet of wet paint: no mirrors, nothing fades fast, and every stroke drags
+  // what is already there along with it.
+  { name: 'Marble', slug: 'marble', line: 'Your way back to reality',
+    p: { mode: 'none', fbComb: 1, fbDecay: 0.9985, fbZoom: 1, fbRotate: 0, fbHueShift: 0, fbSharpen: 0, autoPens: 2, autoPath: 'noise', autoSpeed: 0.35, inkSize: 3, inkGlow: 0.4, bloom: 0.9, chroma: 0.2, sheen: 0.9, exposure: 1.1, palette: 'ocean' } },
+  // Pure mathematics: 3D and 4D objects you can turn, morph and dive into (Mac only for now).
+  { name: 'Sine quaternion', slug: 'sine-quaternion', line: 'Four dimensions of a wave', mac: true,
+    p: { symmetry: 6, gen: 'fractal3d', rmShape: 'sinequat', rmLook: 'glow', genMix: 0.7, fbDecay: 0.8, fbZoom: 1, fbRotate: 0, fbHueShift: 2, rmMorph: 0.07, rmDetail: 0.5, autoPens: 0, bloom: 1.1, chroma: 0.35, palette: 'vapor' } },
+  { name: 'Quaternion Julia', slug: 'quaternion-julia', line: 'A fractal from the fourth dimension', mac: true,
+    p: { symmetry: 8, gen: 'fractal3d', rmShape: 'quatjulia', rmLook: 'metal', genMix: 0.7, fbDecay: 0.8, fbZoom: 1, fbRotate: 0, fbHueShift: 2, rmMorph: 0.07, rmDetail: 0.5, autoPens: 0, bloom: 1.05, chroma: 0.3, palette: 'sunset' } },
+  { name: 'Mandelbulb', slug: 'mandelbulb', line: 'The Mandelbrot set in three dimensions', mac: true,
+    p: { symmetry: 5, gen: 'fractal3d', rmShape: 'bulb', rmLook: 'metal', genMix: 0.7, fbDecay: 0.8, fbZoom: 1, fbRotate: 0, fbHueShift: 2, rmMorph: 0.07, rmDetail: 0.55, autoPens: 0, bloom: 1.1, chroma: 0.35, palette: 'ember' } },
+  { name: 'Gyroid', slug: 'gyroid', line: 'An endless surface of sines', mac: true,
+    p: { symmetry: 6, gen: 'fractal3d', rmShape: 'gyroid', rmLook: 'contour', genMix: 0.75, fbDecay: 0.85, fbZoom: 1.003, fbRotate: 0, fbHueShift: 2, rmFly: 0.12, rmMorph: 0.07, rmDetail: 0.4, autoPens: 0, bloom: 1.15, chroma: 0.4, palette: 'neon' } },
+  { name: 'Mandelbox', slug: 'mandelbox', line: 'A city folded into itself', mac: true,
+    p: { symmetry: 4, gen: 'fractal3d', rmShape: 'box', rmLook: 'metal', genMix: 0.7, fbDecay: 0.8, fbZoom: 1, fbRotate: 0, fbHueShift: 2, rmMorph: 0.07, rmDetail: 0.5, autoPens: 0, bloom: 1.05, chroma: 0.3, palette: 'ice' } },
+  { name: 'Apollonian', slug: 'apollonian', line: 'Spheres within spheres, forever', mac: true,
+    p: { symmetry: 7, gen: 'fractal3d', rmShape: 'apollo', rmLook: 'glass', genMix: 0.75, fbDecay: 0.85, fbZoom: 1.003, fbRotate: 0, fbHueShift: 2, rmFly: 0.12, rmMorph: 0.07, rmDetail: 0.5, autoPens: 0, bloom: 1.1, chroma: 0.35, palette: 'magenta' } },
+].filter((c) => (!c.p.stars || STARS_OK) && (!c.mac || MAC_OK));
 
 // Live palette: eases toward the selected palette so switches never pop.
 const Palette = {
@@ -1701,14 +1916,24 @@ const Fold = (() => {
     return q;
   }
 
-  function update(dt, time, tiltX, tiltY) {
+  // lead: where a finger or hand is painting ([x, y] in p-space, or null); feed: how
+  // hard it is painting (Pens.energy).
+  function update(dt, time, tiltX, tiltY, lead, feed) {
     const P = params;
     fold.mode = MODES.indexOf(P.mode);
     fold.sym = Math.max(2, Math.round(P.symmetry));
     fold.mirror = P.mirror;
     fold.spin += P.spinSpeed * Math.PI / 180 * dt;
-    fold.cx += (tiltX - fold.cx) * Math.min(1, dt * 6);
-    fold.cy += (tiltY - fold.cy) * Math.min(1, dt * 6);
+    // A lens leans slowly toward the painting hand (never all the way: it would sit
+    // under the finger), and wanders a little when left alone.
+    let rate = 6;
+    if (fold.mode === M.lens || fold.mode === M.wormhole) {
+      rate = 0.7;
+      tiltX = lead ? 0.6 * lead[0] : 0.22 * Math.sin(time * 0.11);
+      tiltY = lead ? 0.6 * lead[1] : 0.16 * Math.sin(time * 0.17 + 1);
+    }
+    fold.cx += (tiltX - fold.cx) * Math.min(1, dt * rate);
+    fold.cy += (tiltY - fold.cy) * Math.min(1, dt * rate);
     fold.vz = P.viewZoom;
     fold.warpAmt = P.warpAmount;
     fold.warpScale = P.warpScale;
@@ -1729,7 +1954,21 @@ const Fold = (() => {
     fold.drL = Math.log(P.drosteScale);
     fold.drPhase += P.drosteSpeed * dt * fold.drL * 0.25;
     fold.tile = P.tileScale;
+    // The lens places borrow uniforms they would otherwise not use: the black hole's ring
+    // (which swells while it is fed) and the wormhole's radius ride in uDroste.x, the
+    // pearls' inversion radius in uTile.
+    fed += (Math.min(feed || 0, 3) / 3 - fed) * Math.min(1, dt * 0.8);
+    if (fold.mode === M.lens) fold.drL = P.lensRing * (1 + 0.35 * fed);
+    else if (fold.mode === M.wormhole) fold.drL = P.lensRing;
+    else if (fold.mode === M.pearls) fold.tile = P.pearlScale;
+    // The finger point (uHyp.zw for the steered places, M.pool and up): quick to follow a
+    // hand, slow to drift once it lets go.
+    const fr = Math.min(1, dt * (lead ? 6 : 0.4));
+    fingerX += ((lead ? lead[0] : 0.5 * Math.sin(time * 0.21)) - fingerX) * fr;
+    fingerY += ((lead ? lead[1] : 0.32 * Math.sin(time * 0.29 + 2)) - fingerY) * fr;
+    if (fold.mode >= M.pool) { fold.hypAx = fingerX; fold.hypAy = fingerY; fold.tile = P.placeAmount; }
   }
+  let fed = 0, fingerX = 0, fingerY = 0;
 
   // Fold point (x, y) in p-space; returns the shared `out` array.
   function apply(x, y) {
@@ -1744,20 +1983,15 @@ const Fold = (() => {
       x += f.warpAmt * (ox + 0.5 * o2x);
       y += f.warpAmt * (oy + 0.5 * o2y);
     }
-    if (f.mode === 0) { out[0] = x; out[1] = y; return out; }
+    if (f.mode === M.none) { out[0] = x; out[1] = y; return out; }
 
     let cs = Math.cos(-f.spin), sn = Math.sin(-f.spin);
     let dx = (x - f.cx) * f.vz, dy = (y - f.cy) * f.vz;
     let zx = cs * dx - sn * dy, zy = sn * dx + cs * dy;
 
-    if (f.mode === 1) {
-      const seg = TAU / f.sym, half = seg * 0.5;
-      let a = Math.atan2(zy, zx);
-      a -= seg * Math.floor(a / seg);
-      if (f.mirror) a = half - sabs(a - half, 0.002);
-      const l = Math.hypot(zx, zy);
-      zx = l * Math.cos(a); zy = l * Math.sin(a);
-    } else if (f.mode === 2) {
+    if (f.mode === M.kaleido) {
+      return wedge(zx, zy);
+    } else if (f.mode === M.kifs) {
       const s = f.kScale, iters = f.kIters, maxI = Math.ceil(iters);
       zx = sabs(zx, 0.012); zy = sabs(zy, 0.012);
       const d0 = zx - zy, sd0 = sabs(d0, 0.012);
@@ -1781,7 +2015,7 @@ const Fold = (() => {
       const norm = 1 / Math.max(Math.hypot(f.kOffX, f.kOffY) * 1.25, 0.55);
       zx *= norm; zy *= norm;
       return spun(zx, zy);
-    } else if (f.mode === 3) {
+    } else if (f.mode === M.hyperbolic) {
       const r = Math.hypot(zx, zy);
       if (r > 1e-6) {
         const rh = Math.min(0.985, r / Math.sqrt(1 + Math.pow(Math.max(r - 0.82, 0) * 3.5, 2)));
@@ -1808,7 +2042,7 @@ const Fold = (() => {
       const domRadius = Math.max(f.hypC - f.hypR, 0.15);
       zx *= 0.72 / domRadius; zy *= 0.72 / domRadius;
       return spun(zx, zy);
-    } else if (f.mode === 4) {
+    } else if (f.mode === M.droste) {
       const L = f.drL;
       let wx = Math.log(Math.max(Math.hypot(zx, zy), 1e-5)), wy = Math.atan2(zy, zx);
       const T = L / TAU;
@@ -1821,6 +2055,66 @@ const Fold = (() => {
       const e = Math.exp(wx) * 0.85;
       zx = e * Math.cos(wy); zy = e * Math.sin(wy);
       return spun(zx, zy);
+    } else if (f.mode === M.lens) {
+      // foldLens: trace the ray back to the sky, so ink lands under the finger.
+      const E = f.drL, r = Math.max(Math.hypot(zx, zy), 1e-5);
+      const b = r - E * E / r, wind = 0.9 * Math.log(1 + 0.4 * E / Math.max(r - 0.5 * E, 1e-3 * E));
+      const wc = Math.cos(wind) * b / r, ws = Math.sin(wind) * b / r;
+      return spun((wc * zx - ws * zy) / f.vz, (ws * zx + wc * zy) / f.vz);
+    } else if (f.mode === M.wormhole) {   // foldWorm
+      const a = f.drL, r = Math.max(Math.hypot(zx, zy), 1e-5), u = r / a;
+      const b = u >= 1 ? Math.sqrt(r * r - a * a) : -0.9 * a * u / Math.sqrt(Math.max(1 - u * u, 1e-4));
+      return spun(zx / r * b / f.vz, zy / r * b / f.vz);
+    } else if (f.mode === M.pearls) {   // foldPearls
+      zx += f.hypAx; zy += f.hypAy;
+      for (let i = 0; i < 4; i++) {
+        zx = tri(zx); zy = tri(zy);
+        let k = f.tile / Math.max(zx * zx + zy * zy, 1e-4);
+        k = 0.5 * (k + 1 + Math.sqrt((k - 1) * (k - 1) + 0.02));
+        zx *= k; zy *= k;
+      }
+      return spun(tri(zx) * 0.85, tri(zy) * 0.85);
+    } else if (f.mode === M.poles) {   // foldPoles
+      const t = f.drPhase;
+      const ax = 0.62 * Math.cos(t), ay = 0.62 * Math.sin(t), bx = 0.5 * Math.cos(1 - 0.7 * t), by = 0.5 * Math.sin(1 - 0.7 * t);
+      const z2x = zx * zx - zy * zy, z2y = 2 * zx * zy;
+      const nx = z2x - (ax * ax - ay * ay), ny = z2y - 2 * ax * ay;
+      const dx2 = z2x - (bx * bx - by * by), dy2 = z2y - 2 * bx * by, dd = Math.max(dx2 * dx2 + dy2 * dy2, 1e-6);
+      const qx = (nx * dx2 + ny * dy2) / dd, qy = (ny * dx2 - nx * dy2) / dd;
+      return spun(tri((zx * qx - zy * qy) * 0.9) * 0.9, tri((zx * qy + zy * qx) * 0.9) * 0.9);
+    } else if (f.mode >= M.pool) {   // the steered places: foldPool .. foldJulia
+      const gx = (f.hypAx - f.cx) * f.vz, gy = (f.hypAy - f.cy) * f.vz;
+      const Fx = cs * gx - sn * gy, Fy = sn * gx + cs * gy, t = f.drPhase, A = f.tile;
+      if (f.mode === M.pool) {
+        const ex = zx - Fx, ey = zy - Fy, r1 = Math.hypot(ex, ey) + 1e-4, r0 = Math.hypot(zx, zy) + 1e-4;
+        const w1 = Math.sin(r1 * 22 - t * 8) * Math.exp(-r1 * 1.6), w0 = 0.5 * Math.sin(r0 * 16 - t * 6) * Math.exp(-r0 * 1.2);
+        const k = 0.07 * A;
+        return spun((zx + (ex / r1 * w1 + zx / r0 * w0) * k) / f.vz, (zy + (ey / r1 * w1 + zy / r0 * w0) * k) / f.vz);
+      }
+      if (f.mode === M.whirl) {
+        const ex = zx - Fx, ey = zy - Fy;
+        const th = (3 * A + 0.4 * Math.sin(t)) * Math.exp(-(ex * ex + ey * ey) * 4), c = Math.cos(th), s = Math.sin(th);
+        return wedge(Fx + c * ex - s * ey, Fy + s * ex + c * ey);
+      }
+      if (f.mode === M.planet) {
+        const r = Math.hypot(zx, zy) / 0.8;
+        if (r >= 1) return spun(zx, zy);
+        const nx = zx / 0.8, ny = zy / 0.8, nz = Math.sqrt(1 - r * r), la = Fy * 1.4, lo = Fx * 2.2 + t;
+        const y1 = Math.cos(la) * ny - Math.sin(la) * nz, z1 = Math.sin(la) * ny + Math.cos(la) * nz;
+        const x2 = Math.cos(lo) * nx - Math.sin(lo) * z1, z2 = Math.sin(lo) * nx + Math.cos(lo) * z1;
+        return spun(tri(Math.atan2(x2, z2) / Math.PI * 2) * 1.5, Math.asin(Math.max(-1, Math.min(1, y1))) / Math.PI * 1.8);
+      }
+      if (f.mode === M.corridor) {
+        const ex = zx - 0.6 * Fx, ey = zy - 0.6 * Fy, r = Math.hypot(ex, ey) + 1e-4;
+        return spun(tri(Math.atan2(ey, ex) / Math.PI * 4) * 1.3, tri(0.35 / r + t * 2) * 0.9);
+      }
+      zx *= 1.25; zy *= 1.25;
+      for (let i = 0; i < 4; i++) {
+        const nx = zx * zx - zy * zy + Fx * 1.1;
+        zy = 2 * zx * zy + Fy * 1.1; zx = nx;
+        if (Math.abs(zx) + Math.abs(zy) > 1e6) break;
+      }
+      return spun(tri(zx * 0.6) * 0.9, tri(zy * 0.6) * 0.9);
     } else {
       const t = f.tile;
       zx = zx * t + 1; zy = zy * t + 1;
@@ -1832,9 +2126,18 @@ const Fold = (() => {
       zx = sx * 1.4 - 0.7; zy = sy * 1.4 - 0.7;
       return spun(zx, zy);
     }
-
-    return spun(zx / f.vz, zy / f.vz);
   }
+
+  // The mirror wedge (foldKaleido): folds z into one wedge of the mirrors and spins it back.
+  function wedge(zx, zy) {
+    const f = fold, seg = TAU / f.sym, half = seg * 0.5, l = Math.hypot(zx, zy);
+    let a = Math.atan2(zy, zx);
+    a -= seg * Math.floor(a / seg);
+    if (f.mirror) a = half - sabs(a - half, 0.002);
+    return spun(l * Math.cos(a) / f.vz, l * Math.sin(a) / f.vz);
+  }
+
+  function tri(v) { v -= 1; return Math.abs(v - 4 * Math.floor(v / 4) - 2) - 1; }
 
   function spun(zx, zy) {
     const cs = Math.cos(fold.spin), sn = Math.sin(fold.spin);
@@ -1885,6 +2188,21 @@ precision highp float;
 precision highp int;
 #define PI 3.14159265359
 #define TAU 6.28318530718
+// A lower detail level is drawn into the corner of a full-size texture. pic is
+// (picture w, h, texture w, h), or 0 when the picture fills the texture. These map uv
+// over the picture into the texture and hold at the picture's edge as the texture's
+// own edge would: picUV for edge-clamped textures, picUVM for mirrored ones (lod: the
+// mip level read). With pic 0 they change nothing.
+vec2 picUV(vec2 uv, vec4 pic) {
+  return pic.x > 0.0 ? min(uv * (pic.xy / pic.zw), (pic.xy - 0.5) / pic.zw) : uv;
+}
+vec2 picUVM(vec2 uv, vec4 pic, float lod) {
+  if (pic.x <= 0.0) return uv;
+  float k = exp2(ceil(max(lod, 0.0)));
+  vec2 n = max(floor(pic.xy / k), 1.0), t = max(floor(pic.zw / k), 1.0);
+  uv = 1.0 - abs(1.0 - mod(uv, 2.0));
+  return min(uv * (pic.xy / pic.zw), (n - 0.5) / t);
+}
 `;
 
   const FULLSCREEN_VS = `#version 300 es
@@ -1894,6 +2212,22 @@ void main() {
 }`;
 
   const COMMON = `
+// uMode, by name (MODES in the parameter schema; M in the JS).
+#define M_NONE 0
+#define M_KALEIDO 1
+#define M_KIFS 2
+#define M_HYPERBOLIC 3
+#define M_DROSTE 4
+#define M_TILES 5
+#define M_LENS 6
+#define M_WORMHOLE 7
+#define M_PEARLS 8
+#define M_POLES 9
+#define M_POOL 10
+#define M_WHIRL 11
+#define M_PLANET 12
+#define M_CORRIDOR 13
+#define M_JULIA 14
 uniform vec2 uRes;
 uniform int uMode;
 uniform float uSym;
@@ -2064,9 +2398,146 @@ vec2 foldTiles(vec2 z, out float trap, out float scale) {
   return z * 1.4 - 0.7;
 }
 
+// Black hole: a point-mass lens (ring radius uDroste.x) tracing each ray back to the sky.
+vec2 foldLens(vec2 z, out float scale, out float mask, out float rim) {
+  float E = uDroste.x, rs = 0.5 * E;
+  float r = max(length(z), 1e-5);
+  float k = E * E / (r * r);
+  float b = r - k * r;
+  float x = max(r - rs, 1e-3 * E);
+  float wind = 0.9 * log(1.0 + 0.4 * E / x);
+  scale = clamp(1.0 + k + abs(b) * 0.36 * E / (x * (x + 0.4 * E)), 1.0, 24.0);
+  float gather = clamp(1.0 / max(abs(1.0 - k * k), 0.08) - 1.0, -0.6, 5.0);
+  mask = smoothstep(rs, rs * 1.08, r) * (1.0 + 0.5 * gather);
+  float e = (r - rs * 1.05) / E;
+  rim = exp(-e * e * 1600.0) + 0.22 * exp(-e * e * 60.0) * step(rs, r);
+  return rot(wind) * (z / r) * b;
+}
+
+// Wormhole: a glass ball of radius uDroste.x that holds the whole sky. Outside it the
+// sky is drawn in toward the rim; inside, everything appears again upside down, with
+// the far sky crowded against the edge.
+vec2 foldWorm(vec2 z, out float trap, out float scale, out float rim) {
+  float a = uDroste.x, r = max(length(z), 1e-5), u = r / a;
+  trap = abs(r - a) / uViewZoom;
+  rim = exp(-(u - 1.0) * (u - 1.0) * 900.0);
+  if (u >= 1.0) {
+    float b = sqrt(r * r - a * a);
+    scale = clamp(r / max(b, 1e-3), 1.0, 24.0);
+    return z / r * b;
+  }
+  float w = sqrt(max(1.0 - u * u, 1e-4));
+  scale = clamp(0.9 / (w * w * w), 1.0, 24.0);
+  return -z / r * (0.9 * a * u / w);
+}
+
+vec2 tri(vec2 p) { return abs(mod(p - 1.0, 4.0) - 2.0) - 1.0; }
+
+// Indra's pearls: fold the plane into a square, turn the middle inside out through a
+// circle, and repeat. Every pearl holds a smaller copy of the whole, down to dust.
+vec2 foldPearls(vec2 z, out float trap, out float scale) {
+  float s = uTile, rs = sqrt(uTile);
+  trap = 1e9;
+  scale = 1.0;
+  z += uHyp.zw;
+  for (int i = 0; i < 4; i++) {
+    z = tri(z);
+    float r2 = max(dot(z, z), 1e-4);
+    float k = s / r2;
+    k = 0.5 * (k + 1.0 + sqrt((k - 1.0) * (k - 1.0) + 0.02));   // a soft max(k, 1): no crease where a pearl begins
+    trap = min(trap, abs(sqrt(r2) - rs) / scale);
+    z *= k;
+    scale *= k;
+  }
+  scale = min(scale, 24.0);  // the finest pearls blend into a smooth glow instead of sparkling
+  return tri(z) * 0.85;
+}
+
+// Poles and zeros: the plane seen through f(z) = z (z² - a²) / (z² - b²). The picture
+// pinches to a point at each zero and opens without end at each pole, and the two
+// pairs circle each other slowly (uDroste.y is the turn).
+vec2 foldPoles(vec2 z, out float trap, out float scale) {
+  float t = uDroste.y;
+  vec2 a = 0.62 * vec2(cos(t), sin(t)), b = 0.5 * vec2(cos(1.0 - 0.7 * t), sin(1.0 - 0.7 * t));
+  vec2 z2 = cmul(z, z), a2 = cmul(a, a), b2 = cmul(b, b);
+  vec2 n = z2 - a2, dn = z2 - b2;
+  float dd = max(dot(dn, dn), 1e-6);
+  vec2 w = cmul(z, cdiv(n, dn));
+  scale = clamp(length(n) / sqrt(dd) + 2.0 * dot(z, z) * length(a2 - b2) / dd, 0.3, 24.0);
+  vec2 f = tri(w * 0.9);
+  trap = min(1.0 - abs(f.x), 1.0 - abs(f.y)) / max(scale, 1.0);
+  return f * 0.9;
+}
+
+// ---- Places a finger steers (M_POOL and up). F is the finger, or a slow wanderer when
+// nobody is touching, in the fold's own space; t = uDroste.y runs on; A = uTile is the
+// place's strength. ----
+float tri(float x) { return abs(mod(x - 1.0, 4.0) - 2.0) - 1.0; }
+
+// Pool: rings spread from the finger and from the middle. The picture is seen through
+// the water, brighter along each crest.
+vec2 foldPool(vec2 z, vec2 F, float t, float A, out float mask) {
+  vec2 d = z - F;
+  float r1 = length(d) + 1e-4, r0 = length(z) + 1e-4;
+  float w1 = sin(r1 * 22.0 - t * 8.0) * exp(-r1 * 1.6);
+  float w0 = 0.5 * sin(r0 * 16.0 - t * 6.0) * exp(-r0 * 1.2);
+  mask = max(1.0 + 1.1 * A * (w1 + w0), 0.2);
+  return z + (d / r1 * w1 + z / r0 * w0) * (0.07 * A);
+}
+
+// Whirlpool: the finger stirs space into a spiral, and the mirrors repeat it.
+vec2 foldWhirl(vec2 z, vec2 F, float t, float A, out float trap, out float scale) {
+  vec2 d = z - F;
+  float r2 = dot(d, d), g = exp(-r2 * 4.0);
+  scale = 1.0 + 24.0 * A * r2 * g;
+  return foldKaleido(F + rot((3.0 * A + 0.4 * sin(t)) * g) * d, trap);
+}
+
+// Planet: the canvas wrapped around a globe that turns on its own and tilts toward
+// the finger. Beyond its edge there is only its glow.
+vec2 foldPlanet(vec2 z, vec2 F, float t, out float scale, out float mask, out float rim) {
+  float r = length(z) / 0.8, e = (r - 1.0) / 0.05;
+  rim = exp(-e * e) * (r > 1.0 ? 1.0 : 0.35);
+  mask = 0.0;
+  scale = 1.0;
+  if (r >= 1.0) return z;
+  float nz = sqrt(1.0 - r * r);
+  vec3 n = vec3(z / 0.8, nz);
+  n.yz = rot(F.y * 1.4) * n.yz;
+  n.xz = rot(F.x * 2.2 + t) * n.xz;
+  mask = smoothstep(1.0, 0.97, r) * (0.3 + 0.7 * nz);
+  scale = clamp(1.0 / max(nz, 0.12), 1.0, 24.0);
+  return vec2(tri(atan(n.x, n.z) / PI * 2.0) * 1.5, asin(clamp(n.y, -1.0, 1.0)) / PI * 1.8);
+}
+
+// Hyperspace: an endless corridor lined with the picture. The finger moves the far end.
+vec2 foldTunnel(vec2 z, vec2 F, float t, out float scale, out float mask) {
+  vec2 d = z - 0.6 * F;
+  float r = length(d) + 1e-4;
+  mask = smoothstep(0.015, 0.3, r);
+  scale = clamp(0.3 / (r * r), 1.0, 24.0);
+  return vec2(tri(atan(d.y, d.x) / PI * 4.0) * 1.3, tri(0.35 / r + t * 2.0) * 0.9);
+}
+
+// Julia: z² + c four times over, where c is the finger. A small move reshapes everything.
+vec2 foldJulia(vec2 z, vec2 F, out float trap, out float scale, out float mask) {
+  vec2 c = F * 1.1;
+  z *= 1.25;
+  scale = 1.25;
+  trap = 1e9;
+  for (int i = 0; i < 4; i++) {
+    scale = min(scale * 2.0 * max(length(z), 0.05), 1e6);
+    z = clamp(cmul(z, z) + c, -64.0, 64.0);   // far outside the set is dark anyway: keep the numbers small
+    trap = min(trap, abs(length(z) - 1.0) / max(scale, 1.0));
+  }
+  mask = 1.0 / (1.0 + 0.003 * scale);
+  scale = clamp(scale, 0.3, 24.0);
+  return tri(z * 0.6) * 0.9;
+}
+
 vec2 foldKaleidoSpace(vec2 p) {
   p = warpSpace(p);
-  if (uMode == 0) return p;
+  if (uMode == M_NONE) return p;
   vec2 z = spinInv() * (p - uCenter) * uViewZoom;
   float tr;
   z = foldKaleido(z, tr);
@@ -2079,15 +2550,34 @@ vec2 foldSpaceEx(vec2 p, out float trap, out float scale, out float diskMask, ou
   diskMask = 1.0;
   rimGlow = 0.0;
   p = warpSpace(p);
-  if (uMode == 0) return p;
+  if (uMode == M_NONE) return p;
   vec2 z = spinInv() * (p - uCenter) * uViewZoom;
-  if (uMode == 1) {
+  if (uMode == M_KALEIDO) {
     z = foldKaleido(z, trap);
     return uCenter + spinM() * z / uViewZoom;
   }
-  if (uMode == 2) z = foldKifs(z, trap, scale);
-  else if (uMode == 3) z = foldHyper(z, trap, scale, diskMask, rimGlow);
-  else if (uMode == 4) z = foldDroste(z, trap, scale);
+  if (uMode == M_LENS) {
+    z = foldLens(z, scale, diskMask, rimGlow);
+    return uCenter + spinM() * z / uViewZoom;
+  }
+  if (uMode == M_WORMHOLE) {
+    z = foldWorm(z, trap, scale, rimGlow);
+    return uCenter + spinM() * z / uViewZoom;
+  }
+  if (uMode >= M_POOL) {
+    vec2 F = spinInv() * (uHyp.zw - uCenter) * uViewZoom;
+    if (uMode == M_POOL) { scale = 1.0; return uCenter + spinM() * foldPool(z, F, uDroste.y, uTile, diskMask) / uViewZoom; }
+    if (uMode == M_WHIRL) return uCenter + spinM() * foldWhirl(z, F, uDroste.y, uTile, trap, scale) / uViewZoom;
+    if (uMode == M_PLANET) z = foldPlanet(z, F, uDroste.y, scale, diskMask, rimGlow);
+    else if (uMode == M_CORRIDOR) z = foldTunnel(z, F, uDroste.y, scale, diskMask);
+    else z = foldJulia(z, F, trap, scale, diskMask);
+    return uCenter + spinM() * z;
+  }
+  if (uMode == M_KIFS) z = foldKifs(z, trap, scale);
+  else if (uMode == M_HYPERBOLIC) z = foldHyper(z, trap, scale, diskMask, rimGlow);
+  else if (uMode == M_DROSTE) z = foldDroste(z, trap, scale);
+  else if (uMode == M_PEARLS) z = foldPearls(z, trap, scale);
+  else if (uMode == M_POLES) z = foldPoles(z, trap, scale);
   else z = foldTiles(z, trap, scale);
   scale = clamp(scale * uViewZoom, 0.2, 24.0);
   return uCenter + spinM() * z;
@@ -2102,6 +2592,7 @@ vec2 foldSpace(vec2 p) {
   // Feedback pass: smooth dihedral flow + damped recursive echo coupling + soft generator injection.
   const FEEDBACK_FS = HEADER + COMMON + `
 uniform sampler2D uPrev, uCam, uRM;
+uniform vec4 uPrevPic, uRMPic;   // see picUV
 uniform bool uFoldLoop;
 uniform mat3 uColorMat;
 uniform float uFbRot, uFbZoom, uFbSwirl, uFbWarp, uFbWarpT, uSharpen, uDt, uDream;
@@ -2127,6 +2618,12 @@ vec2 fbTransform(vec2 q) {
   for (int i = 0; i < 4; i++) {
     if (i >= uRipN) break;
     vec2 r = q - uRip[i].xy;
+    // Wet paint (a negative radius): a moving finger drags the picture along with it.
+    if (uRip[i].z < 0.0) {
+      float a = -uRip[i].z - 4.0;
+      d -= vec2(cos(a), sin(a)) * (uRip[i].w * exp(-dot(r, r) * 28.0));
+      continue;
+    }
     float l = max(length(r), 1e-4), w = l - uRip[i].z;
     d -= r / l * (uRip[i].w * exp(-w * w * 160.0));
   }
@@ -2179,7 +2676,7 @@ vec3 generator(vec2 q) {
       c += pal(fi / 6.0 + t * 0.08) * exp(-dot(d, d) * 24.0) * 1.25;
     }
   } else if (uGen == 6) {
-    c = texture(uRM, toUV(q)).rgb;
+    c = texture(uRM, picUVM(toUV(q), uRMPic, 0.0)).rgb;
   }
   if (uGenRadius > 0.0) c *= 1.0 - smoothstep(uGenRadius * 0.65, uGenRadius, length(q - uCenter));
   return c;
@@ -2193,14 +2690,15 @@ vec3 camera(vec2 q) {
   return mix(c, pal(l * 1.2 + uGenT * 0.05) * (l * 1.5 + 0.05), uCamColorize);
 }
 
+vec3 prevAt(vec2 uv) { return textureLod(uPrev, picUVM(uv, uPrevPic, 0.0), 0.0).rgb; }
 vec3 samplePrev(vec2 uv) {
-  vec3 c = textureLod(uPrev, uv, 0.0).rgb;
+  vec3 c = prevAt(uv);
   if (uSharpen > 0.0) {
     vec2 px = 1.0 / uRes;
-    vec3 a = textureLod(uPrev, uv + vec2(px.x, 0.0), 0.0).rgb;
-    vec3 b = textureLod(uPrev, uv - vec2(px.x, 0.0), 0.0).rgb;
-    vec3 d = textureLod(uPrev, uv + vec2(0.0, px.y), 0.0).rgb;
-    vec3 e = textureLod(uPrev, uv - vec2(0.0, px.y), 0.0).rgb;
+    vec3 a = prevAt(uv + vec2(px.x, 0.0));
+    vec3 b = prevAt(uv - vec2(px.x, 0.0));
+    vec3 d = prevAt(uv + vec2(0.0, px.y));
+    vec3 e = prevAt(uv - vec2(0.0, px.y));
     vec3 lo = min(min(a, b), min(d, e)), hi = max(max(a, b), max(d, e));
     c = clamp(c + (c - (a + b + d + e) * 0.25) * uSharpen, min(lo, c), max(hi, c));
   }
@@ -2209,7 +2707,7 @@ vec3 samplePrev(vec2 uv) {
 
 void main() {
   vec2 p = fragP();
-  bool kaleidoFold = uFoldLoop && uMode == 1;
+  bool kaleidoFold = uFoldLoop && uMode == M_KALEIDO;
   vec2 qBase = kaleidoFold ? foldKaleidoSpace(p) : p;
   vec2 qAdv = fbTransform(qBase);
   if (kaleidoFold) qAdv = foldKaleidoSpace(qAdv);
@@ -2217,11 +2715,12 @@ void main() {
 
   // In multi-scale chambers (kifs, hyperbolic, droste, tiles), "Fold the echoes too"
   // couples a damped recursive echo without collapsing the full-resolution canvas.
-  if (uFoldLoop && uMode >= 2) {
+  if (uFoldLoop && uMode >= M_KIFS) {
     float tr, sc, dm, rg;
     vec2 qFold = foldSpaceEx(p, tr, sc, dm, rg);
     float lod = clamp(log2(max(sc * 0.75, 1.0)), 0.0, 4.0);
-    vec3 cFold = textureLod(uPrev, toUV(fbTransform(qFold)), lod).rgb * dm;
+    vec2 uvFold = picUVM(toUV(fbTransform(qFold)), uPrevPic, lod);
+    vec3 cFold = textureLod(uPrev, uvFold, lod).rgb * dm;
     float kEcho = 1.0 - exp(-uDt * 4.5);
     c = mix(c, max(c, cFold * 0.88), kEcho);
   }
@@ -2308,28 +2807,111 @@ void main() {
   // Scene pass: 4-tap supersampled mip-aware chamber fold + orbit-trap filigree + optical veil dissolve.
   const SCENE_FS = HEADER + COMMON + `
 uniform sampler2D uFB, uVeilTex;
+uniform vec4 uFBPic, uVeilPic;   // see picUV
 uniform float uFisheye, uPalMap, uPalShift, uVeil, uSheen, uFbScale;
 uniform vec2 uSheenL;
 uniform int uTaps;
+// The sky places (native only): the web build defines NO_SKY.
+#ifndef NO_SKY
+uniform sampler2D uSkySharp, uSkySoft;
+uniform int uSky, uSkyMirror;
+uniform vec4 uSkyView, uSkyAt, uSkyBox;
+uniform vec4 uSkyLens[8];
+uniform int uSkyLensN;
+#endif
 out vec4 o;
+
+#ifndef NO_SKY
+// The sky places: their light is drawn once, into textures covering one wedge of the
+// mirrors in the sky's own space (mac/render/shaders/stars.metal); here every pixel is
+// turned and folded into that wedge and reads it. Anything that is not a number is
+// dropped.
+vec3 skyAt(vec2 q) {
+  vec2 uv = (q - uSkyBox.xy) / (uSkyBox.zw - uSkyBox.xy);
+  if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec3(0.0);
+  return texture(uSkySharp, uv).rgb + texture(uSkySoft, uv).rgb;
+}
+vec3 skyLight(vec2 p) {
+  p *= 1.0 + uFisheye * dot(p, p) * 0.3;
+  vec2 d = (p - uSkyAt.xy - uSkyAt.zw) * uSkyView.z;
+  vec2 z = vec2(uSkyView.x * d.x + uSkyView.y * d.y, uSkyView.x * d.y - uSkyView.y * d.x);
+  float seg = TAU / uSkyView.w, a = atan(z.y, z.x), r = length(z);
+  a -= seg * floor(a / seg);
+  if (uSkyMirror != 0 && a > seg * 0.5) a = seg - a;
+  vec2 q = r * vec2(cos(a), sin(a));
+  // Every finger is a lens of Einstein radius E: light seen at q came from q - E^2 (q - L) / |q - L|^2.
+  float pupil = 1.0;
+  if (uSkyLensN > 0) {
+    vec2 dq = vec2(0.0);
+    float near = 1e9;
+    float c2 = cos(seg), s2 = sin(seg);
+    for (int i = 0; i < 8; i++) {
+      if (i >= uSkyLensN) break;
+      vec4 L = uSkyLens[i];
+      vec2 l1 = uSkyMirror != 0 ? vec2(L.x, -L.y) : vec2(c2 * L.x - s2 * L.y, s2 * L.x + c2 * L.y);
+      vec2 l2 = uSkyMirror != 0 ? vec2(c2 * L.x + s2 * L.y, s2 * L.x - c2 * L.y) : vec2(c2 * L.x + s2 * L.y, c2 * L.y - s2 * L.x);
+      vec2 d0 = q - L.xy, d1 = q - l1, d2 = q - l2;
+      float e0 = dot(d0, d0), e1 = dot(d1, d1), e2 = dot(d2, d2), far = 36.0 * L.z;
+      // Out to six Einstein radii, fading at the edge: beyond, a pixel spends nothing on it.
+      if (min(e0, min(e1, e2)) > far) continue;
+      float soft = 0.06 * L.z;
+      dq += L.z * (d0 * (smoothstep(far, 0.25 * far, e0) / (e0 + soft)) + d1 * (smoothstep(far, 0.25 * far, e1) / (e1 + soft))
+                 + d2 * (smoothstep(far, 0.25 * far, e2) / (e2 + soft)));
+      near = min(near, min(e0, min(e1, e2)) / max(L.z, 1e-6));
+    }
+    // Inside the ring a lens shows only a faint, shrunken image of the sky behind it: a
+    // soft dark pupil at the fingertip, framed by the bright ring.
+    pupil = smoothstep(0.12, 0.55, near);
+    if (near < 36.0) {
+      q -= dq;
+      r = length(q); a = atan(q.y, q.x);
+      a -= seg * floor(a / seg);
+      if (uSkyMirror != 0 && a > seg * 0.5) a = seg - a;
+      q = r * vec2(cos(a), sin(a));
+    }
+  }
+  vec3 s = skyAt(q) * pupil;
+  // Each star is drawn once, on its own side of a wall; within a sprite's reach of a
+  // wall, the stars just across it spill over: read them where they were drawn.
+  float wall = uSkyMirror != 0 ? seg * 0.5 : seg, reach = uSkyBox.z * 0.029;
+  if (q.y < reach) s += pupil * skyAt(uSkyMirror != 0 ? vec2(q.x, -q.y) : r * vec2(cos(a + seg), sin(a + seg)));
+  if (r * sin(wall - a) < reach) s += pupil * skyAt(uSkyMirror != 0 ? r * vec2(cos(seg - a), sin(seg - a)) : r * vec2(cos(a - seg), sin(a - seg)));
+  return s.r < 1e4 && s.g < 1e4 && s.b < 1e4 ? s : vec3(0.0);
+}
+#endif
 
 vec3 evalPoint(vec2 p) {
   p *= 1.0 + uFisheye * dot(p, p) * 0.3;
   float trap, scale, diskMask, rimGlow;
   vec2 q = foldSpaceEx(p, trap, scale, diskMask, rimGlow);
   float lod = clamp(log2(max(scale * 0.65 * uFbScale, 1.0)), 0.0, 5.0);
-  vec3 c = textureLod(uFB, toUV(q), lod).rgb * diskMask;
+  vec3 c = textureLod(uFB, picUVM(toUV(q), uFBPic, lod), lod).rgb * diskMask;
 
   // Delicate anti-aliased filigree along fractal, hyperbolic, spiral and tile fold lines
-  if (uMode >= 2) {
+  if (uMode >= M_KIFS) {
     float px = max(2.0 / uRes.y, 0.0015);
     float fil = exp(-trap / (px * 1.6)) * diskMask;
     float energy = dot(c, vec3(0.333));
     vec3 filCol = pal(log(max(scale, 0.5)) * 0.2 + uPalShift + 0.25);
-    c += filCol * fil * (0.045 + 0.16 * min(energy, 1.5));
+    c += filCol * fil * ((uMode == M_PEARLS ? 0.3 / scale : 0.045) + 0.16 * min(energy, 1.5));
   }
-  if (uMode == 3 && rimGlow > 0.0) {
+  if (uMode == M_HYPERBOLIC && rimGlow > 0.0) {
     c += pal(uPalShift + 0.5) * rimGlow * 0.22;
+  }
+  // The planet's air: a thin glow around its edge.
+  if (uMode == M_PLANET) c += pal(uPalShift + 0.5) * rimGlow * 0.7;
+  // Each pearl sits in a soft halo of its own light.
+  if (uMode == M_PEARLS) c += pal(log(max(scale, 0.5)) * 0.2 + uPalShift + 0.4) * exp(-trap * 16.0) * (0.5 / (1.0 + scale));
+  // The photon ring: always lit, and brighter with the light falling past it.
+  if (uMode == M_LENS || uMode == M_WORMHOLE) {
+    // Inside the glass ball the sky's colours are turned, so it reads as another place.
+    if (uMode == M_WORMHOLE && length(p - uCenter) * uViewZoom < uDroste.x) c = c.brg;
+    // Stars behind the lens: fixed in the sky, so they stretch into arcs as it moves.
+    vec2 g = q * 7.0, h = hash2(floor(g) + 64.0);
+    vec2 sd = fract(g) - 0.5 - 0.38 * h;
+    float star = exp(-dot(sd, sd) * 2500.0) * step(-0.2, h.y) * (0.4 + 0.6 * fract(h.x * 7.3));
+    c += mix(vec3(1.0), pal(h.x + uPalShift), 0.5) * star * diskMask * 1.5;
+    c += pal(uPalShift + 0.5) * rimGlow * (0.5 + 1.2 * min(dot(c, vec3(0.333)), 2.0));
   }
   return c;
 }
@@ -2348,6 +2930,9 @@ void main() {
     evalPoint(p0 + px * vec2( 0.375, -0.125)) +
     evalPoint(p0 + px * vec2(-0.125, -0.375))
   );
+#ifndef NO_SKY
+  if (uSky != 0) c += skyLight(p0);
+#endif
   // Liquid sheen: treat brightness as a height field and light it like oil on glass.
   if (uSheen > 0.0) {
     float l = dot(c, vec3(0.299, 0.587, 0.114));
@@ -2365,7 +2950,7 @@ void main() {
   if (uVeil > 0.0) {
     vec2 uv = gl_FragCoord.xy / uRes;
     vec2 uvVeil = 0.5 + (uv - 0.5) * (1.0 - 0.035 * (1.0 - uVeil));
-    c = mix(c, texture(uVeilTex, uvVeil).rgb, uVeil);
+    c = mix(c, texture(uVeilTex, picUV(uvVeil, uVeilPic)).rgb, uVeil);
   }
   o = vec4(c, 1.0);
 }`;
@@ -2374,20 +2959,23 @@ void main() {
   const DOWN_FS = HEADER + `
 uniform sampler2D uSrc;
 uniform vec2 uTexel, uOut;
+uniform vec4 uSrcPic;   // see picUV
 uniform float uThreshold;
 uniform bool uPrefilter;
 out vec4 o;
 void main() {
-  vec2 uv = gl_FragCoord.xy / uOut;
-  vec3 c = textureLod(uSrc, uv, 0.0).rgb * 4.0;
-  c += textureLod(uSrc, uv + uTexel * vec2(-1, -1), 0.0).rgb;
-  c += textureLod(uSrc, uv + uTexel * vec2(1, -1), 0.0).rgb;
-  c += textureLod(uSrc, uv + uTexel * vec2(-1, 1), 0.0).rgb;
-  c += textureLod(uSrc, uv + uTexel * vec2(1, 1), 0.0).rgb;
+  vec2 uv = picUV(gl_FragCoord.xy / uOut, uSrcPic);
+  vec2 hi = uSrcPic.x > 0.0 ? (uSrcPic.xy - 0.5) / uSrcPic.zw : vec2(2.0);   // the picture's last texel, as picUV
+  vec4 mid = textureLod(uSrc, min(uv, hi), 0.0);
+  vec3 c = mid.rgb * 4.0;
+  c += textureLod(uSrc, min(uv + uTexel * vec2(-1, -1), hi), 0.0).rgb;
+  c += textureLod(uSrc, min(uv + uTexel * vec2(1, -1), hi), 0.0).rgb;
+  c += textureLod(uSrc, min(uv + uTexel * vec2(-1, 1), hi), 0.0).rgb;
+  c += textureLod(uSrc, min(uv + uTexel * vec2(1, 1), hi), 0.0).rgb;
   c /= 8.0;
   // Alpha carries plain average brightness down the chain, so the flash guard
   // reads the scene's mean from the smallest level instead of a full mip chain.
-  float lum = textureLod(uSrc, uv, 0.0).a;
+  float lum = mid.a;
   if (uPrefilter) {
     lum = dot(c, vec3(0.2126, 0.7152, 0.0722));
     float l = max(c.r, max(c.g, c.b));
@@ -2399,22 +2987,25 @@ void main() {
   const UP_FS = HEADER + `
 uniform sampler2D uSrc;
 uniform vec2 uTexel, uOut;
+uniform vec4 uSrcPic;   // see picUV
 out vec4 o;
 void main() {
-  vec2 uv = gl_FragCoord.xy / uOut;
-  vec3 c = texture(uSrc, uv + uTexel * vec2(-2, 0)).rgb;
-  c += texture(uSrc, uv + uTexel * vec2(2, 0)).rgb;
-  c += texture(uSrc, uv + uTexel * vec2(0, -2)).rgb;
-  c += texture(uSrc, uv + uTexel * vec2(0, 2)).rgb;
-  c += texture(uSrc, uv + uTexel * vec2(-1, -1)).rgb * 2.0;
-  c += texture(uSrc, uv + uTexel * vec2(1, -1)).rgb * 2.0;
-  c += texture(uSrc, uv + uTexel * vec2(-1, 1)).rgb * 2.0;
-  c += texture(uSrc, uv + uTexel * vec2(1, 1)).rgb * 2.0;
+  vec2 uv = picUV(gl_FragCoord.xy / uOut, uSrcPic);
+  vec2 hi = uSrcPic.x > 0.0 ? (uSrcPic.xy - 0.5) / uSrcPic.zw : vec2(2.0);   // the picture's last texel, as picUV
+  vec3 c = texture(uSrc, min(uv + uTexel * vec2(-2, 0), hi)).rgb;
+  c += texture(uSrc, min(uv + uTexel * vec2(2, 0), hi)).rgb;
+  c += texture(uSrc, min(uv + uTexel * vec2(0, -2), hi)).rgb;
+  c += texture(uSrc, min(uv + uTexel * vec2(0, 2), hi)).rgb;
+  c += texture(uSrc, min(uv + uTexel * vec2(-1, -1), hi)).rgb * 2.0;
+  c += texture(uSrc, min(uv + uTexel * vec2(1, -1), hi)).rgb * 2.0;
+  c += texture(uSrc, min(uv + uTexel * vec2(-1, 1), hi)).rgb * 2.0;
+  c += texture(uSrc, min(uv + uTexel * vec2(1, 1), hi)).rgb * 2.0;
   o = vec4(c / 12.0, 1.0);
 }`;
 
   const FINAL_FS = HEADER + `
 uniform sampler2D uScene, uBloomTex, uLumCur, uLumAdapt;
+uniform vec4 uScenePic, uBloomPic;   // see picUV
 uniform bool uGuard;
 uniform vec2 uOut;
 uniform float uBloom, uChroma, uGrain, uVignette, uExposure, uCap;
@@ -2440,13 +3031,14 @@ void main() {
   vec2 uv = gl_FragCoord.xy / uOut;
   vec2 d = uv - 0.5;
   vec2 ca = d * uChroma * 0.01;
-  vec3 c = texture(uScene, uv).rgb;
-  if (uChroma > 0.0) { c.r = texture(uScene, uv - ca).r; c.b = texture(uScene, uv + ca).b; }
+  vec3 c = texture(uScene, picUV(uv, uScenePic)).rgb;
+  if (uChroma > 0.0) { c.r = texture(uScene, picUV(uv - ca, uScenePic)).r; c.b = texture(uScene, picUV(uv + ca, uScenePic)).b; }
   if (uBloom > 0.0) {
     // The glow splits like light through a prism: faintly everywhere, more toward
     // the edges, and further when the lens is set to fringe.
     vec2 pr = d * (0.006 + uChroma * 0.012);
-    c += vec3(texture(uBloomTex, uv - pr).r, texture(uBloomTex, uv).g, texture(uBloomTex, uv + pr).b) * uBloom;
+    c += vec3(texture(uBloomTex, picUV(uv - pr, uBloomPic)).r, texture(uBloomTex, picUV(uv, uBloomPic)).g,
+              texture(uBloomTex, picUV(uv + pr, uBloomPic)).b) * uBloom;
   }
   // Highlight-only flash limiter: absorbs sudden upward brightness spikes without pumping darks.
   if (uGuard) {
@@ -2468,11 +3060,12 @@ void main() {
 
   const LUM_FS = HEADER + `
 uniform sampler2D uSrc;
+uniform vec4 uSrcPic;   // see picUV
 out vec4 o;
 void main() {
   float s = 0.0;
   for (int y = 0; y < 8; y++) for (int x = 0; x < 8; x++) {
-    s += textureLod(uSrc, (vec2(x, y) + 0.5) / 8.0, 0.0).a;
+    s += textureLod(uSrc, picUV((vec2(x, y) + 0.5) / 8.0, uSrcPic), 0.0).a;
   }
   o = vec4(s / 64.0);
 }`;
@@ -2481,7 +3074,14 @@ void main() {
 uniform sampler2D uPrev, uCur;
 uniform float uK;
 out vec4 o;
-void main() { o = mix(texelFetch(uPrev, ivec2(0), 0), texelFetch(uCur, ivec2(0), 0), uK); }`;
+// A value that is not a number (one bad pixel upstream) would stay here for good and
+// dim every chamber after it to black: it is dropped instead. Tested by comparison,
+// which every GPU keeps (isnan may be folded away).
+void main() {
+  vec4 p = texelFetch(uPrev, ivec2(0), 0), c = texelFetch(uCur, ivec2(0), 0);
+  bool pk = all(lessThan(abs(p), vec4(1e6))), ck = all(lessThan(abs(c), vec4(1e6)));
+  o = !pk ? (ck ? c : vec4(0.0)) : !ck ? p : mix(p, c, uK);
+}`;
 
   const COPY_FS = HEADER + `
 uniform sampler2D uSrc;
@@ -2546,7 +3146,164 @@ void main() {
   o = vec4(vCol.rgb * (core + halo), 1.0);
 }`;
 
-  return { FULLSCREEN_VS, FEEDBACK_FS, RAYMARCH_FS, SCENE_FS, DOWN_FS, UP_FS, FINAL_FS, COPY_FS, LUM_FS, ADAPT_FS, INK_VS, INK_FS };
+
+  // Hand looks: glowing segments (a point is a segment of no length), instanced over the
+  // chamber's mirror images like INK_VS when they feed the echoes (uCopies > 1).
+  const LOOK_COPY = `
+uniform int uCopies;
+uniform bool uLookMirror;
+uniform float uSym, uSpin, uFish;
+uniform vec2 uCenter;
+mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
+vec2 copyOf(vec2 p, int k) {
+  p *= 1.0 + uFish * dot(p, p) * 0.3;
+  vec2 z = rot(-uSpin) * (p - uCenter);
+  if (uLookMirror && (k & 1) == 1) z.y = -z.y;
+  int r = uLookMirror ? k >> 1 : k;
+  z = rot(6.28318530718 / uSym * float(r)) * z;
+  return uCenter + rot(uSpin) * z;
+}
+`;
+  const LOOK_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec4 aSeg;
+layout(location = 1) in vec4 aCol;
+layout(location = 2) in vec4 aK;
+uniform vec2 uRes;
+out vec2 vP;
+out vec4 vSeg;
+out vec4 vCol;
+out vec4 vK;
+` + LOOK_COPY + `
+void main() {
+  int k = gl_InstanceID % uCopies;
+  vec2 a = copyOf(aSeg.xy, k), b = copyOf(aSeg.zw, k);
+  float R = aCol.w;
+  vec2 dir = b - a;
+  float L = length(dir);
+  dir = L > 1e-6 ? dir / L : vec2(1.0, 0.0);
+  vec2 nrm = vec2(-dir.y, dir.x);
+  vec2 corner = vec2(gl_VertexID & 1, gl_VertexID >> 1) * 2.0 - 1.0;
+  vec2 pos = (corner.x < 0.0 ? a - dir * R : b + dir * R) + nrm * corner.y * R;
+  vP = pos;
+  vSeg = vec4(a, b);
+  vCol = aCol;
+  vK = aK;
+  gl_Position = vec4(pos.x * uRes.y / uRes.x, pos.y, 0.0, 1.0);
+}`;
+  const LOOK_FS = `#version 300 es
+precision highp float;
+uniform float uGain;
+in vec2 vP;
+in vec4 vSeg;
+in vec4 vCol;
+in vec4 vK;
+out vec4 o;
+void main() {
+  vec2 pa = vP - vSeg.xy, ba = vSeg.zw - vSeg.xy;
+  float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-12), 0.0, 1.0);
+  float d = length(pa - ba * h) / vCol.w;
+  if (d > 1.0) discard;
+  float k = exp(-d * d * vK.y) + exp(-d * 3.5) * vK.z * (1.0 - d);
+  o = vec4(vCol.rgb * (vK.x * k * uGain), 0.0);
+}`;
+  // Strips: satin ribbons (uKind 0, premultiplied) and aurora curtains (uKind 1, light).
+  const STRIP_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec2 aPos;
+layout(location = 1) in vec4 aD;
+uniform vec2 uRes;
+out vec4 vD;
+` + LOOK_COPY + `
+void main() {
+  vec2 p = copyOf(aPos, gl_InstanceID % uCopies);
+  vD = aD;
+  gl_Position = vec4(p.x * uRes.y / uRes.x, p.y, 0.0, 1.0);
+}`;
+  const STRIP_FS = `#version 300 es
+precision highp float;
+uniform int uKind;
+uniform float uGain, uT;
+in vec4 vD;
+out vec4 o;
+vec3 spectral(float t) { return clamp(0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67))), 0.0, 1.0); }
+float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float noise(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y); }
+void main() {
+  if (uKind == 0) {
+    // Satin: across, along, cos of the twist, hue. Narrow edge-on, a sheen that slides across.
+    float across = vD.x, along = vD.y, cs = vD.z, hue = fract(vD.w), pres = floor(vD.w) / 255.0;
+    vec3 front = spectral(hue) * 1.15, back = spectral(hue + 0.12) * 0.55 + 0.05;
+    vec3 base = mix(back, front, step(0.0, cs));
+    float sn = sqrt(max(0.0, 1.0 - cs * cs)) * sign(cs + 1e-4);
+    float sheen = exp(-pow((across * 0.9 - sn * 0.85) * 3.2, 2.0));
+    float weave = 0.92 + 0.08 * sin(along * 1400.0 + across * 3.0);
+    float a = smoothstep(1.0, 0.7, abs(across)) * smoothstep(0.0, 0.03, along) * (1.0 - smoothstep(0.55, 1.0, along)) * pres;
+    vec3 col = (base * (0.25 + 0.75 * abs(cs)) * weave + vec3(1.0, 0.96, 0.92) * sheen * (0.5 + 0.9 * (1.0 - abs(cs))) * 0.9) * 0.62;
+    o = vec4(col * a * uGain, a * 0.92 * uGain);
+  } else {
+    // Curtain: u along the finger's path, v down the curtain, hue, strength.
+    float u = vD.x, v = vD.y;
+    float rays = pow(0.5 + 0.5 * sin(u * 160.0 + uT * 2.0 + sin(u * 31.0 + uT) * 3.0), 2.5);
+    float n = noise(vec2(u * 26.0 - uT * 0.4, v * 2.5 - uT * 0.9));
+    vec3 high = mix(vec3(0.75, 0.25, 1.0), vec3(1.0, 0.35, 0.55), vD.z);
+    vec3 col = mix(vec3(0.15, 1.0, 0.55), high, smoothstep(0.15, 0.95, v + 0.25 * (n - 0.5)));
+    float a = smoothstep(0.0, 0.06, v) * pow(1.0 - v, 1.6) * (0.3 + 0.7 * rays * (0.4 + 0.8 * n)) * smoothstep(0.0, 0.15, u) * vD.w;
+    o = vec4(col * a * 1.6 * uGain, 0.0);
+  }
+}`;
+  // Aura: a corona of flames around each whole hand, from its distance field. Drawn on
+  // top only, in a box around the hands (scissored), so it costs little.
+  const AURA_FS = `#version 300 es
+precision highp float;
+uniform vec2 uRes;
+uniform float uT, uBreath, uGain;
+uniform int uHands;
+uniform vec2 uPts[42];
+uniform vec4 uHand[2];
+out vec4 o;
+const int B[42] = int[42](0,1, 1,2, 2,3, 3,4, 0,5, 5,6, 6,7, 7,8, 5,9, 9,10, 10,11, 11,12, 9,13, 13,14, 14,15, 15,16, 13,17, 17,18, 18,19, 19,20, 0,17);
+float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float noise(vec2 p) { vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y); }
+float fbm(vec2 p) { float a = 0.5, s = 0.0; for (int i = 0; i < 3; i++) { s += a * noise(p); p = mat2(1.6, 1.2, -1.2, 1.6) * p + 7.1; a *= 0.5; } return s * 1.07; }   // 3 octaves: soft light needs no more
+vec3 spectral(float t) { return clamp(0.5 + 0.5 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.67))), 0.0, 1.0); }
+float seg(vec2 p, vec2 a, vec2 b) { vec2 pa = p - a, ba = b - a; float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-8), 0.0, 1.0); return length(pa - ba * h); }
+void main() {
+  vec2 p = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y * 2.0;
+  vec3 c = vec3(0.0);
+  for (int h = 0; h < 2; h++) {
+    if (h >= uHands) break;
+    vec4 H = uHand[h];          // palm xy, hand size, presence
+    if (H.w <= 0.0) continue;
+    float S = H.z, d = 1e9;
+    for (int i = 0; i < 42; i += 2) {
+      int e = B[i + 1];
+      float r = (e == 4 || e == 8 || e == 12 || e == 16 || e == 20) ? 0.055 : 0.075;
+      d = min(d, seg(p, uPts[h * 21 + B[i]], uPts[h * 21 + e]) - r * S);
+    }
+    d = min(d, length(p - H.xy) - 0.3 * S);
+    float dn = d / S;
+    if (dn > 2.2) continue;   // past here the corona adds under 1e-3: skip the flames' noise
+    vec2 rel = (p - H.xy) / S;
+    vec2 dir = rel / max(length(rel), 1e-3);
+    vec2 fq = dir * 1.9 + vec2(0.7, 0.5) * (dn * 2.6 - uT * 0.7);
+    float fl = fbm(fq + fbm(fq * 0.8 + vec2(uT * 0.1, 0.0)) * 1.4);
+    float reach = mix(0.32, 0.7, uBreath);
+    float dd = dn - (fl - 0.45) * 0.55 * (0.55 + 0.45 * uBreath);
+    float corona = exp(-max(dd, 0.0) / reach * 2.6) * smoothstep(-0.06, 0.03, dn);
+    float rays = corona > 0.01 ? 0.55 + 0.9 * pow(fbm(dir * 7.0 + vec2(uT * 0.25 + dn)), 2.0) : 1.0;
+    vec3 col = spectral(fract(dd * 1.1 - uT * 0.05 + dir.x * 0.06)) * 0.75 + 0.25;
+    c += H.w * (col * corona * rays * (0.34 + 0.3 * uBreath)
+              + vec3(1.0, 0.86, 0.7) * exp(-abs(dn) * 34.0) * (0.28 + 0.22 * uBreath)
+              + vec3(0.6, 0.65, 1.0) * smoothstep(0.0, -0.25, dn) * 0.035);
+  }
+  o = vec4(c * uGain, 0.0);
+}`;
+
+  return { FULLSCREEN_VS, FEEDBACK_FS, RAYMARCH_FS, SCENE_FS, DOWN_FS, UP_FS, FINAL_FS, COPY_FS, LUM_FS, ADAPT_FS, INK_VS, INK_FS,
+    LOOK_VS, LOOK_FS, STRIP_VS, STRIP_FS, AURA_FS };
 })();
 </script>
   <script>
@@ -2555,10 +3312,224 @@ void main() {
 //   → scene(4x supersampled display fold, filigree, veil dissolve)
 //   → bloom down/up chain → final(chroma, bloom, tonemap, vignette, grain) → canvas
 
+// Hand looks (All settings → Hands look): each tracked hand drawn in light, built here
+// as batches the renderer draws on top of the picture and, where the chamber mirrors,
+// a little into its echoes. Picture space: y up, the screen's height spans -1..1.
+// mac/core/looks.cpp is the native port; keep the two in step.
+const Looks = (() => {
+  const MAXSEG = 640, MAXV = 3200, RN = 40;
+  const seg = new Float32Array(MAXSEG * 12), vert = new Float32Array(MAXV * 6), strips = [];
+  const out = { look: 0, nSeg: 0, seg, nVert: 0, vert, strips, feed: 0, auraN: 0, auraPts: new Float32Array(84), auraHand: new Float32Array(8), breath: 0, box: [0, 0, 0, 0], time: 0 };
+  const HUES = [0.62, 0.92, 0.05, 0.42, 0.78];
+  const FEED = [0, 0.006, 0.006, 0.0035, 0.004, 0];   // the echoes keep light for seconds: a little goes a long way
+  const CHAINS = [[0, 1, 2, 3, 4], [0, 5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16], [0, 17, 18, 19, 20], [5, 9, 13, 17]];
+  const BONES = [0, 1, 1, 2, 2, 3, 3, 4, 0, 5, 5, 6, 6, 7, 7, 8, 5, 9, 9, 10, 10, 11, 11, 12, 9, 13, 13, 14, 14, 15, 15, 16, 13, 17, 17, 18, 18, 19, 19, 20, 0, 17];
+  const TIPS = [4, 8, 12, 16, 20];
+  const hands = [0, 1].map(() => ({ p: new Float32Array(42), a: 0, init: false, S: 0.5, pinch: 0, tr: TIPS.map(() => []), rb: null }));
+  let nSeg = 0, nVert = 0;
+  const rgb = (h) => [0.5 + 0.5 * Math.cos(6.2832 * h), 0.5 + 0.5 * Math.cos(6.2832 * (h + 0.33)), 0.5 + 0.5 * Math.cos(6.2832 * (h + 0.67))];
+  function addSeg(ax, ay, bx, by, w, c, alpha, sharp, glow) {
+    if (nSeg >= MAXSEG || alpha <= 0) return;
+    const o = nSeg++ * 12;
+    seg[o] = ax; seg[o + 1] = ay; seg[o + 2] = bx; seg[o + 3] = by;
+    seg[o + 4] = c[0]; seg[o + 5] = c[1]; seg[o + 6] = c[2]; seg[o + 7] = w;
+    seg[o + 8] = alpha; seg[o + 9] = sharp; seg[o + 10] = glow; seg[o + 11] = 0;
+  }
+  function addV(x, y, a, b, c, d) {
+    if (nVert >= MAXV) return;
+    const o = nVert++ * 6;
+    vert[o] = x; vert[o + 1] = y; vert[o + 2] = a; vert[o + 3] = b; vert[o + 4] = c; vert[o + 5] = d;
+  }
+  function ring(H, col, A) {
+    if (H.pinch < 0.25) return;
+    const p = H.p, cx = (p[8] + p[16]) / 2, cy = (p[9] + p[17]) / 2, r = H.S * 0.16;
+    for (let i = 0; i < 24; i++) {
+      const a0 = i / 24 * 6.2832, a1 = (i + 1) / 24 * 6.2832;
+      addSeg(cx + Math.cos(a0) * r, cy + Math.sin(a0) * r, cx + Math.cos(a1) * r, cy + Math.sin(a1) * r, H.S * 0.014, col, 1.1 * H.pinch * A, 30, 0.3);
+    }
+  }
+
+  function constellation(H, i, t) {
+    const p = H.p, S = H.S, A = H.a;
+    for (let b = 0; b < BONES.length; b += 2) addSeg(p[BONES[b] * 2], p[BONES[b] * 2 + 1], p[BONES[b + 1] * 2], p[BONES[b + 1] * 2 + 1], S * 0.04, [1, 0.93, 0.82], 0.55 * A, 60, 0.12);
+    for (let j = 0; j < 21; j++) {
+      const tw = Math.pow(0.5 + 0.5 * Math.sin(t * 3.1 + j * 2.3 + i * 5), 3);
+      addSeg(p[j * 2], p[j * 2 + 1], p[j * 2], p[j * 2 + 1], S * (0.024 + 0.03 * tw), [1, 0.95, 0.85], (0.8 + 2.2 * tw) * A, 22, 0.35);
+    }
+    TIPS.forEach((k, f) => addSeg(p[k * 2], p[k * 2 + 1], p[k * 2], p[k * 2 + 1], S * 0.083, rgb(HUES[f]), 1.9 * A, 22, 0.35));
+    const px = (p[0] + p[10] + p[18] + p[26] + p[34]) / 5, py = (p[1] + p[11] + p[19] + p[27] + p[35]) / 5;
+    addSeg(px, py, px, py, S * 0.9, [1, 0.85, 0.6], 0.05 * A, 2, 0);
+    ring(H, [1, 0.95, 0.85], A);
+  }
+
+  function neon(H, i, t) {
+    const p = H.p, S = H.S, A = H.a;
+    CHAINS.forEach((ch, f) => {
+      const col = rgb(f === 5 ? 0.82 : HUES[f]).map((x) => 0.15 + 0.85 * x);
+      const white = col.map((x) => 0.75 + 0.25 * x);
+      const flick = (0.88 + 0.12 * Math.sin(t * 41 + f * 7 + i * 3) * Math.sin(t * 13 + f)) * A;
+      for (let j = 1; j < ch.length; j++) {
+        const a = ch[j - 1] * 2, b = ch[j] * 2;
+        addSeg(p[a], p[a + 1], p[b], p[b + 1], S * 0.12, col, 0.32 * flick, 9, 0.6);
+        addSeg(p[a], p[a + 1], p[b], p[b + 1], S * 0.03, white, 0.55 * flick, 7, 0);
+      }
+    });
+    ring(H, [0.4, 1.0, 0.9], A);
+  }
+
+  function aurora(H, i, t) {
+    const p = H.p, S = H.S, A = H.a;
+    TIPS.forEach((k, f) => {
+      const q = H.tr[f];
+      q.push(p[k * 2], p[k * 2 + 1], t);
+      while (q.length && t - q[2] > 1.3) q.splice(0, 3);
+      const n = q.length / 3;
+      if (n < 2) return;
+      const M = Math.min(48, n), step = (n - 1) / (M - 1), start = nVert;
+      for (let j = 0; j < M; j++) {
+        const o = Math.round(j * step) * 3, u = j / (M - 1), age = (t - q[o + 2]) / 1.3;
+        // Behind the tip the curtain always spreads a little, so a still hand still wears one.
+        const x = q[o] + S * 0.3 * (u - 1), y = q[o + 1] + Math.sin(u * 6 + t * 1.5 + f) * S * 0.03;
+        const L = S * (0.9 + 0.5 * Math.sin(t * 0.7 + f * 1.9 + u * 3)) * (1 - age * 0.5);
+        const al = (1 - age) * 0.9 * A;
+        addV(x, y, u, 0, f / 4, al);
+        addV(x + L * 0.12, y - L, u, 1, f / 4, al);
+      }
+      strips.push([start, nVert - start, 1]);
+    });
+    TIPS.forEach((k) => addSeg(p[k * 2], p[k * 2 + 1], p[k * 2], p[k * 2 + 1], S * 0.05, [0.5, 1.0, 0.7], 1.9 * A, 22, 0.35));
+    ring(H, [0.5, 1.0, 0.7], A);
+  }
+
+  const cr = (p0, p1, p2, p3, u) => { const u2 = u * u, u3 = u2 * u; return 0.5 * (2 * p1 + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u2 + (-p0 + 3 * p1 - 3 * p2 + p3) * u3); };
+  function ribbons(H, i, t, dt) {
+    const p = H.p, S = H.S, A = H.a, L = S * 0.055 * 54 / RN;
+    if (!H.rb) H.rb = TIPS.map((k) => Array.from({ length: RN }, (_, j) => ({ x: p[k * 2], y: p[k * 2 + 1] - j * L, px: p[k * 2], py: p[k * 2 + 1] - j * L, tw: 0, tv: 0 })));
+    const steps = 2, sdt = Math.min(dt, 1 / 30) / steps, drag = Math.exp(-sdt * 1.6);
+    for (let s = 0; s < steps; s++) H.rb.forEach((ch, f) => {
+      ch[0].x = p[TIPS[f] * 2]; ch[0].y = p[TIPS[f] * 2 + 1];
+      for (let j = 1; j < RN; j++) {
+        const q = ch[j], vx = (q.x - q.px) * drag, vy = (q.y - q.py) * drag;
+        q.px = q.x; q.py = q.y;
+        const wind = (Math.sin(t * 0.8 + j * 0.16 + f * 1.3) * 2.4 + Math.sin(t * 2.1 + j * 0.4) * 1.1) * S;
+        q.x += vx + wind * sdt * sdt; q.y += vy - 1.54 * S * sdt * sdt;
+      }
+      for (let it = 0; it < 3; it++) for (let j = 1; j < RN; j++) {
+        const a = ch[j - 1], b = ch[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, k = (d - L) / d;
+        if (j === 1) { b.x -= dx * k; b.y -= dy * k; } else { a.x += dx * k * 0.5; a.y += dy * k * 0.5; b.x -= dx * k * 0.5; b.y -= dy * k * 0.5; }
+      }
+      for (let j = 1; j < RN - 1; j++) {
+        const a = ch[j - 1], b = ch[j], c = ch[j + 1];
+        const cross = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+        const target = cross / (L * L) * 2.2 + Math.sin(t * 1.3 + j * 0.34 + f) * 0.6;
+        b.tv += ((target - b.tw) * 30 - b.tv * 5) * sdt; b.tw += b.tv * sdt;
+      }
+    });
+    H.rb.forEach((ch, f) => {
+      const start = nVert, M = (RN - 1) * 3;
+      let lx = ch[0].x, ly = ch[0].y;
+      for (let j = 0; j < M; j++) {
+        const jj = Math.floor(j / 3), u = (j % 3) / 3;
+        const a = ch[Math.max(0, jj - 1)], b = ch[jj], c = ch[Math.min(RN - 1, jj + 1)], d = ch[Math.min(RN - 1, jj + 2)];
+        const x = cr(a.x, b.x, c.x, d.x, u), y = cr(a.y, b.y, c.y, d.y, u), tw = b.tw + (c.tw - b.tw) * u;
+        const u2 = Math.min(1, u + 1 / 3), nx = cr(a.x, b.x, c.x, d.x, u2), ny = cr(a.y, b.y, c.y, d.y, u2);
+        let tx = nx - lx, ty = ny - ly; const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+        lx = x; ly = y;
+        const along = j / (M - 1), cs = Math.cos(tw), w = S * 0.075 * (1 - along * 0.55) * (0.18 + 0.82 * Math.abs(cs));
+        // w: the hue (fraction) and how present the hand is (whole 255ths), packed together.
+        const hw = ((HUES[f] + along * 0.15 + t * 0.02) % 1) + Math.round(A * 255);
+        addV(x - ty * w, y + tx * w, -1, along, cs, hw);
+        addV(x + ty * w, y - tx * w, 1, along, cs, hw);
+      }
+      strips.push([start, nVert - start, 0]);
+    });
+    TIPS.forEach((k, f) => addSeg(p[k * 2], p[k * 2 + 1], p[k * 2], p[k * 2 + 1], S * 0.04, rgb(HUES[f]), 0.8 * A, 22, 0.35));
+  }
+
+  function aura(H, i) {
+    const n = out.auraN++, p = H.p;
+    out.auraPts.set(p, n * 42);
+    out.auraHand[n * 4] = (p[0] + p[10] + p[18] + p[26] + p[34]) / 5;
+    out.auraHand[n * 4 + 1] = (p[1] + p[11] + p[19] + p[27] + p[35]) / 5;
+    out.auraHand[n * 4 + 2] = H.S; out.auraHand[n * 4 + 3] = H.a;
+    for (let j = 0; j < 21; j++) {
+      const m = H.S * 1.4;
+      out.box[0] = Math.min(out.box[0], p[j * 2] - m); out.box[1] = Math.min(out.box[1], p[j * 2 + 1] - m);
+      out.box[2] = Math.max(out.box[2], p[j * 2] + m); out.box[3] = Math.max(out.box[3], p[j * 2 + 1] + m);
+    }
+  }
+
+  // Two pinched hands hold a bridge of light between their grips: a crackling arc that
+  // grows brighter, wider and wilder as it charges, whatever the look.
+  let bridgeA = 0;
+  function bridgeOf(src, aspect, t, dt) {
+    const on = Inputs.grabMode === 2 && src[0].seen && src[1].seen;
+    bridgeA += ((on ? 1 : 0) - bridgeA) * Math.min(1, dt * (on ? 10 : 6));
+    if (bridgeA < 0.01 || !on) return;
+    const c = 0.25 + Inputs.bridge.charge, A = bridgeA;   // visible from the first moment, wilder as it charges
+    const ax = (2 * src[0].gx - 1) * aspect, ay = 1 - 2 * src[0].gy, bx = (2 * src[1].gx - 1) * aspect, by = 1 - 2 * src[1].gy;
+    const dx = bx - ax, dy = by - ay, L = Math.max(1e-3, Math.hypot(dx, dy)), nx = -dy / L, ny = dx / L, N = 28;
+    for (let strand = 0; strand < 3; strand++) {
+      const amp = L * (0.05 + 0.06 * c) * (strand === 0 ? 1 : 0.6), ph = strand * 2.1;
+      let px = ax, py = ay;
+      for (let i = 1; i <= N; i++) {
+        const u = i / N, env = Math.sin(u * Math.PI);
+        const off = env * amp * (Math.sin(u * 9 + t * 13 + ph) * 0.5 + Math.sin(u * 23 - t * 21 + ph) * 0.3 + Math.sin(u * 51 + Math.floor(t * 40) * 1.7 + ph) * 0.2);
+        const x = ax + dx * u + nx * off, y = ay + dy * u + ny * off, a = A * (strand === 0 ? 1 : 0.5);
+        addSeg(px, py, x, y, 0.03 + 0.03 * c, [0.55, 0.45, 1.0], a * (0.25 + 0.25 * c), 8, 0.6);
+        addSeg(px, py, x, y, 0.006 + 0.004 * c, [0.9, 0.92, 1.0], a * (0.9 + 0.8 * c), 10, 0);
+        px = x; py = y;
+      }
+    }
+    for (let g = 0; g < 2; g++) {
+      const gx = g ? bx : ax, gy = g ? by : ay, pulse = 0.5 + 0.5 * Math.sin(t * 9 + g * 3);
+      addSeg(gx, gy, gx, gy, 0.05 + 0.04 * c + 0.01 * pulse, [0.75, 0.7, 1.0], A * (1.2 + c), 18, 0.4);
+    }
+  }
+
+  // src: the tracker's hands ({ seen, pinch, lm: 21 points as window fractions, y down }).
+  function build(dt, time, aspect, src, look = system.handLook | 0) {
+    nSeg = 0; nVert = 0; strips.length = 0;
+    out.look = look; out.auraN = 0; out.time = time;
+    out.box[0] = out.box[1] = 1e9; out.box[2] = out.box[3] = -1e9;
+    out.breath = 0.5 - 0.5 * Math.cos(time * Math.PI * 2 / 6);
+    const k = 1 - Math.exp(-dt * 34);
+    let any = false;
+    for (let i = 0; i < 2; i++) {
+      const H = hands[i], s = src[i];
+      if (s.seen) {
+        for (let j = 0; j < 21; j++) {
+          const x = (2 * s.lm[j * 2] - 1) * aspect, y = 1 - 2 * s.lm[j * 2 + 1];
+          if (!H.init) { H.p[j * 2] = x; H.p[j * 2 + 1] = y; } else { H.p[j * 2] += (x - H.p[j * 2]) * k; H.p[j * 2 + 1] += (y - H.p[j * 2 + 1]) * k; }
+        }
+        H.init = true;
+        H.a = Math.min(1, H.a + dt * 5);
+        H.pinch += ((s.pinch ? 1 : 0) - H.pinch) * Math.min(1, dt * 10);
+      } else if ((H.a = Math.max(0, H.a - dt * 3)) === 0) { H.init = false; H.rb = null; H.tr.forEach((q) => { q.length = 0; }); }
+      if (H.a <= 0) continue;
+      any = true;
+      H.S = Math.max(0.05, Math.hypot(H.p[18] - H.p[0], H.p[19] - H.p[1]));
+      if (look === 1) constellation(H, i, time);
+      else if (look === 2) neon(H, i, time);
+      else if (look === 3) aurora(H, i, time);
+      else if (look === 4) ribbons(H, i, time, dt);
+      else if (look === 5) aura(H, i);
+    }
+    bridgeOf(src, aspect, time, dt);
+    out.nSeg = nSeg; out.nVert = nVert;
+    // The bridge feeds the echoes too, even with no look shown.
+    out.feed = Math.max(FEED[look] || 0, bridgeA > 0.01 ? 0.006 : 0) * Math.min(1, dt * 60);
+    return any || nSeg > 0 || nVert > 0 ? out : null;
+  }
+  // Forget the hands (looks switched off): the next ones start fresh.
+  function reset() { hands.forEach((H) => { H.a = 0; H.init = false; H.rb = null; H.tr.forEach((q) => { q.length = 0; }); }); }
+  return { build, reset, MAXSEG, MAXV };
+})();
+
 const Renderer = (() => {
   let gl, canvas;
   let progs = {};
-  let vao, inkVao, inkBuf;
+  let vao, inkVao, inkBuf, lookVao, lookBuf, stripVao, stripBuf;
   let hdrFormat;                    // { internal, type }
   let fb = [null, null], cur = 0;   // feedback ping-pong (mipmapped)
   let scene, rm, veil, backup, bloom = [];
@@ -2567,6 +3538,10 @@ const Renderer = (() => {
   let camTex, camAspect = 16 / 9, camReady = false;
   let W = 0, H = 0;                 // render resolution
   let FW = 0, FH = 0, FS = 1;       // echo (feedback) resolution, and its scale against W
+  let bloomN = 0;                   // bloom levels in use at W × H (of bloom.length allocated)
+  const bloomW = [], bloomH = [];   // their sizes
+  // Modes whose fold barely shrinks the echo: no mipmaps for them (they read level 0 only).
+  const MODE_MIPS = MODES.map((m) => m !== 'pool' && m !== 'planet' && m !== 'corridor');
   const kifsCS = new Float32Array(20);
   let frameNo = 0;
   let maxTaps = 4, rmSteps = 76;    // detail level, set by the frame loop
@@ -2619,7 +3594,21 @@ const Renderer = (() => {
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     if (mips) gl.generateMipmap(gl.TEXTURE_2D);
-    return { tex, fbo, w, h, mips };
+    // w × h is allocated; the picture fills vw × vh in its corner (a lower detail level
+    // draws into a smaller viewport). top: the highest mip level that may be read.
+    return { tex, fbo, w, h, vw: w, vh: h, mips, top: 1000 };
+  }
+
+  // The picture in t, for the shaders' *Pic uniforms (picUV): 0 when it fills t.
+  function pic(pr, n, t) {
+    if (t.vw === t.w && t.vh === t.h) u4f(pr, n, 0, 0, 0, 0); else u4f(pr, n, t.vw, t.vh, t.w, t.h);
+  }
+
+  function topLevel(t, top) {
+    if (t.top === top) return;
+    gl.bindTexture(gl.TEXTURE_2D, t.tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAX_LEVEL, top);
+    t.top = top;
   }
 
   function free(t) {
@@ -2639,7 +3628,7 @@ const Renderer = (() => {
     const S = SHADERS;
     progs.feedback = program(S.FULLSCREEN_VS, S.FEEDBACK_FS);
     progs.raymarch = program(S.FULLSCREEN_VS, S.RAYMARCH_FS);
-    progs.scene = program(S.FULLSCREEN_VS, S.SCENE_FS);
+    progs.scene = program(S.FULLSCREEN_VS, STARS_OK ? S.SCENE_FS : S.SCENE_FS.replace('\n', '\n#define NO_SKY\n'));
     progs.down = program(S.FULLSCREEN_VS, S.DOWN_FS);
     progs.up = program(S.FULLSCREEN_VS, S.UP_FS);
     progs.final = program(S.FULLSCREEN_VS, S.FINAL_FS);
@@ -2647,6 +3636,9 @@ const Renderer = (() => {
     progs.lum = program(S.FULLSCREEN_VS, S.LUM_FS);
     progs.adapt = program(S.FULLSCREEN_VS, S.ADAPT_FS);
     progs.ink = program(S.INK_VS, S.INK_FS);
+    progs.look = program(S.LOOK_VS, S.LOOK_FS);
+    progs.strip = program(S.STRIP_VS, S.STRIP_FS);
+    progs.aura = program(S.FULLSCREEN_VS, S.AURA_FS);
 
     vao = gl.createVertexArray();
 
@@ -2661,6 +3653,21 @@ const Renderer = (() => {
     gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 32, 16);
     gl.bindVertexArray(null);
 
+    lookVao = gl.createVertexArray();
+    gl.bindVertexArray(lookVao);
+    lookBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, lookBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, Looks.MAXSEG * 48, gl.DYNAMIC_DRAW);
+    for (let a = 0; a < 3; a++) { gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 4, gl.FLOAT, false, 48, a * 16); }
+    stripVao = gl.createVertexArray();
+    gl.bindVertexArray(stripVao);
+    stripBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, stripBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, Looks.MAXV * 24, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 24, 0);
+    gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 24, 8);
+    gl.bindVertexArray(null);
+
     camTex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, camTex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
@@ -2673,52 +3680,70 @@ const Renderer = (() => {
     return gl;
   }
 
-  function copyInto(src, dst) {
+  // Copies src's picture into dst's corner at vw × vh: pixel for pixel between targets of
+  // one size, resampled otherwise.
+  function copyInto(src, dst, vw = src.vw, vh = src.vh) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, dst.fbo);
-    gl.viewport(0, 0, dst.w, dst.h);
+    gl.viewport(0, 0, vw, vh);
     use(progs.copy);
     tex(0, src.tex);
     u1i(progs.copy, 'uSrc', 0);
-    u2f(progs.copy, 'uOut', dst.w, dst.h);
+    u2f(progs.copy, 'uOut', vw * src.w / src.vw, vh * src.h / src.vh);   // uv spans src's picture
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+    dst.vw = vw; dst.vh = vh;
     if (dst.mips) {
       gl.bindTexture(gl.TEXTURE_2D, dst.tex);
       gl.generateMipmap(gl.TEXTURE_2D);
     }
   }
 
-  // Reallocate render targets, resampling the feedback image so nothing resets.
+  // Render at w × h, the echo at scale fs. Targets are allocated for the largest size,
+  // aw × ah with echo scale afs, and each detail level draws into a viewport in their
+  // corner; only a new largest size reallocates (resampling the echo so nothing resets).
   // The echo buffers hold soft, glowing light and are the largest thing in memory
   // (two float buffers with mips). On dense screens they run at a lower scale `fs`;
   // the mirrors are still folded and supersampled at full resolution on top.
-  function resize(w, h, fs = FS) {
-    w = Math.max(16, Math.round(w)); h = Math.max(16, Math.round(h));
-    if (w === W && h === H && fs === FS) return;
-    const fw = Math.max(16, Math.round(w * fs)), fh = Math.max(16, Math.round(h * fs));
+  function resize(w, h, fs = FS, aw = w, ah = h, afs = fs) {
+    aw = Math.max(16, Math.round(aw)); ah = Math.max(16, Math.round(ah));
+    const afw = Math.max(16, Math.round(aw * afs)), afh = Math.max(16, Math.round(ah * afs));
+    w = Math.min(aw, Math.max(16, Math.round(w))); h = Math.min(ah, Math.max(16, Math.round(h)));
+    const fw = Math.min(afw, Math.max(16, Math.round(w * fs))), fh = Math.min(afh, Math.max(16, Math.round(h * fs)));
+    if (!scene || aw !== scene.w || ah !== scene.h || afw !== fb[0].w || afh !== fb[0].h) allocate(aw, ah, afw, afh, fw, fh);
+    if (w !== W || h !== H || !bloomN) {
+      let bw = w, bh = h;
+      bloomN = 0;
+      for (let i = 0; i < bloom.length && bw > 8 && bh > 8; i++) {
+        bw = Math.max(1, bw >> 1); bh = Math.max(1, bh >> 1);
+        bloomW[i] = bw; bloomH[i] = bh; bloomN++;
+      }
+    }
+    W = w; H = h; FW = fw; FH = fh; FS = fs;
+  }
+
+  function allocate(aw, ah, afw, afh, fw, fh) {
     gl.bindVertexArray(vao);
     const old = fb[cur];
-    const nfb = [target(fw, fh, true, gl.MIRRORED_REPEAT, true), target(fw, fh, true, gl.MIRRORED_REPEAT, true)];
-    if (old) copyInto(old, nfb[0]);
+    const nfb = [target(afw, afh, true, gl.MIRRORED_REPEAT, true), target(afw, afh, true, gl.MIRRORED_REPEAT, true)];
+    if (old) copyInto(old, nfb[0], fw, fh);
     free(fb[0]); free(fb[1]);
     fb = nfb; cur = 0;
-    free(scene); scene = target(w, h, true, gl.CLAMP_TO_EDGE);
+    free(scene); scene = target(aw, ah, true, gl.CLAMP_TO_EDGE);
     if (!lumCur) { lumCur = target(1, 1, true, gl.CLAMP_TO_EDGE); lumAd = [target(1, 1, true, gl.CLAMP_TO_EDGE), target(1, 1, true, gl.CLAMP_TO_EDGE)]; }
     // The dissolve veil, the undo copy and the lattice buffer exist only while in use.
     free(veil); veil = null; veilAmt = 0;
     free(backup); backup = null;
     free(rm); rm = null;
-    bloom.forEach(free); bloom = [];
-    let bw = w, bh = h;
+    bloom.forEach(free); bloom = []; bloomN = 0;
+    let bw = aw, bh = ah;
     for (let i = 0; i < 6 && bw > 8 && bh > 8; i++) {
       bw = Math.max(1, bw >> 1); bh = Math.max(1, bh >> 1);
       bloom.push(target(bw, bh, true, gl.CLAMP_TO_EDGE));
     }
-    W = w; H = h; FW = fw; FH = fh; FS = fs;
   }
 
   // Clearing keeps a copy so it can be undone.
   function clear() {
-    if (!backup) backup = target(FW, FH, true, gl.MIRRORED_REPEAT);
+    if (!backup) backup = target(fb[0].w, fb[0].h, true, gl.MIRRORED_REPEAT);
     clearTimeout(backupTimer);
     backupTimer = setTimeout(() => { free(backup); backup = null; }, 8000);   // undo window
     gl.bindVertexArray(vao);
@@ -2743,7 +3768,7 @@ const Renderer = (() => {
   // Capture the current composite scene and dissolve it smoothly into the new view.
   function startVeil(duration = 1.4) {
     if (!scene) return;
-    if (!veil) veil = target(W, H, true, gl.CLAMP_TO_EDGE);
+    if (!veil) veil = target(scene.w, scene.h, true, gl.CLAMP_TO_EDGE);
     gl.bindVertexArray(vao);
     copyInto(scene, veil);
     veilAmt = 1;
@@ -2754,6 +3779,71 @@ const Renderer = (() => {
     if (veilAmt === 0 && veil) { free(veil); veil = null; }
   }
   function setDetail(taps, steps) { maxTaps = taps; rmSteps = steps; }
+
+  // Hand looks (Looks.build): segments and strips, over `copies` mirror images (the echo
+  // feed) or once (on top). Light adds; satin ribbons on top are laid over.
+  const LOOK_ON_TOP = 0.6;   // the hands sit quietly over the picture; the picture stays the star
+  function drawLooks(L, copies, w, h, gain, onTop) {
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    const mirrors = (pr) => {
+      u2f(pr, 'uRes', w, h);
+      u1f(pr, 'uGain', gain);
+      u1i(pr, 'uCopies', copies);
+      u1i(pr, 'uLookMirror', fold.mirror ? 1 : 0);
+      u1f(pr, 'uSym', Math.max(1, fold.sym));
+      u1f(pr, 'uSpin', fold.spin);
+      u1f(pr, 'uFish', onTop ? 0 : fold.fish);
+      u2f(pr, 'uCenter', fold.cx, fold.cy);
+    };
+    if (L.nSeg > 0) {
+      const pr = progs.look;
+      use(pr); mirrors(pr);
+      gl.bindVertexArray(lookVao);
+      gl.bindBuffer(gl.ARRAY_BUFFER, lookBuf);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, L.seg, 0, L.nSeg * 12);
+      for (let a = 0; a < 3; a++) gl.vertexAttribDivisor(a, copies);
+      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, L.nSeg * copies);
+    }
+    if (L.nVert > 0) {
+      const pr = progs.strip;
+      use(pr); mirrors(pr);
+      u1f(pr, 'uT', L.time);
+      gl.bindVertexArray(stripVao);
+      gl.bindBuffer(gl.ARRAY_BUFFER, stripBuf);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, L.vert, 0, L.nVert * 6);
+      for (const [first, count, kind] of L.strips) {
+        u1i(pr, 'uKind', kind);
+        if (kind === 0 && onTop) gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); else gl.blendFunc(gl.ONE, gl.ONE);
+        gl.drawArraysInstanced(gl.TRIANGLE_STRIP, first, count, copies);
+      }
+    }
+    if (onTop && L.auraN > 0) {
+      const pr = progs.aura;
+      gl.bindVertexArray(vao);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      use(pr);
+      u2f(pr, 'uRes', w, h);
+      u1f(pr, 'uT', L.time);
+      u1f(pr, 'uBreath', L.breath);
+      u1f(pr, 'uGain', gain);
+      u1i(pr, 'uHands', L.auraN);
+      if (pr.loc['uPts[0]']) gl.uniform2fv(pr.loc['uPts[0]'], L.auraPts);
+      if (pr.loc['uHand[0]']) gl.uniform4fv(pr.loc['uHand[0]'], L.auraHand);
+      // Only the box around the hands (picture space to pixels).
+      const toX = (x) => Math.round((x * h / w * 0.5 + 0.5) * w), toY = (y) => Math.round((y * 0.5 + 0.5) * h);
+      const x0 = Math.max(0, toX(L.box[0])), y0 = Math.max(0, toY(L.box[1])), x1 = Math.min(w, toX(L.box[2])), y1 = Math.min(h, toY(L.box[3]));
+      if (x1 > x0 && y1 > y0) {
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(x0, y0, x1 - x0, y1 - y0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.disable(gl.SCISSOR_TEST);
+      }
+    }
+    gl.blendFunc(gl.ONE, gl.ONE);
+    gl.disable(gl.BLEND);
+    gl.bindVertexArray(vao);
+  }
 
   // ---- uniform helpers (cached locations; unknown names are skipped) ----
   function use(pr) { gl.useProgram(pr.p); }
@@ -2782,7 +3872,7 @@ const Renderer = (() => {
     u2f(pr, 'uDroste', f.drL, f.drPhase);
     u1f(pr, 'uTile', f.tile);
     u2f(pr, 'uSpinCS', Math.cos(f.spin), Math.sin(f.spin));
-    if (f.mode === 2 && pr.loc['uKifsCS[0]']) {
+    if (f.mode === M.kifs && pr.loc['uKifsCS[0]']) {
       for (let i = 0; i < 10; i++) { const a = f.kAngle / (1 + 0.45 * i); kifsCS[i * 2] = Math.cos(a); kifsCS[i * 2 + 1] = Math.sin(a); }
       gl.uniform2fv(pr.loc['uKifsCS[0]'], kifsCS);
     }
@@ -2835,12 +3925,13 @@ const Renderer = (() => {
     // 1. raymarched fractal source
     const useRm = P.gen === 'fractal3d';
     if (useRm) {
-      if (!rm) rm = target(Math.max(16, FW >> 1), Math.max(16, FH >> 1), true, gl.MIRRORED_REPEAT);
+      if (!rm) rm = target(Math.max(16, fb[0].w >> 1), Math.max(16, fb[0].h >> 1), true, gl.MIRRORED_REPEAT);
       const pr = progs.raymarch;
+      rm.vw = Math.max(16, FW >> 1); rm.vh = Math.max(16, FH >> 1);
       gl.bindFramebuffer(gl.FRAMEBUFFER, rm.fbo);
-      gl.viewport(0, 0, rm.w, rm.h);
+      gl.viewport(0, 0, rm.vw, rm.vh);
       use(pr);
-      setCommon(pr, rm.w, rm.h);
+      setCommon(pr, rm.vw, rm.vh);
       buildRmRot(0.35 + 0.25 * Math.sin(f.rmT * 0.07));
       m3(pr, 'uRmRot', rmRot);
       u1f(pr, 'uRmScale', P.rmScale);
@@ -2861,8 +3952,11 @@ const Renderer = (() => {
       tex(0, src.tex); u1i(pr, 'uPrev', 0);
       tex(1, camTex); u1i(pr, 'uCam', 1);
       tex(2, rm ? rm.tex : camTex); u1i(pr, 'uRM', 2);
+      pic(pr, 'uPrevPic', src);
+      if (rm) pic(pr, 'uRMPic', rm); else u4f(pr, 'uRMPic', 0, 0, 0, 0);
+      dst.vw = FW; dst.vh = FH;
       // Only folds with F(F(p)) = F(p) can fold the echoes; the fractal fold compounds light.
-      u1i(pr, 'uFoldLoop', P.foldInLoop && fold.mode !== 2 ? 1 : 0);
+      u1i(pr, 'uFoldLoop', P.foldInLoop && fold.mode !== M.kifs ? 1 : 0);
       buildColorMat(f.decay, P.fbSat, f.hue);
       m3(pr, 'uColorMat', colorMat);
       u1f(pr, 'uFbRot', f.fbRot);
@@ -2914,11 +4008,15 @@ const Renderer = (() => {
       gl.disable(gl.BLEND);
       gl.bindVertexArray(vao);
     }
+    // 3a. the hands' look, fed a little into the echoes at every mirror image
+    if (f.looks && f.looks.feed > 0 && f.inkCopies > 1 && system.handLookFeed) drawLooks(f.looks, f.inkCopies, FW, FH, f.looks.feed, false);
     cur = 1 - cur;
 
     // 3b. mipmaps on the feedback texture, only when a fold will actually minify it
-    const seamless = fold.mode === 0 || (fold.mode === 1 && fold.mirror);
-    if (fold.mode >= 2 || fold.vz * 0.65 * FS > 1) {
+    const seamless = fold.mode === M.none || (fold.mode === M.kaleido && fold.mirror);
+    if (!MODE_MIPS[fold.mode]) topLevel(fb[cur], 0);
+    else if (fold.mode >= M.kifs || fold.vz * 0.65 * FS > 1) {
+      topLevel(fb[cur], 1000);
       gl.bindTexture(gl.TEXTURE_2D, fb[cur].tex);
       gl.generateMipmap(gl.TEXTURE_2D);
     }
@@ -2932,7 +4030,10 @@ const Renderer = (() => {
       setCommon(pr, W, H);
       tex(0, fb[cur].tex); u1i(pr, 'uFB', 0);
       tex(1, veil ? veil.tex : fb[cur].tex); u1i(pr, 'uVeilTex', 1);
-      u1i(pr, 'uTaps', seamless ? 1 : fold.mode === 1 ? Math.min(2, maxTaps) : maxTaps);
+      pic(pr, 'uFBPic', fb[cur]);
+      pic(pr, 'uVeilPic', veil || fb[cur]);
+      scene.vw = W; scene.vh = H;
+      u1i(pr, 'uTaps', seamless ? 1 : fold.mode === M.kaleido ? Math.min(2, maxTaps) : maxTaps);
       u1f(pr, 'uSheen', P.sheen);
       u2f(pr, 'uSheenL', 0.6 * Math.cos(f.sheenT), 0.6 * Math.sin(f.sheenT));
       u1f(pr, 'uFisheye', fold.fish);
@@ -2942,22 +4043,26 @@ const Renderer = (() => {
       u1f(pr, 'uVeil', veil ? veilAmt * veilAmt * (3 - 2 * veilAmt) : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
+    // 4b. the hands' look on top of the picture
+    if (f.looks) drawLooks(f.looks, 1, W, H, LOOK_ON_TOP, true);
 
     // 5. bloom downsample chain; its alpha channel also averages scene brightness
-    const doBloom = P.bloom > 0 && bloom.length > 0;
-    const guard = system.flashGuard && bloom.length > 0;
+    const doBloom = P.bloom > 0 && bloomN > 0;
+    const guard = system.flashGuard && bloomN > 0;
     if (doBloom || guard) {
       const pr = progs.down;
       use(pr);
       u1f(pr, 'uThreshold', P.bloomThreshold);
       let s = scene;
-      for (let i = 0; i < bloom.length; i++) {
+      for (let i = 0; i < bloomN; i++) {
         const d = bloom[i];
+        d.vw = bloomW[i]; d.vh = bloomH[i];
         gl.bindFramebuffer(gl.FRAMEBUFFER, d.fbo);
-        gl.viewport(0, 0, d.w, d.h);
+        gl.viewport(0, 0, d.vw, d.vh);
         tex(0, s.tex); u1i(pr, 'uSrc', 0);
+        pic(pr, 'uSrcPic', s);
         u2f(pr, 'uTexel', 1 / s.w, 1 / s.h);
-        u2f(pr, 'uOut', d.w, d.h);
+        u2f(pr, 'uOut', d.vw, d.vh);
         u1i(pr, 'uPrefilter', i === 0 ? 1 : 0);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
         s = d;
@@ -2970,7 +4075,8 @@ const Renderer = (() => {
       gl.bindFramebuffer(gl.FRAMEBUFFER, lumCur.fbo);
       gl.viewport(0, 0, 1, 1);
       use(pr);
-      tex(0, bloom[bloom.length - 1].tex); u1i(pr, 'uSrc', 0);
+      tex(0, bloom[bloomN - 1].tex); u1i(pr, 'uSrc', 0);
+      pic(pr, 'uSrcPic', bloom[bloomN - 1]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       pr = progs.adapt;
       gl.bindFramebuffer(gl.FRAMEBUFFER, lumAd[1 - lumIdx].fbo);
@@ -2991,13 +4097,14 @@ const Renderer = (() => {
       use(pr);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE);
-      for (let i = bloom.length - 1; i > 0; i--) {
+      for (let i = bloomN - 1; i > 0; i--) {
         const sm = bloom[i], d = bloom[i - 1];
         gl.bindFramebuffer(gl.FRAMEBUFFER, d.fbo);
-        gl.viewport(0, 0, d.w, d.h);
+        gl.viewport(0, 0, d.vw, d.vh);
         tex(0, sm.tex); u1i(pr, 'uSrc', 0);
+        pic(pr, 'uSrcPic', sm);
         u2f(pr, 'uTexel', 0.5 / sm.w, 0.5 / sm.h);
-        u2f(pr, 'uOut', d.w, d.h);
+        u2f(pr, 'uOut', d.vw, d.vh);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
       }
       gl.disable(gl.BLEND);
@@ -3011,6 +4118,8 @@ const Renderer = (() => {
       use(pr);
       tex(0, scene.tex); u1i(pr, 'uScene', 0);
       tex(1, doBloom ? bloom[0].tex : scene.tex); u1i(pr, 'uBloomTex', 1);
+      pic(pr, 'uScenePic', scene);
+      pic(pr, 'uBloomPic', doBloom ? bloom[0] : scene);
       tex(2, lumCur.tex); u1i(pr, 'uLumCur', 2);
       tex(3, lumAd[lumIdx].tex); u1i(pr, 'uLumAdapt', 3);
       u1i(pr, 'uGuard', guard ? 1 : 0);
@@ -3057,7 +4166,11 @@ const Pens = (() => {
   const touches = new Map();    // fingers on the glass, for twist and pinch
   let gd = 0, ga = 0, gt = 0, gdN = 0, gaN = 0, gAng = 0, gLog = 0;
   const tapQ = [];              // taps waiting to become ripples
-  const rip = new Float32Array(16), ripAge = new Float32Array(4);
+  const rip = new Float32Array(16), ripAge = new Float32Array(4), ripPow = new Float32Array(4);   // ripPow: the chamber's ripple times the tap's strength
+  // A hand stirring the picture (an open hand on the move): palm and velocity in view
+  // fractions (origin top left), refreshed by each tracker sample and carried between them.
+  const stirs = [{ on: false, u: 0, v: 0, vu: 0, vv: 0, at: 0 }, { on: false, u: 0, v: 0, vu: 0, vv: 0, at: 0 }];
+  let clock = 0;
   let ripN = 0, energy = 0, moved = 0, painted = 0, taps = 0;
 
   const LISSAJOUS = [[3, 2], [5, 4], [3, 4], [5, 6], [7, 4], [2, 5], [7, 6], [4, 9]];
@@ -3143,7 +4256,7 @@ const Pens = (() => {
       if (touches.delete(e.pointerId) && touches.size < 2) Motion.held = false;
       if (!p) return;
       const still = Math.hypot(e.clientX - p.sx, e.clientY - p.sy) < 10;
-      if (p.down && e.type === 'pointerup' && still && e.timeStamp - p.t0 < 320 && touches.size === 0) tapQ.push(p.x, p.y);
+      if (p.down && e.type === 'pointerup' && still && e.timeStamp - p.t0 < 320 && touches.size === 0) tapQ.push(p.x, p.y, 1);
       p.down = false;
       if (e.pointerType !== 'mouse') pointers.delete(e.pointerId);
     };
@@ -3191,7 +4304,7 @@ const Pens = (() => {
   function stroke(ax, ay, bx, by, rad) {
     const len = Math.hypot(bx - ax, by - ay);
     // In unwarped Mandala/None modes, INK_VS instances all dihedral reflections on the GPU.
-    if (fold.mode === 0 || (fold.mode === 1 && fold.warpAmt <= 0)) {
+    if (fold.mode === M.none || (fold.mode === M.kaleido && fold.warpAmt <= 0)) {
       if (len < 1e-5) { push(ax, ay, ax, ay, rad, col); return; }
       carried(ax, ay);
       push(ux, uy, bx, by, rad, col);
@@ -3200,7 +4313,7 @@ const Pens = (() => {
     const js = foldScale((ax + bx) / 2, (ay + by) / 2);
     let f = Fold.apply(ax, ay);
     let x0 = f[0], y0 = f[1];
-    const w = rad * js * (fold.mode === 3 ? 0.65 : 0.85);
+    const w = rad * js * (fold.mode === M.hyperbolic ? 0.65 : 0.85);
     if (len < 1e-5) { push(x0, y0, x0, y0, w, col); return; }
     carried(x0, y0);
     x0 = ux; y0 = uy;
@@ -3238,50 +4351,114 @@ const Pens = (() => {
   }
 
   // A tap drops a stone in the glass: a ring of light, a scatter of sparks and
-  // a wave that pushes the echo outward through every mirror.
-  function burst(x, y) {
-    const P = params;
-    if (P.ripple > 0) {
+  // a wave that pushes the echo outward through every mirror. `power` scales it (a hand's
+  // punch or a snapped bridge is several taps strong, and makes a wave even in places
+  // whose own ripple is off); negative power pulls the wave and the sparks inward.
+  function burst(x, y, power = 1) {
+    const P = params, mag = Math.abs(power);
+    const rp = P.ripple > 0 ? P.ripple : (mag > 1.01 || power < 0 ? 0.6 : 0);
+    if (rp > 0) {
       const f = Fold.apply(x, y);
-      if (ripN === 4) { rip.copyWithin(0, 4, 16); ripAge.copyWithin(0, 1, 4); ripN = 3; }
-      rip[ripN * 4] = f[0]; rip[ripN * 4 + 1] = f[1]; ripAge[ripN] = 0; ripN++;
+      if (ripN === 4) { rip.copyWithin(0, 4, 16); ripAge.copyWithin(0, 1, 4); ripPow.copyWithin(0, 1, 4); ripN = 3; }
+      rip[ripN * 4] = f[0]; rip[ripN * 4 + 1] = f[1]; ripAge[ripN] = 0; ripPow[ripN] = rp * power; ripN++;
     }
     taps++;
     lastT += 0.07;
     Palette.write(lastT + palPhase, col, 0, P.inkBright);
-    const R = 0.03 * P.inkSize, N = 14;
+    const R = 0.03 * P.inkSize * Math.sqrt(mag), N = 14;
     let ax = x + R, ay = y;
     for (let i = 1; i <= N; i++) {
       const a = i / N * TAU, bx = x + R * Math.cos(a), by = y + R * Math.sin(a);
-      stroke(ax, ay, bx, by, 0.004 * P.inkSize);
+      stroke(ax, ay, bx, by, 0.004 * P.inkSize * Math.min(2, Math.sqrt(mag)));
       ax = bx; ay = by;
     }
-    for (let i = 0; i < 18; i++) {
-      const a = Math.random() * TAU, sp = 0.35 + Math.random() * 0.7;
-      spawn(x, y, Math.cos(a) * sp, Math.sin(a) * sp, 0.4 + Math.random() * 0.7);
+    const sparks = Math.floor(18 * Math.min(3, mag));
+    for (let i = 0; i < sparks; i++) {
+      const a = Math.random() * TAU, sp = (0.35 + Math.random() * 0.7) * Math.min(2, Math.sqrt(mag));
+      if (power < 0) spawn(x + Math.cos(a) * R * 3, y + Math.sin(a) * R * 3, -Math.cos(a) * sp, -Math.sin(a) * sp, 0.3 + Math.random() * 0.4);
+      else spawn(x, y, Math.cos(a) * sp, Math.sin(a) * sp, 0.4 + Math.random() * 0.7);
     }
-    Sound.pluck(x, y, 0.5);
-    mn.haptic('tick');
+    Sound.pluck(x, y, Math.min(1, 0.5 * Math.sqrt(mag)));
+    mn.haptic(mag >= 2 ? 'confirm' : 'tick');
+  }
+
+  // View fractions (origin top left) to p-space, with the fisheye, as the hands' pens.
+  const vp = [0, 0];
+  function toView(u, v) {
+    const asp = canvasEl.clientWidth / canvasEl.clientHeight;
+    let x = (u - 0.5) * 2 * asp, y = (0.5 - v) * 2;
+    const fk = 1 + fold.fish * (x * x + y * y) * 0.3;
+    vp[0] = x * fk; vp[1] = y * fk;
+    return vp;
+  }
+  // A tap in the air: what a click does there, `power` times as strong.
+  function airTap(u, v, power) { const q = toView(u, v); tapQ.push(q[0], q[1], power); }
+  function setStir(hand, on, u, v, vu, vv) {
+    const st = stirs[hand & 1];
+    if (!on) { st.on = false; return; }
+    if (st.on) { st.vu += (vu - st.vu) * 0.5; st.vv += (vv - st.vv) * 0.5; } else { st.vu = vu; st.vv = vv; }
+    st.on = true; st.u = u; st.v = v; st.at = clock;
+  }
+  // The hand stirs the echoes like a hand drawn through water: a drag (as wet paint's)
+  // at its palm, every frame, carried on between the tracker's samples and fading if they stop.
+  function stir(st) {
+    if (!st.on) return;
+    const age = clock - st.at;
+    if (age > 0.25) { st.on = false; return; }
+    const fade = age > 0.1 ? 1 - (age - 0.1) / 0.15 : 1;
+    const u = st.u + st.vu * Math.min(age, 0.1), v = st.v + st.vv * Math.min(age, 0.1);
+    if (ripN + combN >= 4) return;
+    const p0 = toView(u, v), x0 = p0[0], y0 = p0[1];
+    const p1 = toView(u + st.vu * dt, v + st.vv * dt), x1 = p1[0], y1 = p1[1];
+    const a = Fold.apply(x0, y0), ax = a[0], ay = a[1];
+    const b = Fold.apply(x1, y1), dx = b[0] - ax, dy = b[1] - ay, d = Math.hypot(dx, dy);
+    if (d < 1e-5 || d > 0.3) return;
+    const o = (ripN + combN++) * 4;
+    rip[o] = b[0]; rip[o + 1] = b[1]; rip[o + 2] = -(Math.atan2(dy, dx) + 4); rip[o + 3] = d * 0.85 * fade;
+  }
+
+  // Wet paint (fbComb): a moving finger drags the picture with it, for good. Each drag
+  // takes a free ripple slot as (x, y, -(direction + 4), distance): the negative third
+  // value is what tells the feedback shader it is a drag and not a ripple.
+  let combN = 0;
+  function comb(p, active) {
+    if (active && p.cb && params.fbComb > 0 && ripN + combN < 4) {
+      const a = Fold.apply(p.cbx, p.cby), ax = a[0], ay = a[1];
+      const b = Fold.apply(p.x, p.y), dx = b[0] - ax, dy = b[1] - ay, d = Math.hypot(dx, dy);
+      if (d > 1e-5 && d < 0.3) {
+        const o = (ripN + combN++) * 4;
+        rip[o] = b[0]; rip[o + 1] = b[1]; rip[o + 2] = -(Math.atan2(dy, dx) + 4); rip[o + 3] = d * params.fbComb;
+      }
+    }
+    p.cbx = p.x; p.cby = p.y; p.cb = active;
+  }
+  // Where a finger or hand is painting, for the lens places to lean toward: [x, y]
+  // (one reused array, valid until the next call) or null.
+  const leadAt = [0, 0];
+  function lead() {
+    for (const p of pointers.values()) if (p.down) { leadAt[0] = p.x; leadAt[1] = p.y; return leadAt; }
+    for (const p of hands) if (p.down) { leadAt[0] = p.x; leadAt[1] = p.y; return leadAt; }
+    return null;
   }
 
   function updateRipples() {
-    const push0 = params.ripple * 0.011 * dt * 60;
+    const push0 = 0.011 * dt * 60;
     for (let i = 0; i < ripN; i++) {
       ripAge[i] += dt;
       if (ripAge[i] > 3) {
-        rip.copyWithin(i * 4, (i + 1) * 4, 16); ripAge.copyWithin(i, i + 1, 4);
+        rip.copyWithin(i * 4, (i + 1) * 4, 16); ripAge.copyWithin(i, i + 1, 4); ripPow.copyWithin(i, i + 1, 4);
         ripN--; i--;
         continue;
       }
       rip[i * 4 + 2] = 0.02 + ripAge[i] * 0.8;
-      rip[i * 4 + 3] = push0 * Math.exp(-ripAge[i] * 1.2);
+      rip[i * 4 + 3] = push0 * ripPow[i] * Math.exp(-ripAge[i] * 1.2);
     }
   }
 
   function updateParticles(time) {
     const P = params, rad = 0.0025 * P.inkSize, gain = P.inkBright * 1.2;
     const drag = Math.exp(-1.6 * dt);
-    const gpuMirrors = fold.mode === 0 || (fold.mode === 1 && fold.warpAmt <= 0);
+    const gpuMirrors = fold.mode === M.none || (fold.mode === M.kaleido && fold.warpAmt <= 0);
     for (let i = 0; i < pCount; i++) {
       const o = i * 8;
       parts[o + 4] -= dt;
@@ -3358,9 +4535,15 @@ const Pens = (() => {
       let x = (t[0] - 0.5) * 2 * asp, y = (0.5 - t[1]) * 2;
       const fk = 1 + fold.fish * (x * x + y * y) * 0.3;
       x *= fk; y *= fk;
-      if (!p.down) { p.tx = p.x = x; p.ty = p.y = y; p.down = true; p.has = false; continue; }
-      // Steady when the finger is still, immediate when it moves.
-      const k1 = Math.min(1, 0.22 + Math.hypot(x - p.tx, y - p.ty) * 14);
+      const now = performance.now() / 1000;
+      if (!p.down) { p.tx = p.x = p.rx = x; p.ty = p.y = p.ry = y; p.dvx = p.dvy = 0; p.st = now; p.down = true; p.has = false; continue; }
+      // One Euro filter (mac/core/pens.cpp): steady when the finger is still, with almost
+      // no lag once it moves, because the cutoff rises with its speed.
+      const age = Math.max(now - p.st, 1 / 120), alpha = (fc) => 1 / (1 + 1 / (TAU * fc * age));
+      const ad = alpha(1.0);
+      p.dvx += ((x - p.rx) / age - p.dvx) * ad; p.dvy += ((y - p.ry) / age - p.dvy) * ad;
+      p.rx = x; p.ry = y; p.st = now;
+      const k1 = alpha(1.6 + 6.0 * Math.hypot(p.dvx, p.dvy));
       p.tx += (x - p.tx) * k1; p.ty += (y - p.ty) * k1;
     }
   }
@@ -3386,14 +4569,19 @@ const Pens = (() => {
       } else run(p, active);
       q.length = 0;
     }
-    const glide = 1 - Math.exp(-dt * 26);
+    const glide = 1 - Math.exp(-dt * 34);
     for (const p of hands) {
       if (p.down) { p.x += (p.tx - p.x) * glide; p.y += (p.ty - p.y) * glide; }
       run(p, p.down);
     }
-    for (let i = 0; i < tapQ.length; i += 2) burst(tapQ[i], tapQ[i + 1]);
+    clock += dt;
+    for (let i = 0; i < tapQ.length; i += 3) burst(tapQ[i], tapQ[i + 1], tapQ[i + 2]);
     tapQ.length = 0;
     updateRipples();
+    combN = 0;
+    stir(stirs[0]); stir(stirs[1]);
+    for (const p of pointers.values()) comb(p, p.down);
+    for (const p of hands) comb(p, p.down);
     updateParticles(time);
     energy += (moved / Math.max(dt, 1e-3) - energy) * Math.min(1, dt * 5);
     moved = 0;
@@ -3435,7 +4623,7 @@ const Pens = (() => {
   return {
     attach, build, setHands, clear, rip,
     get particles() { return pCount; },
-    get ripples() { return ripN; },
+    get ripples() { return ripN + combN; }, lead, airTap, setStir,
     get energy() { return energy; },
     get painted() { return painted; },
     get taps() { return taps; },
@@ -3472,11 +4660,16 @@ const Inputs = (() => {
   try { state.camera = localStorage.getItem('mn:camera') || ''; } catch (e) {}
   let video = null, stream = null, freshFrame = false;
   let worker = null, workerReady = false, workerBusy = false;
-  const mkHand = () => ({ seen: false, pinch: false, ext: [false, false, false, false, false], gx: 0, gy: 0, ang: 0, scale: 1, ix: 0, iy: 0, was: false });
+  const mkHand = () => {
+    const lm = new Float32Array(42);   // the 21 landmarks as window fractions, for the hand looks
+    return { seen: false, pinch: false, ext: [false, false, false, false, false], gx: 0, gy: 0, ang: 0, scale: 1, ix: 0, iy: 0, was: false, lm,
+      ls: 0, sAt: 0, rate: 0, pinchT: 0, pinchU: 0, pinchV: 0, pinchMoved: 0, pokeCool: 0, punchCool: 0, palmU: 0, palmV: 0, palmAt: 0 };
+  };
   const hs = [mkHand(), mkHand()];
+  let hz = 0, hzAt = 0;               // the tracker's rate (Show hand tracking rate)
   const tipsOut = new Array(10).fill(null);
   const grab = { mode: 0, ang: 0, dist: 1, t: 0, acc: 0, sm: 0, lacc: 0, lsm: 0 };
-  const palm = { since: 0, fired: false, ax: 0, ay: 0, bx: 0, by: 0 };
+  const palm = { since: 0, fired: false, ax: 0, ay: 0, bx: 0, by: 0, quietUntil: 0 };   // quietUntil: no step right after a snap
   let sentAt = 0, seenAt = 0, fastUntil = 0, heardAt = 0;
   let grabEls = null;
 
@@ -3652,11 +4845,13 @@ onmessage = async (e) => {
       return;
     }
     await openStream();
+    if (worker) return;   // a second tap while the camera prompt was open
     state.hands = true;
     seenAt = performance.now();
     UI.toast('Loading fingertip tracking…');
     const url = URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' }));
     worker = new Worker(url);
+    URL.revokeObjectURL(url);
     worker.onmessage = (e) => {
       const m = e.data;
       if (m.type === 'ready') { workerReady = true; UI.toast('Hands ready · raise a finger to paint'); }
@@ -3674,7 +4869,7 @@ onmessage = async (e) => {
     // or still (the pens glide between samples), a few glances a second once it has
     // left, and one a second after ten seconds of nobody there.
     const now = performance.now(), away = now - seenAt;
-    const gap = away < 1500 ? (now < fastUntil || grab.mode ? 30 : 62) : away < 10000 ? 140 : 1000;
+    const gap = away < 1500 ? 0 : away < 10000 ? 140 : 1000;   // every frame while a hand is here: responsiveness first
     if (now - sentAt < gap) return;
     sentAt = now;
     workerBusy = true;
@@ -3719,6 +4914,42 @@ onmessage = async (e) => {
     H.ang = Math.atan2(p[9][1] - p[0][1], -(p[9][0] - p[0][0]) * va);
   }
 
+  // The hand acts on the picture as a hand would (mac/core/hands.cpp, gestures):
+  // a quick pinch and release is a tap; a pointing finger poked toward the screen too;
+  // a pinched hand punched toward the camera bursts through, pulled back it implodes;
+  // an open hand on the move stirs the picture like a hand through water.
+  function gestures(H, slot, wasPinch, now) {
+    const ls = Math.log(Math.max(H.scale, 1e-4));
+    if (H.sAt > 0) {
+      const secs = Math.min(0.2, Math.max(0.01, (now - H.sAt) / 1000));
+      H.rate += ((ls - H.ls) / secs - H.rate) * 0.5;
+    } else H.rate = 0;
+    H.ls = ls; H.sAt = now;
+    if (H.pinch && !wasPinch) { H.pinchT = now; H.pinchU = H.gx; H.pinchV = H.gy; H.pinchMoved = 0; }
+    if (H.pinch) H.pinchMoved = Math.max(H.pinchMoved, Math.hypot(H.gx - H.pinchU, H.gy - H.pinchV));
+    if (!H.pinch && wasPinch && now - H.pinchT < 300 && H.pinchMoved < 0.04 && grab.mode < 2) Pens.airTap(H.pinchU, H.pinchV, 1);
+    const pointing = H.ext[1] && !H.ext[2] && !H.ext[3] && !H.ext[4] && !H.pinch;
+    if (pointing && H.rate > 1.6 && now > H.pokeCool) { Pens.airTap(H.lm[16], H.lm[17], 1.6); H.pokeCool = now + 450; }
+    if (H.pinch && grab.mode === 1 && Math.abs(H.rate) > 2.4 && now > H.punchCool) {
+      const inward = H.rate > 0;
+      Pens.airTap(H.gx, H.gy, inward ? 3.0 : -2.2);
+      Motion.dive(inward ? 0.6 : -0.6);
+      H.punchCool = now + 600;
+    }
+    const open = H.ext[1] + H.ext[2] + H.ext[3] + H.ext[4];
+    const pu = (H.lm[0] + H.lm[10] + H.lm[18] + H.lm[26] + H.lm[34]) / 5, pv = (H.lm[1] + H.lm[11] + H.lm[19] + H.lm[27] + H.lm[35]) / 5;
+    if (open >= 3 && !H.pinch && H.palmAt > 0) {
+      const secs = Math.min(0.2, Math.max(0.01, (now - H.palmAt) / 1000));
+      const vu = (pu - H.palmU) / secs, vv = (pv - H.palmV) / secs;
+      Pens.setStir(slot, Math.hypot(vu, vv) > 0.08, pu, pv, vu, vv);
+    } else Pens.setStir(slot, false, 0, 0, 0, 0);
+    H.palmU = pu; H.palmV = pv; H.palmAt = now;
+  }
+
+  // Two pinched hands hold a bridge of light that charges as you stretch it (0..1.5);
+  // letting go of both at once snaps it.
+  const bridge = { startDist: 1, held: 0, charge: 0, at: 0, mu: 0, mv: 0, power: 0, pending: false };
+
   function holdGlass() {
     const a = hs[0], b = hs[1], now = performance.now();
     const pa = a.seen && a.pinch, pb = b.seen && b.pinch;
@@ -3730,6 +4961,20 @@ onmessage = async (e) => {
     } else if (mode === 1) {
       const H = pa ? a : b;
       ang = H.ang; dist = H.scale;
+    }
+    if (bridge.pending && (mode === 0 || now - bridge.at > 350)) {
+      if (mode === 0) { Pens.airTap(bridge.mu, bridge.mv, bridge.power); palm.quietUntil = now + 2000; }   // both let go: it snaps (and open hands right after don't step on)
+      bridge.pending = false;
+    }
+    if (mode === 2) {
+      if (grab.mode !== 2) { bridge.startDist = dist; bridge.held = 0; }
+      bridge.held += Math.max(0, (now - grab.t) / 1000);
+      // Charged by a deliberate stretch (or squeeze), and slowly by holding on.
+      bridge.charge = Math.min(1.5, 1.6 * Math.abs(Math.log(dist / bridge.startDist)) + Math.min(0.4, bridge.held * 0.1));
+      bridge.mu = (a.gx + b.gx) / 2; bridge.mv = (a.gy + b.gy) / 2;
+    } else if (grab.mode === 2) {
+      if (bridge.charge > 0.35) { bridge.pending = true; bridge.at = now; bridge.power = 2 + 3 * bridge.charge; }
+      bridge.charge = 0;
     }
     if (mode !== grab.mode) {
       if (mode && !grab.mode) { Motion.spinVel = 0; mn.haptic('tick'); }
@@ -3744,7 +4989,7 @@ onmessage = async (e) => {
     const secs = Math.max(0.01, (now - grab.t) / 1000);
     if (Math.abs(da) < 0.6) {          // a larger jump is the tracker swapping hands, not a turn
       // Smooth what the camera measured, then let only deliberate movement through.
-      grab.acc += da; grab.sm += (grab.acc - grab.sm) * 0.35;
+      grab.acc += da; grab.sm += (grab.acc - grab.sm) * 0.55;
       const turn = Motion.take('cA', grab.sm, mode === 2 ? 0.03 : 0.045) * 0.85;
       if (turn) {
         Motion.feed(-turn);
@@ -3752,7 +4997,7 @@ onmessage = async (e) => {
       }
       const r = Math.log(dist / grab.dist);
       if (Math.abs(r) < 0.5) {
-        grab.lacc += r; grab.lsm += (grab.lacc - grab.lsm) * 0.3;
+        grab.lacc += r; grab.lsm += (grab.lacc - grab.lsm) * 0.5;
         const push = Motion.take('cD', grab.lsm, 0.035);
         if (push) Motion.dive(push * (mode === 2 ? 7 : 9));
       }
@@ -3768,8 +5013,11 @@ onmessage = async (e) => {
       let slot = list[i].side === 'Left' ? 0 : list[i].side === 'Right' ? 1 : -1;
       if (slot < 0 || hs[slot].seen) slot = hs[0].seen ? 1 : 0;
       if (hs[slot].seen) continue;
+      const wasPinch = hs[slot].pinch;   // cleared when the hand was last unseen
       track(hs[slot], list[i].p, va);
       const H = hs[slot], p = list[i].p;
+      for (let j = 0; j < 21; j++) { H.lm[j * 2] = reach(1 - p[j][0]); H.lm[j * 2 + 1] = reach(p[j][1]); }
+      gestures(H, slot, wasPinch, performance.now());
       for (let f = 0; f < 5; f++) {
         const t = FINGERS[f][0];
         // A pinching hand holds the glass with thumb and forefinger; its other three
@@ -3781,13 +5029,21 @@ onmessage = async (e) => {
     if (!grabEls) grabEls = [document.getElementById('grab0'), document.getElementById('grab1')];
     for (let sl = 0; sl < 2; sl++) {
       const H = hs[sl];
-      if (!H.seen) { H.pinch = false; H.ext.fill(false); for (let f = 0; f < 5; f++) tipsOut[sl * 5 + f] = null; }
+      if (!H.seen) { H.pinch = false; H.ext.fill(false); for (let f = 0; f < 5; f++) tipsOut[sl * 5 + f] = null; H.sAt = H.palmAt = 0; H.rate = 0; Pens.setStir(sl, false, 0, 0, 0, 0); }
       const on = H.seen && H.pinch;
       grabEls[sl].classList.toggle('on', on);
       if (on) grabEls[sl].style.transform = `translate3d(${H.gx * innerWidth}px, ${H.gy * innerHeight}px, 0)`;
     }
     holdGlass();
     Pens.setHands(tipsOut);
+    if (system.handDebug) {
+      const now = performance.now();
+      if (hzAt && now > hzAt) hz += (1000 / (now - hzAt) - hz) * (hz ? 0.15 : 1);
+      hzAt = now;
+      const el = document.getElementById('handHz');
+      el.hidden = false;
+      el.textContent = `hands ${(hs[0].seen ? 1 : 0) + (hs[1].seen ? 1 : 0)} · ${hz.toFixed(0)} Hz`;
+    }
     if (!state.hands) return;
 
     const a = hs[0], b = hs[1], now = performance.now();
@@ -3807,7 +5063,7 @@ onmessage = async (e) => {
 
     // Both palms shown and held still: step to the next chamber, hands-free.
     const flat = (H) => H.seen && !H.pinch && H.ext[1] && H.ext[2] && H.ext[3] && H.ext[4];
-    if (!flat(a) || !flat(b)) { palm.since = 0; palm.fired = false; }
+    if (!flat(a) || !flat(b) || now < palm.quietUntil) { palm.since = 0; palm.fired = false; }
     else if (!palm.since || Math.hypot(a.gx - palm.ax, a.gy - palm.ay) + Math.hypot(b.gx - palm.bx, b.gy - palm.by) > 0.06) {
       palm.since = now; palm.ax = a.gx; palm.ay = a.gy; palm.bx = b.gx; palm.by = b.gy;
     } else if (!palm.fired && now - palm.since > 900) {
@@ -3886,6 +5142,7 @@ onmessage = async (e) => {
 
   return {
     state, setCam, setHands, setMidi, setTilt, learn, takeFrame, feedHands: onHands, setCamera,
+    hands: hs, bridge, get grabMode() { return grab.mode; },
     get cameras() { return cameras; },
     // The camera actually in use: the chosen one, unless it is not there.
     get camera() { return stream ? usingCamera : cameras.some((c) => c.id === state.camera) ? state.camera : ''; },
@@ -4070,8 +5327,9 @@ const Sound = (() => {
       follow('mid', 1, band(4, 24), dt);
       follow('high', 2, band(24, 96), dt);
     }
-    // The drone opens up while you paint. Scheduled a few times a second, not per frame.
-    if (state.synth && (tick = (tick + 1) % 8) === 0) {
+    // The drone opens up while you paint. Scheduled eight times a second, not per frame.
+    if (state.synth && (tick += dt) >= 0.125) {
+      tick %= 0.125;
       const swell = lung < 0 ? 0 : lung;
       // It brightens as you paint, and is turned down a little as it does, so
       // brighter never means louder.
@@ -4522,6 +5780,9 @@ const UI = (() => {
 
   const cap = (s) => s[0].toUpperCase() + s.slice(1);
   const name = (v) => OPTION_NAMES[v] || cap(String(v));
+  // How each palette is called on screen (its key stays the same in links and settings).
+  const PALETTE_NAMES = { acid: 'Nectar', toxic: 'Healing', ocean: 'Coral' };
+  const pname = (p) => PALETTE_NAMES[p] || cap(p);
 
   // ---------------- params ----------------
   function setParam(key, value) {
@@ -4554,7 +5815,7 @@ const UI = (() => {
   // Five ways for the glass to move, from winding down to letting go. Each is a
   // whole feeling (pace, echo, softness, glow, breath) rather than a setting.
   const CALM = [
-    { key: 'still', name: 'Still', line: 'Barely moving. For winding down.',
+    { key: 'still', name: 'Still', line: 'Barely moving. To switch off.',
       p: { pace: 0.35, fbDecay: 0.992, warpAmount: 0, fbWarp: 0, bloom: 0.75, inkGlow: 1.0, breath: 0.8 } },
     { key: 'soft', name: 'Soft', line: 'Slow, with gentle edges. For resting.',
       p: { pace: 0.6, fbDecay: 0.988, warpAmount: 0.08, fbWarp: 0.001, bloom: 1.0, inkGlow: 1.3, breath: 0.6 } },
@@ -4736,8 +5997,56 @@ const UI = (() => {
     CHAMBERS.forEach((c, i) => {
       host.append(pip('lens', `<img src="thumbs/${c.slug}.png" alt="" decoding="async">`, c.name, { onclick: () => enterChamber(i) }));
     });
-    arrange(host);
+    // Seven places at a time, so the ring stays open and readable. It opens on the page
+    // that holds the place you are in.
+    const PAGE = 7, pages = Math.ceil(CHAMBERS.length / PAGE);
+    let page = 0, seen = -1;
+    // The last pip opens every place at once, laid out as a wall of pictures.
+    const more = pip('go', '<span style="font-size:20px;line-height:1">▦</span>', 'All places', { onclick: openPlaces });
+    host.append(more);
+    function show(p) {
+      page = p;
+      [...host.children].forEach((b, i) => { if (b !== more) b.hidden = Math.floor(i / PAGE) !== page; });
+      more.hidden = pages < 2;
+      arrange(host);
+    }
+    show(0);
+    const GROUPS = [
+      ['The sky', ['galaxy', 'nebula', 'pulsar', 'quasar', 'supernova', 'aurora', 'black-hole', 'glass-ball', 'planet']],
+      ['Mirrors', ['mandala', 'tunnel', 'fractal', 'circle-limit', 'spiral', 'liquid', 'crystal', 'maze', 'dissolve', 'dream']],
+      ['Bent space', ['pearls', 'poles', 'pool', 'whirlpool', 'hyperspace', 'julia', 'marble']],
+      ['Mathematics', ['sine-quaternion', 'quaternion-julia', 'mandelbulb', 'gyroid', 'mandelbox', 'apollonian']],
+    ];
+    function openPlaces() {
+      const wall = $('#placesWall'), dlg = $('#places');
+      wall.replaceChildren();
+      const placed = new Set();
+      const section = (title, list) => {
+        if (!list.length) return;
+        wall.append(el('h3', {}, title));
+        const grid = el('div', { class: 'places-grid' });
+        for (const i of list) {
+          const c = CHAMBERS[i];
+          const b = el('button', { class: 'place', ...(i === chamber ? { 'aria-current': 'true' } : {}), onclick: () => { dlg.close(); togglePanel(null); enterChamber(i); } },
+            `<img src="thumbs/${c.slug}.png" alt="" loading="lazy" decoding="async"><span class="n"></span><span class="l"></span>`);
+          b.querySelector('.n').textContent = c.name;
+          b.querySelector('.l').textContent = c.line;
+          grid.append(b);
+        }
+        wall.append(grid);
+      };
+      for (const [title, slugs] of GROUPS) {
+        const list = slugs.map((s) => CHAMBERS.findIndex((c) => c.slug === s)).filter((i) => i >= 0);
+        list.forEach((i) => placed.add(i));
+        section(title, list);
+      }
+      section('More', CHAMBERS.map((c, i) => i).filter((i) => !placed.has(i)));
+      dlg.showModal();
+      const cur = wall.querySelector('[aria-current]');
+      if (cur) cur.scrollIntoView({ block: 'center' });
+    }
     refreshers.push(() => {
+      if (chamber !== seen) { seen = chamber; if (Math.floor(chamber / PAGE) !== page) show(Math.floor(chamber / PAGE)); }
       [...host.children].forEach((b, i) => {
         if (i === chamber) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
       });
@@ -4767,7 +6076,23 @@ const UI = (() => {
         get: () => params.drosteScale, set: (v) => setParam('drosteScale', v), out: (v) => `${v.toFixed(1)}×` },
       tiles: { label: 'Tiles', ends: ['Few', 'Many'], min: 0.5, max: 6, step: 0.01,
         get: () => params.tileScale, set: (v) => setParam('tileScale', v), out: (v) => v.toFixed(1) },
+      lens: { label: 'Ring size', ends: ['Small', 'Vast'], min: 0.15, max: 0.9, step: 0.01,
+        get: () => params.lensRing, set: (v) => setParam('lensRing', v), out: (v) => v.toFixed(2) },
+      wormhole: { label: 'Ball size', ends: ['Small', 'Vast'], min: 0.15, max: 0.9, step: 0.01,
+        get: () => params.lensRing, set: (v) => setParam('lensRing', v), out: (v) => v.toFixed(2) },
+      pearls: { label: 'Pearl size', ends: ['Fine', 'Full'], min: 0.8, max: 1.9, step: 0.01,
+        get: () => params.pearlScale, set: (v) => setParam('pearlScale', v), out: (v) => v.toFixed(2) },
+      poles: { label: 'Turning', ends: ['Still', 'Fast'], min: 0, max: 1.5, step: 0.01,
+        get: () => params.drosteSpeed, set: (v) => setParam('drosteSpeed', v), out: (v) => v.toFixed(2) },
     };
+    const strength = (label, ends) => ({ label, ends, min: 0, max: 1, step: 0.01,
+      get: () => params.placeAmount, set: (v) => setParam('placeAmount', v), out: (v) => `${Math.round(v * 100)}%` });
+    const flow = (label) => ({ label, ends: ['Still', 'Fast'], min: 0, max: 1.5, step: 0.01,
+      get: () => params.drosteSpeed, set: (v) => setParam('drosteSpeed', v), out: (v) => v.toFixed(2) });
+    Object.assign(specs, {
+      pool: strength('Waves', ['Glassy', 'Rough']), whirl: strength('Stir', ['Gentle', 'Strong']),
+      planet: flow('Turning'), corridor: flow('Speed'), julia: intDial('symmetry', 'Mirrors', ['Few', 'Many'], 2, 16),
+    });
     const i = refreshers.indexOf(shapePull);
     if (i >= 0) refreshers.splice(i, 1);
     shapePull = dial($('#shapeDial'), specs[params.mode]);
@@ -4831,10 +6156,43 @@ const UI = (() => {
   }
 
   // ---------------- Colour and Calm ----------------
+  // How hands look: a choice on the ring, beside place and colour.
+  const HAND_GLYPH = [
+    line('<path d="M5 17c4 0 5-3 7-6s5-5 7-5"/><circle cx="5" cy="17" r="1.6" fill="currentColor"/>'),
+    line('<path d="M5 18l4-6 5 2 5-8"/><circle cx="5" cy="18" r="1.3" fill="currentColor"/><circle cx="9" cy="12" r="1.3" fill="currentColor"/><circle cx="14" cy="14" r="1.3" fill="currentColor"/><circle cx="19" cy="6" r="1.7" fill="currentColor"/>'),
+    line('<path d="M4 16c4-10 8 4 16-8" stroke-width="3.4" opacity=".3"/><path d="M4 16c4-10 8 4 16-8"/>'),
+    line('<path d="M4 7c4-2 12 2 16 0"/><path d="M6 9v8M9 9.5v6M12 10v9M15 9.5v6M18 9v7" opacity=".6"/>'),
+    line('<path d="M7 4c-3 5 3 8 0 16M12 4c-3 5 3 8 0 16M17 4c-3 5 3 8 0 16"/>'),
+    line('<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.5" opacity=".6"/><circle cx="12" cy="12" r="9.5" opacity=".3"/>'),
+  ];
+  const HAND_LINE = ['Only what your fingers paint', 'Your hand in threads of starlight', 'Glowing tubes of light',
+    'Northern lights hang from your fingers', 'Satin ribbons that flow and settle', 'A corona that breathes with you'];
+  function chooseHandLook(i) {
+    system.handLook = i;
+    system.handLookOn = i > 0 && Inputs.state.hands;
+    refresh();
+  }
+  function buildHands() {
+    const host = $('#handsRing');
+    HAND_LOOKS.forEach((name, i) => host.append(pip('', HAND_GLYPH[i], name, { 'aria-pressed': 'false', onclick: () => chooseHandLook(i) })));
+    arrange(host);
+    const feed = $('#handsFeed');
+    feed.addEventListener('click', () => { system.handLookFeed = !system.handLookFeed; refresh(); });
+    refreshers.push(() => {
+      const k = system.handLook | 0;
+      [...host.children].forEach((b, i) => b.setAttribute('aria-pressed', i === k));
+      $('#handsName').textContent = HAND_LOOKS[k];
+      $('#handsLine').textContent = HAND_LINE[k] + (k > 0 && !Inputs.state.hands ? ' · shown when Hands are on' : '');
+      feed.hidden = k === 0;
+      feed.setAttribute('aria-pressed', system.handLookFeed);
+      feed.textContent = system.handLookFeed ? 'Feeds the picture' : 'On top only';
+    });
+  }
+
   function buildMood() {
     const host = $('#swatches');
     for (const p of Object.keys(PALETTES)) {
-      const b = pip('swatch', '', cap(p), { 'aria-label': cap(p), title: cap(p), 'aria-pressed': 'false', onclick: () => setParam('palette', p) });
+      const b = pip('swatch', '', pname(p), { 'aria-label': pname(p), title: pname(p), 'aria-pressed': 'false', 'data-key': p, onclick: () => setParam('palette', p) });
       b.style.setProperty('--swatch', Palette.css(p));
       host.append(b);
     }
@@ -4846,8 +6204,8 @@ const UI = (() => {
     arrange(calm);
     $('#fineTune').addEventListener('click', () => togglePanel('tune'));
     refreshers.push(() => {
-      [...host.children].forEach((b) => b.setAttribute('aria-pressed', b.title.toLowerCase() === params.palette));
-      $('#paletteName').textContent = cap(params.palette);
+      [...host.children].forEach((b) => b.setAttribute('aria-pressed', b.dataset.key === params.palette));
+      $('#paletteName').textContent = pname(params.palette);
       const rootStyle = document.documentElement.style;
       rootStyle.setProperty('--orb', Palette.css(params.palette));
       rootStyle.setProperty('--brand', Palette.cssLine(params.palette));
@@ -4959,7 +6317,7 @@ const UI = (() => {
     const s = SCHEMA[key], id = 's-' + ++rowId;
     if (Array.isArray(s[1])) {
       const sel = el('select', { id, class: 'set-select' });
-      s[1].forEach((v) => sel.append(el('option', { value: v }, name(v))));
+      s[1].forEach((v) => sel.append(el('option', { value: v }, key === 'palette' ? pname(v) : name(v))));
       sel.addEventListener('change', () => setParam(key, sel.value));
       refreshers.push(() => { if (document.activeElement !== sel) sel.value = params[key]; });
       return settingRow(s[5], sel, { mode, inline: true, search: `${s[5]} ${s[4]}` });
@@ -5036,12 +6394,32 @@ const UI = (() => {
     return settingRow('Camera to use', sel, { inline: true, search: 'camera to use webcam device source external usb select choose' });
   }
 
+  // How hands look when shown: one chip per look, first in All settings.
+  function handLookRow() {
+    const box = el('div', { class: 'mn-row set-looks', role: 'radiogroup', 'aria-label': 'Hands look', id: 's-handlook' });
+    const chips = HAND_LOOKS.map((name, i) => {
+      const b = el('button', { class: 'mn-chip', role: 'radio', type: 'button', onclick: () => {
+        system.handLook = i;
+        if (i > 0 && Inputs.state.hands) system.handLookOn = true;
+        refresh();
+      } }, name);
+      box.append(b);
+      return b;
+    });
+    refreshers.push(() => chips.forEach((b, i) => b.setAttribute('aria-checked', system.handLook === i)));
+    return settingRow('Hands look', box, { search: 'hands look style light constellation neon aurora ribbons aura ink fingertips' });
+  }
+
   function buildAll() {
     const host = $('#allGroups');
-    GROUPS.forEach(([title, keyGroups], gi) => {
+    host.append(group('Hands', [
+      handLookRow(),
+      switchRow('Feeds the picture', () => system.handLookFeed, (v) => { system.handLookFeed = v; }, 'hands look feed echoes mirror picture'),
+    ], true));
+    GROUPS.forEach(([title, keyGroups]) => {
       const rows = title === 'Camera' ? [cameraRow()] : [];
       for (const [k, s] of Object.entries(SCHEMA)) if (keyGroups.includes(s[4])) rows.push(paramRow(k, MODE_OF_GROUP[s[4]]));
-      host.append(group(title, rows, gi === 0));
+      host.append(group(title, rows, false));
     });
 
     // Devices
@@ -5060,6 +6438,7 @@ const UI = (() => {
       learnRow,
       switchRow('Track two hands', () => S.twoHands, Inputs.setTwoHands, 'fingertips hands two both wheel palms'),
       switchRow('Track hands on the processor', () => S.handsCpu, Inputs.setHandsCpu, 'fingertips hands cpu gpu cooler heat'),
+      switchRow('Show hand tracking rate', () => system.handDebug, (v) => { system.handDebug = v; if (!v) $('#handHz').hidden = true; }, 'fingertips hands tracking rate debug dev hz'),
       switchRow('Tilt to steer', () => S.tilt, Inputs.setTilt, 'tilt phone motion'),
     ]));
 
@@ -5147,24 +6526,28 @@ const UI = (() => {
   }
 
   // The line at the centre of the home ring: what the thing you touched does.
-  const HOME_SAY = 'Out on an infinite adventure';
+  const HOME_SAY = 'An infinite adventure';
   function say(text) { $('#say').textContent = text || HOME_SAY; }
 
   // The home ring, clockwise from the top. Four things shape the place you are in;
   // four are ways of being in it; then keeping a moment, the light, and every setting.
   function buildHome() {
     const items = [
-      { face: 'place', label: 'Place', go: 'chamber', say: 'Where you are' },
-      { face: 'colour', label: 'Colour', go: 'colour', say: 'The light you sit in' },
-      { face: 'calm', label: 'Calm', go: 'calm', say: 'How gently it moves' },
+      { face: 'place', label: 'Place', go: 'chamber', say: 'Your place' },
+      { face: 'colour', label: 'Colour', go: 'colour', say: 'Choose your light' },
+      { face: 'hands', label: 'Hands', go: 'hands', say: 'Your avatar in this universe' },
+      { face: 'calm', label: 'Calm', go: 'calm', say: 'The gentleness of the journey' },
       { inner: '<span class="lung"></span>', label: 'Breathe', on: () => system.breathGuide, set: setBreathe,
-        say: 'In as the orb grows, out as it falls' },
-      { icon: 'volume', label: 'Sound', on: soundOn, set: setSound, say: 'The glass sings as you paint' },
-      { icon: 'mic', label: 'Listen', on: () => Sound.state.mic, set: setListen, say: 'Music in the room moves the mirrors' },
-      { icon: 'play', label: 'Drift', on: () => system.autoVJ, set: setWander, say: 'It wanders on its own. Just watch.' },
-      { icon: 'download', label: 'Keep', go: 'keep', say: 'Take this moment with you' },
-      { icon: 'light', label: 'Light', go: 'light', say: 'What paints the picture' },
-      { icon: 'settings', label: 'Settings', go: 'all', say: 'Every setting, in one list' },
+        say: 'Let yourself just be' },
+      { icon: 'mic', label: 'Listen', on: () => Sound.state.mic, set: setListen, say: 'Let your music into this universe' },
+      { icon: 'play', label: 'Autopilot', on: () => system.autoVJ, set: setWander, say: 'Just observe the experience' },
+      { icon: 'download', label: 'Remember', go: 'keep', say: 'Capture your journey to share' },
+      { inner: '<span class="vial-pip"></span>', label: 'Palace', on: () => Visit.active, set: (v) => { v ? Visit.begin() : Visit.end(); togglePanel(null); },
+        say: 'Walking the palace, one question at a time' },
+      { inner: '<span class="vial-pip"></span>', label: 'Shelf', on: () => false, set: () => { togglePanel(null); Visit.openShelf(); },
+        say: 'Your words for your soul' },
+      { icon: 'light', label: 'Light', go: 'light', say: 'The brush on the canvas' },
+      { icon: 'settings', label: 'Settings', go: 'all', say: "Customize to your heart's content" },
     ];
     const host = $('#homeRing'), faces = {};
     for (const it of items) {
@@ -5189,6 +6572,8 @@ const UI = (() => {
       faces.colour.querySelector('.pip-disc').style.setProperty('--face', Palette.css(params.palette));
       const d = faces.calm.querySelector('.pip-disc'), k = calmNow().key;
       if (d.dataset.k !== k) { d.dataset.k = k; d.innerHTML = GLYPH[k]; }
+      const h = faces.hands.querySelector('.pip-disc'), hk = String(system.handLook | 0);
+      if (h.dataset.k !== hk) { h.dataset.k = hk; h.innerHTML = HAND_GLYPH[+hk]; }
     });
   }
 
@@ -5231,9 +6616,20 @@ const UI = (() => {
       try { setSound(!soundOn()); Sound.wake(); } catch (err) { toast(err.message); }
       refresh(); wake();
     };
+    // One button, three steps: hands paint; hands paint and are drawn in light; off.
     sideHands.onclick = () => {
-      Inputs.setHands(!Inputs.state.hands).then(() => { if (Inputs.state.hands) toast('Raise a finger to paint · pinch to hold the glass'); refresh(); }, (err) => { toast(err.message); refresh(); });
-      wake();
+      const fail = (err) => { toast(err.message); refresh(); };
+      if (!Inputs.state.hands) {
+        system.handLookOn = false;
+        Inputs.setHands(true).then(() => { if (Inputs.state.hands) toast('Raise a finger to paint · pinch to hold the glass'); refresh(); }, fail);
+      } else if (!system.handLookOn && system.handLook > 0) {
+        system.handLookOn = true;
+        mn.toast(`Hands: ${HAND_LOOKS[system.handLook]}`, { action: 'Change', onAction: () => togglePanel('hands') });
+      } else {
+        system.handLookOn = false;
+        Inputs.setHands(false).then(refresh, fail);
+      }
+      refresh(); wake();
     };
     // A speaker that is crossed out until it sings; an open hand.
     const svg = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
@@ -5247,7 +6643,9 @@ const UI = (() => {
       sideSound.title = snd ? 'Sound is on' : 'Turn sound on';
       sideSound.setAttribute('aria-label', sideSound.title);
       sideHands.setAttribute('aria-pressed', hands);
-      sideHands.title = hands ? 'Hands are painting' : 'Paint with your hands';
+      const look = hands && system.handLookOn && system.handLook > 0;
+      sideHands.dataset.look = look;
+      sideHands.title = !hands ? 'Paint with your hands' : look ? `Hands are painting, shown as ${HAND_LOOKS[system.handLook]} · press to turn off` : system.handLook > 0 ? `Hands are painting · press to show them as ${HAND_LOOKS[system.handLook]}` : 'Hands are painting · press to turn off';
       sideHands.setAttribute('aria-label', sideHands.title);
     });
 
@@ -5337,9 +6735,9 @@ const UI = (() => {
     const n = $('#captionName'), l = $('#captionLine');
     l.classList.toggle('tagline', !!welcome);
     if (welcome) {
-      n.setAttribute('aria-label', 'Welcome, fractonaut');
-      n.innerHTML = `<span aria-hidden="true">Welcome, </span><span class="brand">${WORD}</span>`;
-      l.textContent = 'fractonaut 2026 · out on an infinite adventure';
+      n.setAttribute('aria-label', 'Here you are, fractonaut');
+      n.innerHTML = `<span aria-hidden="true">Here you are, </span><span class="brand">${WORD}</span>`;
+      l.textContent = 'How are you, fractonaut?';
     } else {
       n.removeAttribute('aria-label');
       n.textContent = CHAMBERS[chamber].name;
@@ -5348,6 +6746,165 @@ const UI = (() => {
     $('#caption').classList.add('show');
     captionTimer = 6;
   }
+
+  // ---------------- the visit ----------------
+  // A walk through the palace, told like a story: a few lines at the door, then one
+  // room at a time. Each room keeps a question; painting (and, slowly, time) fills its
+  // glass; a full glass can be bottled with a line of the visitor's own. Rooms change
+  // through a slow dusk, never a cut. Bottles stay on this device (mn:shelf).
+  const Visit = (() => {
+    const ARRIVE = [
+      'They say this palace shows itself only to the tired.',
+      'You have walked a long road to find its door.',
+      'Set down what you carry. No one here is waiting on you.',
+      'Every room keeps one question, and a little light to answer it with.',
+      'Let the question sit with you. Then move your hands, and watch.',
+    ];
+    const ROOMS = [
+      { slug: 'mandala', door: 'The first room is round, and it has been expecting you.', q: 'What have I carried this far?', potion: 'Endurance', hue: '#ffb86b' },
+      { slug: 'dream', door: 'Down the hall is a room where everything drifts.', q: 'What comes easily to me?', potion: 'Ease', hue: '#7fe3d4' },
+      { slug: 'black-hole', door: 'A stair leads down to a room with no floor, only a deep that pulls.', q: 'What do I keep returning to?', potion: 'Devotion', hue: '#ff8fa3' },
+      { slug: 'liquid', door: 'The next room will not hold still for anyone.', q: 'When did I last surprise myself?', potion: 'Courage', hue: '#ff6b5e' },
+      { slug: 'circle-limit', door: 'The last door opens on a room with no far wall.', q: 'Who is glad that I exist?', potion: 'Belonging', hue: '#f5e29a' },
+    ];
+    const HUE = Object.fromEntries(ROOMS.map((r) => [r.potion, r.hue]));
+    const FLASK = 'M15 4h10v16l11 22a8 8 0 0 1-7 12H11a8 8 0 0 1-7-12l11-22z';
+    const PAINT = 150, SECONDS = 120;   // strokes that fill a glass alone; time that does
+    const LINE = 7;                     // seconds a line of the story is given
+    let state = '', step = 0, start = 0, roomT = 0, fill = 0, shownFor = 0;
+    let queue = [];                     // [{ t: seconds left, fn }]
+    const after = (t, fn) => queue.push({ t, fn });
+    const shelf = () => { try { return JSON.parse(mn.store.get('shelf') || '[]'); } catch { return []; } };
+
+    // The old line fades out fully before the new one fades in.
+    function line(text, ask) {
+      const l = $('#visitLine');
+      l.classList.remove('show');
+      after(l.textContent ? 1.9 : 0.05, () => { l.textContent = text; l.classList.toggle('ask', !!ask); l.classList.add('show'); shownFor = 0; });
+    }
+    let flaskEl = null, shown = -1;   // the flask, and the percentage (101: full) it shows
+    function setFill(v) {
+      fill = v;
+      const pct = v >= 1 ? 101 : Math.round(v * 100);
+      if (pct === shown) return;
+      shown = pct;
+      const f = flaskEl || (flaskEl = $('#flask'));
+      f.style.setProperty('--fill', v.toFixed(3));
+      f.setAttribute('aria-valuenow', Math.min(pct, 100));
+      f.classList.toggle('full', v >= 1);
+    }
+    function clearRoom() {
+      $('#flaskBox').hidden = $('#visitForm').hidden = $('#visitShelf').hidden = true;
+      $('#visitPotion').classList.remove('show');
+    }
+    function begin() {
+      queue = []; state = 'arrive'; step = 0;
+      $('#visitLine').textContent = '';
+      $('#visit').hidden = false;
+      clearRoom();
+      line(ARRIVE[0]);
+      after(LINE, nextArrive);
+      refresh();
+    }
+    function nextArrive() {
+      if (state !== 'arrive') return;
+      if (++step < ARRIVE.length) { line(ARRIVE[step]); after(LINE, nextArrive); } else door(0);
+    }
+    // Walk to a room: its door line, dusk, the room itself, dawn, then its question.
+    function door(i) {
+      queue = []; state = 'door'; step = i;
+      const r = ROOMS[i], c = CHAMBERS.findIndex((x) => x.slug === r.slug), move = c >= 0 && c !== chamber;
+      clearRoom();
+      line(r.door);
+      if (move) {
+        after(2.4, () => $('#dusk').classList.add('on'));
+        after(5.4, () => enterChamber(c, { instant: true, quiet: true }));
+        after(6.6, () => $('#dusk').classList.remove('on'));
+      }
+      after(move ? 9.5 : LINE, () => {
+        state = 'room'; roomT = 0; start = Pens.painted;
+        $('#visit').style.setProperty('--potion', r.hue);
+        setFill(0);
+        line(r.q, true);
+        after(2.2, () => { $('#flaskBox').hidden = false; });
+      });
+    }
+    function end() {
+      queue = []; state = '';
+      $('#dusk').classList.remove('on');
+      $('#visit').hidden = true;
+      mn.store.set('visited', '1');
+      refresh();
+    }
+    function keep(text) {
+      const r = ROOMS[step];
+      mn.store.set('shelf', JSON.stringify([...shelf(), { potion: r.potion, q: r.q, text, at: Date.now() }].slice(-200)));
+      $('#visitText').value = '';
+      $('#visitForm').hidden = true;
+      $('#visitPotion').classList.remove('show');
+      state = 'rest';
+      line(text ? 'It goes on the shelf, still warm.' : 'You leave it unnamed. It keeps all the same.');
+      after(6, () => {
+        if (step + 1 < ROOMS.length) { door(step + 1); return; }
+        state = 'leave';
+        $('#flaskBox').hidden = true;
+        line('Five small bottles, and every one of them yours.');
+        after(LINE, () => { line('The palace keeps no hours. Come back whenever you are tired.'); $('#visitShelf').hidden = false; });
+        after(LINE + 30, end);
+      });
+    }
+    function tick(dt) {
+      if (!state) return;
+      shownFor += dt;
+      // Backwards, so a callback may add to the queue; one that replaces it ends the pass.
+      for (let i = queue.length - 1, Q = queue; i >= 0 && queue === Q; i--) {
+        const q = Q[i];
+        if ((q.t -= dt) > 0) continue;
+        Q.splice(i, 1);
+        q.fn();
+      }
+      if (state !== 'room') return;
+      roomT += dt;
+      setFill(Math.min(1, Math.max(fill, (Pens.painted - start) / PAINT + roomT / SECONDS)));
+      if (fill < 1) return;
+      state = 'full';
+      const p = $('#visitPotion');
+      p.innerHTML = `Something has gathered in the glass. The room calls it <b>${ROOMS[step].potion}</b>.`;
+      p.classList.add('show');
+      mn.haptic('confirm');
+      after(2.5, () => { if (state === 'full') $('#visitForm').hidden = false; });
+    }
+    function flask(hue) {
+      return `<svg class="flask full" viewBox="0 0 40 56" style="--fill:1;--potion:${hue}" aria-hidden="true"><path class="liquid" d="${FLASK}" style="transform:none;clip-path:inset(38% 0 0 0)"/><path class="glass" d="${FLASK}"/></svg>`;
+    }
+    function openShelf() {
+      const host = $('#shelfList'), fmt = new Intl.DateTimeFormat(undefined, { dateStyle: 'long' });
+      const all = shelf().reverse();
+      host.replaceChildren(...(all.length ? all.map((s) => {
+        const hue = HUE[s.potion] || '#e9c98b';
+        const d = el('div', { class: 'bottle', style: `--potion:${hue}` }, `${flask(hue)}<p class="name"></p><p class="q"></p><p class="words"></p><p class="when"></p>`);
+        d.querySelector('.name').textContent = s.potion;
+        d.querySelector('.q').textContent = s.q;
+        d.querySelector('.words').textContent = s.text || '';
+        d.querySelector('.when').textContent = fmt.format(s.at);
+        return d;
+      }) : [el('p', { class: 'empty' }, 'Nothing is bottled yet. Walk the rooms, and the shelf will fill.')]));
+      $('#shelf').showModal();
+    }
+    function init() {
+      $('#visitForm').addEventListener('submit', (e) => { e.preventDefault(); keep($('#visitText').value.trim()); });
+      $('#visitOn').addEventListener('click', () => keep(''));
+      $('#visitShelf').addEventListener('click', openShelf);
+      // A tap on the picture turns the page of the story, once a line has had a moment.
+      canvas.addEventListener('pointerdown', () => {
+        if (state !== 'arrive' || shownFor < 1.5) return;
+        queue = queue.filter((q) => q.fn !== nextArrive);
+        nextArrive();
+      });
+      if (!mn.store.get('visited') && !location.hash) begin();
+    }
+    return { init, tick, begin, end, openShelf, get active() { return !!state; } };
+  })();
 
   // ---------------- capture ----------------
   function stamp() { return new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19); }
@@ -5548,7 +7105,7 @@ const UI = (() => {
   function cycle(key, dir = 1) {
     const opts = SCHEMA[key][1];
     setParam(key, opts[(opts.indexOf(params[key]) + dir + opts.length) % opts.length]);
-    toast(`${SCHEMA[key][5]} · ${name(params[key])}`);
+    toast(`${SCHEMA[key][5]} · ${key === 'palette' ? pname(params[key]) : name(params[key])}`);
   }
 
   function onKey(e) {
@@ -5627,6 +7184,7 @@ const UI = (() => {
     buildChambers();
     buildLight();
     buildMood();
+    buildHands();
     buildAll();
     renderShapeDial();
     buildPanels();
@@ -5639,6 +7197,7 @@ const UI = (() => {
     document.addEventListener('fullscreenchange', keepAwake);
     wake();
     showCaption(true);
+    Visit.init();
   }
 
   function update(dt) {
@@ -5658,12 +7217,15 @@ const UI = (() => {
     if (captionTimer > 0 && (captionTimer -= dt) <= 0) $('#caption').classList.remove('show');
     if (whisperTimer > 0 && (whisperTimer -= dt) <= 0) $('#whisper').classList.remove('show');
     if (idleTimer > 0 && (idleTimer -= dt) <= 0 && !openPanel) document.body.classList.add('idle');
+    Visit.tick(dt);
   }
 
   return {
     init, update, afterFrame, afterRender, toast, refresh, note, breathCue,
     nextChamber: () => enterChamber(chamber + 1), setNormalized, stats,
     paused: false,
+    // Something on the page moves every frame: a morph between chambers, or the hands drawn in light.
+    get busy() { return !!morph; },
   };
 })();
 </script>
@@ -5685,7 +7247,10 @@ const Main = (() => {
   const LEVELS = [[4, 1], [2, 1], [1, 1], [1, 0.85], [1, 0.72], [1, 0.6], [1, 0.5], [1, 0.42], [1, 0.35], [1, 0.3]];
   let filming = false;
   let level = 0, quality = 1, refreshHz = 60, calib = [], fpsAcc = 0, fpsFrames = 0, good = 0;
-  let trial = null, cooldown = 0, ceiling = 0, ceilingFor = 0;
+  let trial = null, cooldown = 0, backoff = 8, ceiling = 0, ceilingFor = 0;
+  // The last 60 gaps between animation frames (ms), for the display's rate.
+  const gaps = new Float32Array(60), gapsSorted = new Float32Array(60);
+  let gapN = 0, gapAt = 0, rafAt = 0;
 
   // Canvas size in CSS and device pixels, kept current by a ResizeObserver so the
   // frame loop never has to measure layout.
@@ -5722,11 +7287,15 @@ const Main = (() => {
     let cw = Math.max(1, Math.round(fw * k)), ch = Math.max(1, Math.round(fh * k));
     if (filming) { cw -= cw & 1; ch -= ch & 1; }
     if (force || canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
-    const s = system.renderScale * quality;
-    // Echo detail tops out at 1.5 device pixels per CSS pixel; past that it costs
-    // memory and fill rate for softness nobody can see.
-    const density = cw * s / Math.max(1, cssW);
-    Renderer.resize(cw * s, ch * s, density > 1.5 ? Math.max(0.6, 1.5 / density) : 1);
+    // Targets are sized for full quality; lower detail levels draw into part of them.
+    const a = system.renderScale, s = a * quality;
+    Renderer.resize(cw * s, ch * s, echoScale(cw * s), cw * a, ch * a, echoScale(cw * a));
+  }
+  // Echo detail tops out at 1.5 device pixels per CSS pixel; past that it costs
+  // memory and fill rate for softness nobody can see.
+  function echoScale(w) {
+    const density = w / Math.max(1, cssW);
+    return density > 1.5 ? Math.max(0.6, 1.5 / density) : 1;
   }
 
   // Start near where this screen will settle, instead of stuttering down to it:
@@ -5747,7 +7316,7 @@ const Main = (() => {
     UI.update(dt);
     Palette.update(dt);
     Motion.update(dt);
-    Fold.update(pdt, time, Inputs.state.tiltX, Inputs.state.tiltY);
+    Fold.update(pdt, time, Inputs.state.tiltX, Inputs.state.tiltY, Pens.lead(), Pens.energy);
     Renderer.fadeVeil(dt);
 
     // Slow breathing, and whatever the room is playing. All of it moves the picture;
@@ -5788,8 +7357,10 @@ const Main = (() => {
 
     f.inkCount = Pens.build(dt, time, f);
     f.ripN = Pens.ripples;
-    const gpuMirrors = fold.mode === 0 || (fold.mode === 1 && fold.warpAmt <= 0);
+    const gpuMirrors = fold.mode === M.none || (fold.mode === M.kaleido && fold.warpAmt <= 0);
     f.inkCopies = gpuMirrors ? (fold.mirror ? 2 * fold.sym : fold.sym) : 1;
+    const look = system.handLookOn ? system.handLook | 0 : 0;
+    f.looks = Inputs.state.hands && (look > 0 || Inputs.grabMode === 2) ? Looks.build(dt, time, canvas.width / canvas.height, Inputs.hands, look) : (Looks.reset(), null);
     Sound.update(dt, Pens.energy, system.breathGuide ? lung : -1);
     Renderer.render(f);
   }
@@ -5800,25 +7371,42 @@ const Main = (() => {
     resize();
   }
 
+  // The display's rate from the median gap between animation frames. That is the
+  // frame rate itself when frames are slow, so it only ever raises refreshHz here;
+  // adapt lowers it when dropping detail does not help.
+  function frameRate() {
+    if (gapN < gaps.length) return 0;
+    gapsSorted.set(gaps);
+    gapsSorted.sort();
+    return Math.min(240, 1000 / gapsSorted[gaps.length >> 1]);
+  }
+
   function adapt(dt) {
+    if (dt > 1) { fpsAcc = 0; fpsFrames = 0; return; }   // back from a hidden tab, not a stall
     fpsAcc += dt; fpsFrames++;
     if (fpsAcc < 1) return;
     const fps = fpsFrames / fpsAcc;
     fpsAcc = 0; fpsFrames = 0;
     UI.stats.fps = fps;
+    const rate = frameRate();
+    if (rate > refreshHz * 1.04) refreshHz = rate;
     if (!system.autoQuality) { applyLevel(); return; }
     cooldown--; ceilingFor--;
     const hz = halved() ? refreshHz / 2 : refreshHz;
     const slow = fps < hz * 0.9;
     if (trial && slow && fps < trial.fps * 1.05) {
-      // Dropping detail bought nothing, so the GPU is not what is holding us back.
-      const back = trial.level; trial = null; cooldown = 8;
+      // Dropping detail bought nothing, so the GPU is not what is holding us back (a
+      // slower display, perhaps): wait longer before each new try.
+      const back = trial.level; trial = null;
+      cooldown = backoff; backoff = Math.min(120, backoff * 2);
+      if (rate && rate < refreshHz) refreshHz = rate;
       setLevel(back);
     } else if (slow && cooldown <= 0) {
       if (good < 0) { ceiling = level + 1; ceilingFor = 45; }   // we only just climbed here: remember it
       trial = { level, fps }; good = 0;
       setLevel(level + (fps < hz * 0.6 ? 2 : 1));
     } else if (!slow) {
+      if (trial) backoff = 8;   // dropping detail helped
       trial = null;
       const floor = ceilingFor > 0 ? ceiling : 0;
       if (fps > hz * 0.97 && level > floor && ++good >= 4) { good = -3; setLevel(level - 1); }
@@ -5830,10 +7418,13 @@ const Main = (() => {
 
   function loop(now) {
     requestAnimationFrame(loop);
+    const gap = now - rafAt;
+    rafAt = now;
+    if (gap > 0 && gap < 250) { gaps[gapAt] = gap; gapAt = (gapAt + 1) % gaps.length; gapN++; }
     if (halved() && calib.length >= 30 && now - last < 1500 / refreshHz) return;
-    const dt = Math.min((now - last) / 1000, 0.05);
-    // Not the window in front: tick over at about 30 fps and leave quality alone.
-    if (calib.length >= 30 && !UI.paused && !document.hasFocus()) {
+    const raw = (now - last) / 1000, dt = Math.min(raw, 0.05);   // the simulation never steps more than 50 ms
+    // Not visible: tick over at about 30 fps and leave quality alone.
+    if (calib.length >= 30 && !UI.paused && document.visibilityState !== 'visible') {
       if (now - last < 30) return;
       last = now;
       resize();
@@ -5852,7 +7443,7 @@ const Main = (() => {
       return;
     }
     if (UI.paused) return;
-    adapt(dt);
+    adapt(raw);
     resize();
     step(dt);
     UI.afterRender();
