@@ -90,7 +90,8 @@ const char* kCamFS = "#version 300 es\n#extension GL_OES_EGL_image_external_essl
   X(uCap) X(uBloom) X(uChroma) X(uGrain) X(uVignette) X(uExposure) X(uFrame) X(uPeak) X(uKs) X(uG)        \
   X(uBloomMeanK) X(uOutMode) X(uM) X(uState) X(uPrevPic) X(uRMPic) X(uFBPic) X(uVeilPic)         \
   X(uScenePic) X(uBloomPic) X(uSrcPic) X(uGain) X(uLookMirror) X(uFish) X(uKind) X(uT) X(uBreath) X(uHands)  \
-  X(uPts) X(uHand)
+  X(uPts) X(uHand) X(uRmQ) X(uRmShape) X(uRmLook) X(uRmSlice) X(uRmDetail) X(uRmZoom) X(uRmYaw) X(uRmPitch) \
+  X(uRmPad) X(uRmCamP) X(uRmCamF) X(uRmCamU)
 
 struct Loc {
 #define X(n) GLint n = -1;
@@ -1015,6 +1016,15 @@ static void encodeFrame(Renderer* r, const Frame& f) {
     glUniform1f(pr.u.uRmZ, f.rmZ);
     glUniform1f(pr.u.uRmT, f.rmT);
     glUniform1i(pr.u.uRmSteps, r->rmSteps);
+    // The maths places (as mac/render/renderer.mm): c, the slice, the hand's camera, the flight.
+    glUniform4f(pr.u.uRmQ, f.rmQ[0], f.rmQ[1], f.rmQ[2], f.rmQ[3]);
+    glUniform4f(pr.u.uRmCamP, f.rmCam[0], f.rmCam[1], f.rmCam[2], f.rmCam[3]);
+    glUniform4f(pr.u.uRmCamF, f.rmCam[4], f.rmCam[5], f.rmCam[6], f.rmCam[7]);
+    glUniform4f(pr.u.uRmCamU, f.rmCam[8], f.rmCam[9], f.rmCam[10], f.rmSurf ? 1.f : 0.f);
+    glUniform1i(pr.u.uRmShape, P.rmShape); glUniform1i(pr.u.uRmLook, P.rmLook);
+    glUniform1f(pr.u.uRmSlice, f.rmSlice); glUniform1f(pr.u.uRmDetail, P.rmDetail);
+    glUniform1f(pr.u.uRmPad, P.foldInLoop ? 1.f : 0.f);   // the feedback pass folds into one wedge: draw only that
+    glUniform1f(pr.u.uRmYaw, f.rmView[0]); glUniform1f(pr.u.uRmPitch, f.rmView[1]); glUniform1f(pr.u.uRmZoom, f.rmView[2]);
     draw();
   }
 
