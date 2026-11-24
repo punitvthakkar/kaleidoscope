@@ -127,3 +127,10 @@ sKind says which sky this is:
   4 supernova  matter gathers on a finger held down and bursts outward when it lets go
   5 aurora     a crown of curtains seen from beneath, rays streaming outward from the
                pole; the curtains reach for a finger
+
+## Status 2026-11-25: maths and sky places on every build
+
+- Commit `233626c` (live on fractonaut.com): the six maths places and the six sky places now run on the web and Android, as on the Mac.
+- Web: RAYMARCH_FS is mac/render/shaders/raymarch.metal translated to GLSL (Android extracts the same shader); RmFlight and Sky in the frame-loop block port mac/core/rmflight.cpp and the sky part of engine.cpp; the sky passes in the WebGL2 block follow android/native/render/renderer.cpp. After editing stars.metal, run `node android/tools/make_stars.mjs --web index.html` to refresh STARS_GLSL.
+- Checked: every new place renders in Firefox (camoufox). Not yet checked: touch, drag, taps and hands in those places on the web; the Android build (android/build/dev/.../app-debug.apk) on a phone.
+- Still open: Mandelbulb moire, Julia margins.
